@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">MyWay</string>
+    <string name="mapbox_access_token">pk.eyJ1IjoiaWduaXRpdXNnb2h5eiIsImEiOiJja3AzYzVrNTUwMm10Mm5vd2RmaTFvZHNhIn0.fnR4iM5I4dIYFoin-A4Mxg</string>
+</resources>

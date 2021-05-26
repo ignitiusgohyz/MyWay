@@ -1,6 +1,6 @@
 package com.example.myway;
 
-// test test test
+// test test test 2
 
 import android.os.Bundle;
 

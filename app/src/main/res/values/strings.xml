@@ -4,4 +4,7 @@
     <string name="user_location_permission_explanation">Explanation Here</string>
     <string name="user_location_permission_not_granted">Not granted explanation</string>
     <string name="new_location">New Location</string>
+    <string name="login_hint_username">Username</string>
+    <string name="login_hint_password">Password</string>
+    <string name="Login">Login</string>
 </resources>

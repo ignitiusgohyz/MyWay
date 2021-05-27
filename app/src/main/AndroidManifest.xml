@@ -11,6 +11,7 @@
         android:roundIcon="@mipmap/ic_myway_logo"
         android:supportsRtl="true"
         android:theme="@style/Theme.MyWay">
+        <activity android:name=".RegisterActivity"></activity>
         <activity android:name=".LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

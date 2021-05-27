@@ -7,4 +7,7 @@
     <string name="login_hint_username">Username</string>
     <string name="login_hint_password">Password</string>
     <string name="Login">Login</string>
+    <string name="Register">Register</string>
+    <string name="visible">Password Visible</string>
+    <string name="non_visible">Password Hidden</string>
 </resources>

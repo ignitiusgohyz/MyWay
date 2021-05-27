@@ -10,4 +10,10 @@
     <string name="Register">Register</string>
     <string name="visible">Password Visible</string>
     <string name="non_visible">Password Hidden</string>
+    <string name="first_name">First Name</string>
+    <string name="last_name">Last Name</string>
+    <string name="email">Enter Email</string>
+    <string name="enter_password">Enter Password</string>
+    <string name="re_enter_password">Re-Enter Password</string>
+    <string name="different_password_warning">Passwords are different!</string>
 </resources>

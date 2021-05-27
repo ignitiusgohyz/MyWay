@@ -7,8 +7,9 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="red">#FF0000</color>
 
-    <color name="mapboxPink">#FF4760F3</color>
-    <color name="mapboxBlue">#FFFF33A9</color>
+    <color name="mapboxBlue">#FF4760F3</color>
+    <color name="mapboxPink">#FFFF33A9</color>
 
 </resources>

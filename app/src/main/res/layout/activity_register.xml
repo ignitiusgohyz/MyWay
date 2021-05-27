@@ -6,4 +6,140 @@
     android:layout_height="match_parent"
     tools:context=".RegisterActivity">
 
+    <EditText
+        android:id="@+id/first_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="@string/first_name"
+        android:inputType="textPersonName"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.268"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.179">
+
+    </EditText>
+
+    <EditText
+        android:id="@+id/last_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="@string/last_name"
+        android:inputType="textPersonName"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.27"
+        app:layout_constraintStart_toEndOf="@+id/first_name"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.179">
+
+    </EditText>
+
+    <EditText
+        android:id="@+id/email"
+        android:layout_width="226dp"
+        android:layout_height="85dp"
+        android:hint="@string/email"
+        android:paddingTop="40dp"
+        android:inputType="textEmailAddress"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.459"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/first_name"
+        app:layout_constraintVertical_bias="0.014">
+
+    </EditText>
+
+    <EditText
+        android:id="@+id/first_password"
+        android:layout_width="226dp"
+        android:layout_height="85dp"
+        android:hint="@string/enter_password"
+        android:inputType="textPassword"
+        android:paddingTop="40dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.459"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/email"
+        app:layout_constraintVertical_bias="0.0">
+
+    </EditText>
+
+    <EditText
+        android:id="@+id/second_password"
+        android:layout_width="226dp"
+        android:layout_height="85dp"
+        android:hint="@string/re_enter_password"
+        android:inputType="textPassword"
+        android:paddingTop="40dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.459"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/first_password"
+        app:layout_constraintVertical_bias="0.0">
+
+    </EditText>
+
+    <Button
+        android:id="@+id/register_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/Register"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/second_password"
+        app:layout_constraintVertical_bias="0.237" />
+
+    <ImageButton
+        android:id="@+id/visibility_button"
+        android:layout_width="32dp"
+        android:layout_height="18dp"
+        android:layout_marginEnd="30dp"
+        android:background="#0000"
+        android:contentDescription="@string/non_visible"
+        android:src="@drawable/ic_password_not_visible"
+        app:layout_constraintBottom_toBottomOf="@+id/first_password"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/first_password"
+        app:layout_constraintTop_toBottomOf="@+id/email">
+
+    </ImageButton>
+
+    <TextView
+        android:id="@+id/different_password_warning"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="125dp"
+        android:text="@string/different_password_warning"
+        android:textColor="@android:color/holo_red_dark"
+        android:textSize="9sp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@+id/first_password"
+        app:layout_constraintEnd_toEndOf="@+id/first_password"
+        app:layout_constraintStart_toStartOf="@+id/first_password"
+        app:layout_constraintTop_toBottomOf="@+id/first_password" />
+
+    <TextView
+        android:id="@+id/different_password_warning2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/different_password_warning"
+        android:textColor="@android:color/holo_red_dark"
+        android:textSize="9sp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@+id/second_password"
+        app:layout_constraintEnd_toEndOf="@+id/second_password"
+
+        app:layout_constraintHorizontal_bias="0.035"
+        app:layout_constraintStart_toStartOf="@+id/second_password"
+        app:layout_constraintTop_toBottomOf="@+id/second_password"
+        app:layout_constraintVertical_bias="0.0" />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

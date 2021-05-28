@@ -1,5 +1,6 @@
 package com.example.myway;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -7,11 +8,12 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
+
+import java.util.HashMap;
 
 @SuppressWarnings("deprecation")
 public class LoginActivity extends AppCompatActivity {
@@ -19,36 +21,57 @@ public class LoginActivity extends AppCompatActivity {
     private Button loginButton;
     private Button registerButton;
     private ImageButton visibilityButton;
-    private EditText password;
+    private EditText createdUsername;
+    private String createdUsername_string;
+    private EditText createdPassword;
+    private String createdPassword_string;
+    protected HashMap<String, String> local_database = new HashMap<>();
+    protected static final int request_code = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         loginButton = findViewById(R.id.login);
+        createdUsername = findViewById(R.id.username);
+        createdPassword = findViewById(R.id.password);
+        registerButton = findViewById(R.id.register);
+        visibilityButton = findViewById(R.id.visibility_button);
+
         loginButton.setOnClickListener(v -> {
-            Toast.makeText(LoginActivity.this, "Logging In...", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-            startActivity(intent);
+            createdUsername_string = createdUsername.getText().toString().toLowerCase();
+            createdPassword_string = createdPassword.getText().toString();
+            if (createdUsername_string.length() == 0 || createdPassword_string.length() == 0) {
+                Toast.makeText(LoginActivity.this, "Please fill in all fields.", Toast.LENGTH_SHORT).show();
+            } else if (local_database.containsKey(createdUsername_string)) {
+                boolean authenticity = local_database.get(createdUsername_string).equals(createdPassword_string);
+                if (authenticity) {
+                    Toast.makeText(LoginActivity.this, "Logging In...", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    startActivity(intent);
+                } else {
+                    Toast.makeText(LoginActivity.this, "Wrong Password!", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Toast.makeText(LoginActivity.this, "No such username!", Toast.LENGTH_SHORT).show();
+            }
         });
 
-        registerButton = findViewById(R.id.register);
         registerButton.setOnClickListener(v -> {
             Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
-            startActivity(intent);
+            intent.putExtra("hashMap", local_database);
+            startActivityForResult(intent, request_code);
         });
 
-        visibilityButton = findViewById(R.id.visibility_button);
         visibilityButton.setOnClickListener(v -> {
-            password = findViewById(R.id.password);
             Toast toast;
             if (visibilityButton.getContentDescription().equals("Password Hidden")) {
-                password.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+                createdPassword.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
                 visibilityButton.setContentDescription("Password Visible");
                 visibilityButton.setImageResource(R.drawable.ic_password_visible);
                 toast = Toast.makeText(LoginActivity.this, "Show", Toast.LENGTH_SHORT);
             } else {
-                password.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                createdPassword.setTransformationMethod(PasswordTransformationMethod.getInstance());
                 visibilityButton.setContentDescription("Password Hidden");
                 visibilityButton.setImageResource(R.drawable.ic_password_not_visible);
                 toast = Toast.makeText(LoginActivity.this, "Hide", Toast.LENGTH_SHORT);
@@ -56,7 +79,15 @@ public class LoginActivity extends AppCompatActivity {
             toast.show();
             Handler handler = new Handler();
             handler.postDelayed(toast::cancel, 500);
-            password.setSelection(password.getText().length());
+            createdPassword.setSelection(createdPassword.getText().length());
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable @org.jetbrains.annotations.Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == request_code && resultCode == RESULT_OK) {
+            local_database = (HashMap<String, String>) data.getSerializableExtra("hashMap");
+        }
     }
 }

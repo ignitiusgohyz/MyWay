@@ -16,4 +16,6 @@
     <string name="enter_password">Enter Password</string>
     <string name="re_enter_password">Re-Enter Password</string>
     <string name="different_password_warning">Passwords are different!</string>
+    <string name="enter_username">Enter Username</string>
+    <string name="special_character_warning">Name cannot contain special characters!</string>
 </resources>

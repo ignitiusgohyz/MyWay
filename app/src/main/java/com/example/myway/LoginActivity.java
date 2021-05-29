@@ -14,12 +14,11 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import java.util.HashMap;
+import java.util.Objects;
 
 @SuppressWarnings("deprecation")
 public class LoginActivity extends AppCompatActivity {
 
-    private Button loginButton;
-    private Button registerButton;
     private ImageButton visibilityButton;
     private EditText createdUsername;
     private String createdUsername_string;
@@ -32,10 +31,10 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        loginButton = findViewById(R.id.login);
+        Button loginButton = findViewById(R.id.login);
         createdUsername = findViewById(R.id.username);
         createdPassword = findViewById(R.id.password);
-        registerButton = findViewById(R.id.register);
+        Button registerButton = findViewById(R.id.register);
         visibilityButton = findViewById(R.id.visibility_button);
 
         loginButton.setOnClickListener(v -> {
@@ -44,7 +43,7 @@ public class LoginActivity extends AppCompatActivity {
             if (createdUsername_string.length() == 0 || createdPassword_string.length() == 0) {
                 Toast.makeText(LoginActivity.this, "Please fill in all fields.", Toast.LENGTH_SHORT).show();
             } else if (local_database.containsKey(createdUsername_string)) {
-                boolean authenticity = local_database.get(createdUsername_string).equals(createdPassword_string);
+                boolean authenticity = Objects.requireNonNull(local_database.get(createdUsername_string)).equals(createdPassword_string);
                 if (authenticity) {
                     Toast.makeText(LoginActivity.this, "Logging In...", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
@@ -87,7 +86,11 @@ public class LoginActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable @org.jetbrains.annotations.Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == request_code && resultCode == RESULT_OK) {
-            local_database = (HashMap<String, String>) data.getSerializableExtra("hashMap");
+            if (data != null)  {
+                @SuppressWarnings("unchecked")
+                HashMap<String, String> temp_database = (HashMap<String, String>) data.getSerializableExtra("hashMap");
+                local_database = temp_database;
+            }
         }
     }
 }

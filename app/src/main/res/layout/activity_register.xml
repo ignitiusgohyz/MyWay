@@ -143,9 +143,10 @@
         android:src="@drawable/ic_password_not_visible"
         app:layout_constraintBottom_toBottomOf="@+id/first_password"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/first_password"
         app:layout_constraintTop_toBottomOf="@+id/email"
-        app:layout_constraintVertical_bias="0.492">
+        app:layout_constraintVertical_bias="0.88">
 
     </ImageButton>
 
@@ -182,6 +183,23 @@
         app:layout_constraintVertical_bias="0.0">
 
     </EditText>
+
+    <ImageButton
+        android:id="@+id/password_requirement_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:src="@drawable/ic_more_information"
+        android:contentDescription="@string/password_requirement"
+        app:layout_constraintBottom_toTopOf="@+id/different_password_warning2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/second_password"
+        app:layout_constraintTop_toBottomOf="@+id/different_password_warning"
+        app:layout_constraintVertical_bias="1.0"
+        android:visibility="invisible">
+
+    </ImageButton>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

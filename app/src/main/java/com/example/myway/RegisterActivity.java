@@ -9,10 +9,15 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,11 +35,12 @@ import java.util.regex.Pattern;
 // 5. Ensure e-mail is truly in e-mail format.
 // 6. Disallow special characters for username as well.
 // 7. Lookout for areas to improve code efficiency to prevent frame skips.
+// 8. Potentially make the password info button permanently visible beside visibility button.
 
 @SuppressWarnings("deprecation")
 public class RegisterActivity extends AppCompatActivity {
 
-    private ImageButton visibilityButton;
+    private ImageButton visibilityButton, passwordInfoButton;
     private EditText username;
     private String username_string;
     private EditText first_password;
@@ -49,7 +55,7 @@ public class RegisterActivity extends AppCompatActivity {
     private TextView special_characters_warning;
     protected HashMap<String, String> local_database;
 
-    @SuppressLint("ResourceAsColor")
+    @SuppressLint({"ResourceAsColor", "ClickableViewAccessibility"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,6 +66,7 @@ public class RegisterActivity extends AppCompatActivity {
         first_password = findViewById(R.id.first_password);
         second_password = findViewById(R.id.second_password);
         visibilityButton = findViewById(R.id.visibility_button);
+        passwordInfoButton = findViewById(R.id.password_requirement_button);
         different_password_1 = findViewById(R.id.different_password_warning);
         different_password_2 = findViewById(R.id.different_password_warning2);
         first_name = findViewById(R.id.first_name);
@@ -99,6 +106,21 @@ public class RegisterActivity extends AppCompatActivity {
             handler.postDelayed(toast::cancel, 500);
             first_password.setSelection(first_password.getText().length());
             second_password.setSelection(second_password.getText().length());
+        });
+
+        passwordInfoButton.setOnClickListener(v -> {
+            LayoutInflater layoutInflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+            View popupView = layoutInflater.inflate(R.layout.popup_password_requirement, null);
+
+            int width = LinearLayout.LayoutParams.WRAP_CONTENT;
+            int height = LinearLayout.LayoutParams.WRAP_CONTENT;
+            boolean focusable = true;
+            final PopupWindow popupWindow = new PopupWindow(popupView, width, height, focusable);
+            popupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
+            popupView.setOnTouchListener((v1, event) -> {
+                popupWindow.dismiss();
+                return true;
+            });
         });
 
         first_name.addTextChangedListener(new TextWatcher() {
@@ -163,13 +185,24 @@ public class RegisterActivity extends AppCompatActivity {
                 if (!(first_password.getText().toString().equals(second_password.getText().toString()))) {
                     first_password.getBackground().mutate().setColorFilter(getResources().getColor(R.color.red), PorterDuff.Mode.SRC_ATOP);
                     second_password.getBackground().mutate().setColorFilter(getResources().getColor(R.color.red), PorterDuff.Mode.SRC_ATOP);
+                    different_password_1.setText(R.string.different_password_warning);
+                    different_password_2.setText(R.string.different_password_warning);
                     different_password_1.setVisibility(View.VISIBLE);
                     different_password_2.setVisibility(View.VISIBLE);
+                } else if (isInvalid(first_password)) {
+                    first_password.getBackground().mutate().setColorFilter(getResources().getColor(R.color.red), PorterDuff.Mode.SRC_ATOP);
+                    second_password.getBackground().mutate().setColorFilter(getResources().getColor(R.color.red), PorterDuff.Mode.SRC_ATOP);
+                    different_password_1.setText(R.string.password_requirement);
+                    different_password_2.setText(R.string.password_requirement);
+                    different_password_1.setVisibility(View.VISIBLE);
+                    different_password_2.setVisibility(View.VISIBLE);
+                    passwordInfoButton.setVisibility(View.VISIBLE);
                 } else {
                     first_password.getBackground().mutate().setColorFilter(getResources().getColor(R.color.black), PorterDuff.Mode.SRC_ATOP);
                     second_password.getBackground().mutate().setColorFilter(getResources().getColor(R.color.black), PorterDuff.Mode.SRC_ATOP);
                     different_password_1.setVisibility(View.INVISIBLE);
                     different_password_2.setVisibility(View.INVISIBLE);
+                    passwordInfoButton.setVisibility(View.INVISIBLE);
                 }
             }
         });
@@ -185,13 +218,24 @@ public class RegisterActivity extends AppCompatActivity {
                 if (!(first_password.getText().toString().equals(second_password.getText().toString()))) {
                     first_password.getBackground().mutate().setColorFilter(getResources().getColor(R.color.red), PorterDuff.Mode.SRC_ATOP);
                     second_password.getBackground().mutate().setColorFilter(getResources().getColor(R.color.red), PorterDuff.Mode.SRC_ATOP);
+                    different_password_1.setText(R.string.different_password_warning);
+                    different_password_2.setText(R.string.different_password_warning);
                     different_password_1.setVisibility(View.VISIBLE);
                     different_password_2.setVisibility(View.VISIBLE);
+                } else if (isInvalid(first_password)) {
+                    first_password.getBackground().mutate().setColorFilter(getResources().getColor(R.color.red), PorterDuff.Mode.SRC_ATOP);
+                    second_password.getBackground().mutate().setColorFilter(getResources().getColor(R.color.red), PorterDuff.Mode.SRC_ATOP);
+                    different_password_1.setText(R.string.password_requirement);
+                    different_password_2.setText(R.string.password_requirement);
+                    different_password_1.setVisibility(View.VISIBLE);
+                    different_password_2.setVisibility(View.VISIBLE);
+                    passwordInfoButton.setVisibility(View.VISIBLE);
                 } else {
                     first_password.getBackground().mutate().setColorFilter(getResources().getColor(R.color.black), PorterDuff.Mode.SRC_ATOP);
                     second_password.getBackground().mutate().setColorFilter(getResources().getColor(R.color.black), PorterDuff.Mode.SRC_ATOP);
                     different_password_1.setVisibility(View.INVISIBLE);
                     different_password_2.setVisibility(View.INVISIBLE);
+                    passwordInfoButton.setVisibility(View.INVISIBLE);
                 }
             }
         });
@@ -232,5 +276,20 @@ public class RegisterActivity extends AppCompatActivity {
         intent.putExtra("hashMap", local_database);
         setResult(RESULT_OK, intent);
         finish();
+    }
+
+    private boolean isInvalid(EditText pw) {
+        String temp_pw = pw.getText().toString();
+        Pattern pattern = Pattern.compile("^" +
+                "(?=.*[0-9])" +         //at least 1 digit
+                "(?=.*[a-z])" +         //at least 1 lower case letter
+                "(?=.*[A-Z])" +         //at least 1 upper case letter
+                "(?=.*[a-zA-Z])" +      //any letter
+                "(?=.*[!@#$%^*&+=])" +    //at least 1 special character
+                "(?=\\S+$)" +           //no white spaces
+                ".{8,}" +               //at least 8 characters
+                "$");
+        Matcher matcher = pattern.matcher(temp_pw);
+        return !matcher.matches();
     }
 }

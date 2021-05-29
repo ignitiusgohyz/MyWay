@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "913572295861",
+    "project_id": "myway-cbd30",
+    "storage_bucket": "myway-cbd30.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:913572295861:android:a400be5c5e571d166d3afc",
+        "android_client_info": {
+          "package_name": "com.example.myway"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "913572295861-l89ngts2vafvvcfui0m28e49834josek.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBZlFO69hZKwHa167Yq2KzUuq4w-cALTok"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "913572295861-l89ngts2vafvvcfui0m28e49834josek.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

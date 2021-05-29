@@ -1,7 +1,6 @@
 package com.example.myway;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
@@ -18,26 +17,23 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 //TODO
-// 1. Replace all deprecated methods.
-// 2. Insert autofillHints after finding out what it does.
-// 3. Resize the UI layout of RegisterActivity so we can increase font size of password warning.
-// 4. Reposition Toast messages to somewhere more visible such as the top of the UI.
-// 5. Add in number in registration fields.
-// 6. Place restrictions on password lengths during registration.
-// 7. Ensure e-mail is truly in e-mail format.
-// 8. Disallow special characters for username as well.
-// 9. Lookout for areas to improve code efficiency to prevent frame skips.
+// 1. Replace all deprecated methods --> Suppressed them, is this fine to do so?
+// 2. Reposition Toast messages to somewhere more visible such as the top of the UI.
+// 3. Add in number in registration fields.
+// 4. Place restrictions on password lengths during registration.
+// 5. Ensure e-mail is truly in e-mail format.
+// 6. Disallow special characters for username as well.
+// 7. Lookout for areas to improve code efficiency to prevent frame skips.
 
+@SuppressWarnings("deprecation")
 public class RegisterActivity extends AppCompatActivity {
 
-    private Button registerButton;
     private ImageButton visibilityButton;
     private EditText username;
     private String username_string;
@@ -53,12 +49,13 @@ public class RegisterActivity extends AppCompatActivity {
     private TextView special_characters_warning;
     protected HashMap<String, String> local_database;
 
+    @SuppressLint("ResourceAsColor")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-        registerButton = findViewById(R.id.register_button);
+        Button registerButton = findViewById(R.id.register_button);
         username = findViewById(R.id.register_username);
         first_password = findViewById(R.id.first_password);
         second_password = findViewById(R.id.second_password);
@@ -71,14 +68,16 @@ public class RegisterActivity extends AppCompatActivity {
         special_characters_warning = findViewById(R.id.special_character_warning);
 
         Intent db_intent = getIntent();
-        local_database = (HashMap<String, String>) db_intent.getSerializableExtra("hashMap");
+        @SuppressWarnings("unchecked")
+        HashMap<String, String> temp_database = (HashMap<String, String>) db_intent.getSerializableExtra("hashMap");
+        local_database = temp_database;
 
-        first_name.getBackground().mutate().setColorFilter(ContextCompat.getColor(RegisterActivity.this, R.color.black), PorterDuff.Mode.SRC_ATOP);
-        last_name.getBackground().mutate().setColorFilter(ContextCompat.getColor(RegisterActivity.this, R.color.black), PorterDuff.Mode.SRC_ATOP);
-        email.getBackground().mutate().setColorFilter(ContextCompat.getColor(RegisterActivity.this, R.color.black), PorterDuff.Mode.SRC_ATOP);
-        username.getBackground().mutate().setColorFilter(ContextCompat.getColor(RegisterActivity.this, R.color.black), PorterDuff.Mode.SRC_ATOP);
-        first_password.getBackground().mutate().setColorFilter(ContextCompat.getColor(RegisterActivity.this, R.color.black), PorterDuff.Mode.SRC_ATOP);
-        second_password.getBackground().mutate().setColorFilter(ContextCompat.getColor(RegisterActivity.this, R.color.black), PorterDuff.Mode.SRC_ATOP);
+        first_name.getBackground().mutate().setColorFilter(getResources().getColor(R.color.black), PorterDuff.Mode.SRC_ATOP);
+        last_name.getBackground().mutate().setColorFilter(getResources().getColor(R.color.black), PorterDuff.Mode.SRC_ATOP);
+        first_password.getBackground().mutate().setColorFilter(getResources().getColor(R.color.black), PorterDuff.Mode.SRC_ATOP);
+        second_password.getBackground().mutate().setColorFilter(getResources().getColor(R.color.black), PorterDuff.Mode.SRC_ATOP);
+        username.getBackground().mutate().setColorFilter(getResources().getColor(R.color.black), PorterDuff.Mode.SRC_ATOP);
+        email.getBackground().mutate().setColorFilter(getResources().getColor(R.color.black), PorterDuff.Mode.SRC_ATOP);
 
         visibilityButton.setOnClickListener(v -> {
             Toast toast;
@@ -118,10 +117,10 @@ public class RegisterActivity extends AppCompatActivity {
                 Matcher matcher = pattern.matcher(first_name.getText().toString());
                 boolean containsSpecialChar = matcher.find();
                 if (containsSpecialChar) {
-                    first_name.getBackground().mutate().setColorFilter(ContextCompat.getColor(RegisterActivity.this, R.color.red), PorterDuff.Mode.SRC_ATOP);
+                    first_name.getBackground().mutate().setColorFilter(getResources().getColor(R.color.red), PorterDuff.Mode.SRC_ATOP);
                     special_characters_warning.setVisibility(View.VISIBLE);
                 } else {
-                    first_name.getBackground().mutate().setColorFilter(ContextCompat.getColor(RegisterActivity.this, R.color.black), PorterDuff.Mode.SRC_ATOP);
+                    first_name.getBackground().mutate().setColorFilter(getResources().getColor(R.color.black), PorterDuff.Mode.SRC_ATOP);
                     special_characters_warning.setVisibility(View.INVISIBLE);
                 }
             }
@@ -143,10 +142,10 @@ public class RegisterActivity extends AppCompatActivity {
                 Matcher matcher = pattern.matcher(last_name.getText().toString());
                 boolean containsSpecialChar = matcher.find();
                 if (containsSpecialChar) {
-                    last_name.getBackground().mutate().setColorFilter(ContextCompat.getColor(RegisterActivity.this, R.color.red), PorterDuff.Mode.SRC_ATOP);
+                    last_name.getBackground().mutate().setColorFilter(getResources().getColor(R.color.red), PorterDuff.Mode.SRC_ATOP);
                     special_characters_warning.setVisibility(View.VISIBLE);
                 } else {
-                    last_name.getBackground().mutate().setColorFilter(ContextCompat.getColor(RegisterActivity.this, R.color.black), PorterDuff.Mode.SRC_ATOP);
+                    last_name.getBackground().mutate().setColorFilter(getResources().getColor(R.color.black), PorterDuff.Mode.SRC_ATOP);
                     special_characters_warning.setVisibility(View.INVISIBLE);
                 }
             }
@@ -162,13 +161,13 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (!(first_password.getText().toString().equals(second_password.getText().toString()))) {
-                    first_password.getBackground().mutate().setColorFilter(ContextCompat.getColor(RegisterActivity.this, R.color.red), PorterDuff.Mode.SRC_ATOP);
-                    second_password.getBackground().mutate().setColorFilter(ContextCompat.getColor(RegisterActivity.this, R.color.red), PorterDuff.Mode.SRC_ATOP);
+                    first_password.getBackground().mutate().setColorFilter(getResources().getColor(R.color.red), PorterDuff.Mode.SRC_ATOP);
+                    second_password.getBackground().mutate().setColorFilter(getResources().getColor(R.color.red), PorterDuff.Mode.SRC_ATOP);
                     different_password_1.setVisibility(View.VISIBLE);
                     different_password_2.setVisibility(View.VISIBLE);
                 } else {
-                    first_password.getBackground().mutate().setColorFilter(ContextCompat.getColor(RegisterActivity.this, R.color.black), PorterDuff.Mode.SRC_ATOP);
-                    second_password.getBackground().mutate().setColorFilter(ContextCompat.getColor(RegisterActivity.this, R.color.black), PorterDuff.Mode.SRC_ATOP);
+                    first_password.getBackground().mutate().setColorFilter(getResources().getColor(R.color.black), PorterDuff.Mode.SRC_ATOP);
+                    second_password.getBackground().mutate().setColorFilter(getResources().getColor(R.color.black), PorterDuff.Mode.SRC_ATOP);
                     different_password_1.setVisibility(View.INVISIBLE);
                     different_password_2.setVisibility(View.INVISIBLE);
                 }
@@ -184,13 +183,13 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (!(first_password.getText().toString().equals(second_password.getText().toString()))) {
-                    first_password.getBackground().mutate().setColorFilter(ContextCompat.getColor(RegisterActivity.this, R.color.red), PorterDuff.Mode.SRC_ATOP);
-                    second_password.getBackground().mutate().setColorFilter(ContextCompat.getColor(RegisterActivity.this, R.color.red), PorterDuff.Mode.SRC_ATOP);
+                    first_password.getBackground().mutate().setColorFilter(getResources().getColor(R.color.red), PorterDuff.Mode.SRC_ATOP);
+                    second_password.getBackground().mutate().setColorFilter(getResources().getColor(R.color.red), PorterDuff.Mode.SRC_ATOP);
                     different_password_1.setVisibility(View.VISIBLE);
                     different_password_2.setVisibility(View.VISIBLE);
                 } else {
-                    first_password.getBackground().mutate().setColorFilter(ContextCompat.getColor(RegisterActivity.this, R.color.black), PorterDuff.Mode.SRC_ATOP);
-                    second_password.getBackground().mutate().setColorFilter(ContextCompat.getColor(RegisterActivity.this, R.color.black), PorterDuff.Mode.SRC_ATOP);
+                    first_password.getBackground().mutate().setColorFilter(getResources().getColor(R.color.black), PorterDuff.Mode.SRC_ATOP);
+                    second_password.getBackground().mutate().setColorFilter(getResources().getColor(R.color.black), PorterDuff.Mode.SRC_ATOP);
                     different_password_1.setVisibility(View.INVISIBLE);
                     different_password_2.setVisibility(View.INVISIBLE);
                 }

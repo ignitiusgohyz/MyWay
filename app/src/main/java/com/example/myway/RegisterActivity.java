@@ -21,9 +21,17 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+
 import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -36,6 +44,7 @@ import java.util.regex.Pattern;
 // 6. Disallow special characters for username as well.
 // 7. Lookout for areas to improve code efficiency to prevent frame skips.
 // 8. Potentially make the password info button permanently visible beside visibility button.
+// 9. Clear login page on resume.
 
 @SuppressWarnings("deprecation")
 public class RegisterActivity extends AppCompatActivity {
@@ -241,12 +250,13 @@ public class RegisterActivity extends AppCompatActivity {
         });
 
         registerButton.setOnClickListener(v -> {
-            username_string = username.getText().toString().toLowerCase();
-            first_password_string = first_password.getText().toString();
-            second_password_string = second_password.getText().toString();
-            first_name_string = first_name.getText().toString();
-            last_name_string = last_name.getText().toString();
-            email_string = email.getText().toString();
+            username_string = username.getText().toString().toLowerCase().trim();
+            first_password_string = first_password.getText().toString().trim();
+            second_password_string = second_password.getText().toString().trim();
+            first_name_string = first_name.getText().toString().trim();
+            last_name_string = last_name.getText().toString().trim();
+            email_string = email.getText().toString().trim();
+
             if (isEmpty(username_string) || isEmpty(first_password_string) || isEmpty(second_password_string) ||
                 isEmpty(first_name_string) || isEmpty(last_name_string) || isEmpty(email_string)) {
                 Toast.makeText(RegisterActivity.this, "Please fill in all fields!", Toast.LENGTH_SHORT).show();

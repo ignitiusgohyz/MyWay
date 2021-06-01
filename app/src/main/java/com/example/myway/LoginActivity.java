@@ -1,8 +1,5 @@
 package com.example.myway;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -13,8 +10,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
-import java.util.HashMap;
-import java.util.Objects;
+import androidx.appcompat.app.AppCompatActivity;
 
 @SuppressWarnings("deprecation")
 public class LoginActivity extends AppCompatActivity {
@@ -24,8 +20,6 @@ public class LoginActivity extends AppCompatActivity {
     private String createdUsername_string;
     private EditText createdPassword;
     private String createdPassword_string;
-    protected HashMap<String, String> local_database = new HashMap<>();
-    protected static final int request_code = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,15 +29,18 @@ public class LoginActivity extends AppCompatActivity {
         createdUsername = findViewById(R.id.username);
         createdPassword = findViewById(R.id.password);
         Button registerButton = findViewById(R.id.register);
+        Button tempClearDatabaseButton = findViewById(R.id.tempclearbutton);
         visibilityButton = findViewById(R.id.visibility_button);
+        DatabaseHelper databaseHelper = new DatabaseHelper(LoginActivity.this);
 
         loginButton.setOnClickListener(v -> {
             createdUsername_string = createdUsername.getText().toString().toLowerCase();
             createdPassword_string = createdPassword.getText().toString();
+
             if (createdUsername_string.length() == 0 || createdPassword_string.length() == 0) {
                 Toast.makeText(LoginActivity.this, "Please fill in all fields.", Toast.LENGTH_SHORT).show();
-            } else if (local_database.containsKey(createdUsername_string)) {
-                boolean authenticity = Objects.requireNonNull(local_database.get(createdUsername_string)).equals(createdPassword_string);
+            } else if (databaseHelper.usernameExists(createdUsername_string)) {
+                boolean authenticity = databaseHelper.verifyPassword(createdUsername_string, createdPassword_string);
                 if (authenticity) {
                     Toast.makeText(LoginActivity.this, "Logging In...", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
@@ -56,10 +53,14 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+        tempClearDatabaseButton.setOnClickListener(v -> {
+                databaseHelper.clearDatabase();
+                Toast.makeText(LoginActivity.this, "All records deleted", Toast.LENGTH_SHORT).show();
+                });
+
         registerButton.setOnClickListener(v -> {
             Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
-            intent.putExtra("hashMap", local_database);
-            startActivityForResult(intent, request_code);
+            startActivity(intent);
         });
 
         visibilityButton.setOnClickListener(v -> {
@@ -80,17 +81,5 @@ public class LoginActivity extends AppCompatActivity {
             handler.postDelayed(toast::cancel, 500);
             createdPassword.setSelection(createdPassword.getText().length());
         });
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable @org.jetbrains.annotations.Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == request_code && resultCode == RESULT_OK) {
-            if (data != null)  {
-                @SuppressWarnings("unchecked")
-                HashMap<String, String> temp_database = (HashMap<String, String>) data.getSerializableExtra("hashMap");
-                local_database = temp_database;
-            }
-        }
     }
 }

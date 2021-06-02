@@ -64,5 +64,5 @@ dependencies {
     implementation 'com.android.volley:volley:1.2.0'
 
     // navigation sdk
-    implementation 'com.mapbox.mapboxsdk:mapbox-android-navigation-ui:0.42.6'
+    //implementation 'com.mapbox.mapboxsdk:mapbox-android-navigation-ui:0.42.6'
 }

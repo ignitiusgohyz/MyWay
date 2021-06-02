@@ -22,4 +22,5 @@
     <string name="password_popup">Password Requirements (at least one): \n
     &#x2022; Lowercase Alphabet \n &#x2022; Uppercase Alphabet \n &#x2022; Numerical Digits \n
         &#x2022; Special Characters \n &#x2022; 8 characters </string>
+    <string name="start_navigating">Start Navigating</string>
 </resources>

@@ -6,6 +6,8 @@ import android.annotation.SuppressLint;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -18,7 +20,11 @@ import com.mapbox.android.core.location.LocationEngineRequest;
 import com.mapbox.android.core.location.LocationEngineResult;
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
+import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.Mapbox;
+import com.mapbox.mapboxsdk.annotations.Marker;
+import com.mapbox.mapboxsdk.annotations.MarkerOptions;
+import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.location.LocationComponent;
 import com.mapbox.mapboxsdk.location.LocationComponentActivationOptions;
 import com.mapbox.mapboxsdk.location.modes.CameraMode;
@@ -27,6 +33,8 @@ import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 import com.mapbox.mapboxsdk.maps.Style;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
@@ -37,7 +45,7 @@ import java.util.List;
 // Classes for Location Component
 
 
-public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, PermissionsListener {
+public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, PermissionsListener, MapboxMap.OnMapClickListener {
 
     // Map Variables
     private MapView mapView;
@@ -54,6 +62,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     // Location Update Variables
     private MainActivityLocationCallback callback = new MainActivityLocationCallback(this);
 
+    private Point originPosition;
+    private Point destinationPosition;
+    private Marker destinationMarker;
+    private Button startButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,6 +76,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         // MapView in XML, called after access token is configured.
         setContentView(R.layout.activity_main);
         mapView = findViewById(R.id.mapView);
+        startButton = findViewById(R.id.startNavigation);
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
 //        mapView.getMapAsync(new OnMapReadyCallback() {
@@ -77,12 +91,19 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 //                });
 //            }
 //        });
+
+        startButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
     }
 
     @Override
     public void onMapReady(@NonNull MapboxMap mapboxMap) {
         this.mapboxMap = mapboxMap;
-
+        this.mapboxMap.addOnMapClickListener(this);
         mapboxMap.setStyle(new Style.Builder().fromUri("mapbox://styles/ignitiusgohyz/ckp4cvn2t14gk18mk28etd4or"),
                 style -> enableLocationComponent(style));
     }
@@ -115,6 +136,19 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             permissionsManager = new PermissionsManager(this);
             permissionsManager.requestLocationPermissions(this);
         }
+    }
+
+    @Override
+    public boolean onMapClick(@NonNull LatLng point) {
+        if(destinationMarker != null) {
+            mapboxMap.removeMarker(destinationMarker);
+        }
+        destinationMarker = mapboxMap.addMarker(new MarkerOptions().position(point));
+        destinationPosition = Point.fromLngLat(point.getLongitude(), point.getLatitude());
+       //originposition
+        startButton.setEnabled(true);
+        startButton.setBackgroundResource(R.color.mapboxBlue);
+        return true;
     }
 
     // Set up Location Engine and parameters to query device location

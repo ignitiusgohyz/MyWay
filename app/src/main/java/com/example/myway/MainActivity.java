@@ -3,15 +3,19 @@ package com.example.myway;
 // Misc Classes
 
 import android.annotation.SuppressLint;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.graphics.drawable.DrawableCompat;
 
 import com.mapbox.android.core.location.LocationEngine;
 import com.mapbox.android.core.location.LocationEngineCallback;
@@ -20,10 +24,10 @@ import com.mapbox.android.core.location.LocationEngineRequest;
 import com.mapbox.android.core.location.LocationEngineResult;
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
+import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.annotations.Marker;
-import com.mapbox.mapboxsdk.annotations.MarkerOptions;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.location.LocationComponent;
 import com.mapbox.mapboxsdk.location.LocationComponentActivationOptions;
@@ -33,11 +37,20 @@ import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 import com.mapbox.mapboxsdk.maps.Style;
+import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
+import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
+import java.util.Objects;
+
+import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconAllowOverlap;
+import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconIgnorePlacement;
+import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconImage;
+
+// Mapbox Marker
 
 // Classes for Permission
 // Classes for Map
@@ -51,21 +64,18 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private MapView mapView;
     private MapboxMap mapboxMap;
 
-    // Permission Variables
-    private PermissionsManager permissionsManager;
-
     // Location Engine Variables
     private LocationEngine locationEngine;
-    private final long DEFAULT_INTERVAL_IN_MILLISECONDS = 1000L;
-    private final long DEFAULT_MAX_WAIT_TIME = DEFAULT_INTERVAL_IN_MILLISECONDS * 5;
+    private LocationComponent locationComponent;
 
     // Location Update Variables
-    private MainActivityLocationCallback callback = new MainActivityLocationCallback(this);
+    private final MainActivityLocationCallback callback = new MainActivityLocationCallback(this);
 
     private Point originPosition;
     private Point destinationPosition;
     private Marker destinationMarker;
     private Button startButton;
+    private Location originLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,33 +89,22 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         startButton = findViewById(R.id.startNavigation);
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
-//        mapView.getMapAsync(new OnMapReadyCallback() {
-//            @Override
-//            public void onMapReady(@NonNull MapboxMap mapboxMap) {
-//                mapboxMap.setStyle(new Style.Builder().fromUri("mapbox://styles/ignitiusgohyz/ckp4cvn2t14gk18mk28etd4or"), new Style.OnStyleLoaded() {
-//             // mapboxMap.setStyle(Style.MAPBOX_STREETS, new Style.OnStyleLoaded() {
-//                    @Override
-//                    public void onStyleLoaded(@NonNull Style style) {
-//
-//                    }
-//                });
-//            }
-//        });
 
-        startButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        startButton.setOnClickListener(v -> {
 
-            }
         });
     }
 
     @Override
     public void onMapReady(@NonNull MapboxMap mapboxMap) {
         this.mapboxMap = mapboxMap;
-        this.mapboxMap.addOnMapClickListener(this);
-        mapboxMap.setStyle(new Style.Builder().fromUri("mapbox://styles/ignitiusgohyz/ckp4cvn2t14gk18mk28etd4or"),
-                style -> enableLocationComponent(style));
+        this.mapboxMap.addOnMapClickListener(MainActivity.this);
+        mapboxMap.setStyle(new Style.Builder().fromUri("mapbox://styles/mapbox/cjf4m44iw0uza2spb3q0a7s41"),
+                style -> {
+            enableLocationComponent(style);
+            addDestinationIconSymbolLayer(style);
+                });
+
     }
 
     @SuppressWarnings({"MissingPermission"})
@@ -113,7 +112,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         // If permission is granted
         if (PermissionsManager.areLocationPermissionsGranted(this)) {
             // Get instance of component
-            LocationComponent locationComponent = mapboxMap.getLocationComponent();
+            locationComponent = mapboxMap.getLocationComponent();
 
             // Set LocationComponent activation options
             LocationComponentActivationOptions locationComponentActivationOptions =
@@ -133,19 +132,42 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
             initLocationEngine();
         } else {
-            permissionsManager = new PermissionsManager(this);
+            // Permission Variables
+            PermissionsManager permissionsManager = new PermissionsManager(this);
             permissionsManager.requestLocationPermissions(this);
         }
     }
 
+    private void addDestinationIconSymbolLayer(@NonNull Style loadedMapStyle) {
+        Drawable unwrappedDrawable = AppCompatResources.getDrawable(this, R.drawable.mapbox_marker_icon_default);
+        Drawable wrappedDrawable = DrawableCompat.wrap(unwrappedDrawable);
+        DrawableCompat.setTint(wrappedDrawable, Color.RED);
+        loadedMapStyle.addImage("destination-icon-id",
+                BitmapFactory.decodeResource(this.getResources(), R.drawable.mapbox_marker_icon_default));
+        GeoJsonSource geoJsonSource = new GeoJsonSource("destination-source-id");
+        loadedMapStyle.addSource(geoJsonSource);
+        SymbolLayer destinationSymbolLayer = new SymbolLayer("destination-symbol-layer-id", "destination-source-id");
+        destinationSymbolLayer.withProperties(
+                iconImage("destination-icon-id"),
+                iconAllowOverlap(true),
+                iconIgnorePlacement(true)
+        );
+        loadedMapStyle.addLayer(destinationSymbolLayer);
+    }
+
     @Override
     public boolean onMapClick(@NonNull LatLng point) {
-        if(destinationMarker != null) {
-            mapboxMap.removeMarker(destinationMarker);
+        Point destinationPoint = Point.fromLngLat(point.getLongitude(), point.getLatitude());
+        if (locationComponent.getLastKnownLocation() != null) {
+            Point originPoint = Point.fromLngLat(locationComponent.getLastKnownLocation().getLongitude(),
+                        locationComponent.getLastKnownLocation().getLatitude());
         }
-        destinationMarker = mapboxMap.addMarker(new MarkerOptions().position(point));
-        destinationPosition = Point.fromLngLat(point.getLongitude(), point.getLatitude());
-       //originposition
+
+        GeoJsonSource source = Objects.requireNonNull(mapboxMap.getStyle()).getSourceAs("destination-source-id");
+        if (source != null) {
+            source.setGeoJson(Feature.fromGeometry(destinationPoint));
+        }
+//        getRoute(originPoint, destinationPoint);
         startButton.setEnabled(true);
         startButton.setBackgroundResource(R.color.mapboxBlue);
         return true;
@@ -155,12 +177,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @SuppressWarnings("MissingPermission")
     private void initLocationEngine() {
         locationEngine = LocationEngineProvider.getBestLocationEngine(this);
+        long DEFAULT_INTERVAL_IN_MILLISECONDS = 1000L;
+        long DEFAULT_MAX_WAIT_TIME = DEFAULT_INTERVAL_IN_MILLISECONDS * 5;
         LocationEngineRequest request = new LocationEngineRequest.Builder(DEFAULT_INTERVAL_IN_MILLISECONDS)
                 .setPriority(LocationEngineRequest.PRIORITY_HIGH_ACCURACY)
                 .setMaxWaitTime(DEFAULT_MAX_WAIT_TIME).build();
-
         locationEngine.requestLocationUpdates(request, callback, getMainLooper());
         locationEngine.getLastLocation(callback);
+
     }
 
     @Override
@@ -248,7 +272,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(@NotNull Bundle outState) {
         super.onSaveInstanceState(outState);
         mapView.onSaveInstanceState(outState);
     }

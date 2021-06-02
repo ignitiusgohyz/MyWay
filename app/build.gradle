@@ -36,8 +36,8 @@ android {
         release {
             firebaseAppDistribution {
                 appId="1:913572295861:android:a400be5c5e571d166d3afc"
-
                 artifactType="APK"
+                testers="e0543641@u.nus.edu, celestine.ng00@gmail.com"
             }
         }
     }

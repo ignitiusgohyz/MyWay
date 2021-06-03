@@ -26,16 +26,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-//TODO
-// 1. Replace all deprecated methods --> Suppressed them, is this fine to do so?
-// 2. Reposition Toast messages to somewhere more visible such as the top of the UI.
-// 3. Add in number in registration fields.
-// 4. Ensure e-mail is truly in e-mail format.
-// 5. Disallow special characters for username as well.
-// 6. Lookout for areas to improve code efficiency to prevent frame skips.
-// 7. Potentially make the password info button permanently visible beside visibility button.
-// 8. Clear login page on resume.
-
 @SuppressWarnings("deprecation")
 public class RegisterActivity extends AppCompatActivity {
 

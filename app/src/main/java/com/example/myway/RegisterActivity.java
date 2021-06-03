@@ -5,9 +5,11 @@ import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
+import android.util.Patterns;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -50,6 +52,7 @@ public class RegisterActivity extends AppCompatActivity {
     private TextView different_password_1;
     private TextView different_password_2;
     private TextView special_characters_warning;
+    private TextView invalid_email_warning;
 
     @SuppressLint({"ResourceAsColor", "ClickableViewAccessibility"})
     @Override
@@ -69,6 +72,7 @@ public class RegisterActivity extends AppCompatActivity {
         last_name = findViewById(R.id.last_name);
         email = findViewById(R.id.email);
         special_characters_warning = findViewById(R.id.special_character_warning);
+        invalid_email_warning = findViewById(R.id.invalid_email);
 
         first_name.getBackground().mutate().setColorFilter(getResources().getColor(R.color.black), PorterDuff.Mode.SRC_ATOP);
         last_name.getBackground().mutate().setColorFilter(getResources().getColor(R.color.black), PorterDuff.Mode.SRC_ATOP);
@@ -180,7 +184,7 @@ public class RegisterActivity extends AppCompatActivity {
                     different_password_2.setText(R.string.different_password_warning);
                     different_password_1.setVisibility(View.VISIBLE);
                     different_password_2.setVisibility(View.VISIBLE);
-                } else if (isInvalid(first_password)) {
+                } else if (isInvalidPassword(first_password)) {
                     first_password.getBackground().mutate().setColorFilter(getResources().getColor(R.color.red), PorterDuff.Mode.SRC_ATOP);
                     second_password.getBackground().mutate().setColorFilter(getResources().getColor(R.color.red), PorterDuff.Mode.SRC_ATOP);
                     different_password_1.setText(R.string.password_requirement);
@@ -194,6 +198,27 @@ public class RegisterActivity extends AppCompatActivity {
                     different_password_1.setVisibility(View.INVISIBLE);
                     different_password_2.setVisibility(View.INVISIBLE);
                     passwordInfoButton.setVisibility(View.INVISIBLE);
+                }
+            }
+        });
+
+        email.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (isValidEmail(email)) {
+                email.getBackground().mutate().setColorFilter(getResources().getColor(R.color.black), PorterDuff.Mode.SRC_ATOP);
+                invalid_email_warning.setVisibility(View.INVISIBLE);
+                } else {
+                    email.getBackground().mutate().setColorFilter(getResources().getColor(R.color.red), PorterDuff.Mode.SRC_ATOP);
+                    invalid_email_warning.setVisibility(View.VISIBLE);
                 }
             }
         });
@@ -213,7 +238,7 @@ public class RegisterActivity extends AppCompatActivity {
                     different_password_2.setText(R.string.different_password_warning);
                     different_password_1.setVisibility(View.VISIBLE);
                     different_password_2.setVisibility(View.VISIBLE);
-                } else if (isInvalid(first_password)) {
+                } else if (isInvalidPassword(first_password)) {
                     first_password.getBackground().mutate().setColorFilter(getResources().getColor(R.color.red), PorterDuff.Mode.SRC_ATOP);
                     second_password.getBackground().mutate().setColorFilter(getResources().getColor(R.color.red), PorterDuff.Mode.SRC_ATOP);
                     different_password_1.setText(R.string.password_requirement);
@@ -270,8 +295,15 @@ public class RegisterActivity extends AppCompatActivity {
         finish();
     }
 
-    private boolean isInvalid(EditText pw) {
-        String temp_pw = pw.getText().toString();
+    public static boolean isValidEmail(EditText email) {
+        String target = email.getText().toString().trim();
+        Pattern emailPattern = Pattern.compile("[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+");
+        Matcher matcher = emailPattern.matcher(target);
+        return matcher.matches();
+    }
+
+    private boolean isInvalidPassword(EditText pw) {
+        String temp_pw = pw.getText().toString().trim();
         Pattern pattern = Pattern.compile("^" +
                 "(?=.*[0-9])" +         //at least 1 digit
                 "(?=.*[a-z])" +         //at least 1 lower case letter

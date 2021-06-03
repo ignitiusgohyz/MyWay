@@ -2,64 +2,62 @@
 
 // Misc Classes
 
-import android.annotation.SuppressLint;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
-import android.location.Location;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-import android.widget.Toast;
+    import android.annotation.SuppressLint;
+    import android.graphics.BitmapFactory;
+    import android.graphics.Color;
+    import android.graphics.drawable.Drawable;
+    import android.location.Location;
+    import android.os.Bundle;
+    import android.util.Log;
+    import android.widget.Button;
+    import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.content.res.AppCompatResources;
-import androidx.core.graphics.drawable.DrawableCompat;
+    import androidx.annotation.NonNull;
+    import androidx.appcompat.app.AppCompatActivity;
+    import androidx.appcompat.content.res.AppCompatResources;
+    import androidx.core.graphics.drawable.DrawableCompat;
 
-import com.mapbox.android.core.location.LocationEngine;
-import com.mapbox.android.core.location.LocationEngineCallback;
-import com.mapbox.android.core.location.LocationEngineProvider;
-import com.mapbox.android.core.location.LocationEngineRequest;
-import com.mapbox.android.core.location.LocationEngineResult;
-import com.mapbox.android.core.permissions.PermissionsListener;
-import com.mapbox.android.core.permissions.PermissionsManager;
-import com.mapbox.api.directions.v5.models.DirectionsResponse;
-import com.mapbox.api.directions.v5.models.DirectionsRoute;
-import com.mapbox.geojson.Feature;
-import com.mapbox.geojson.Point;
-import com.mapbox.mapboxsdk.Mapbox;
-import com.mapbox.mapboxsdk.annotations.Marker;
-import com.mapbox.mapboxsdk.geometry.LatLng;
-import com.mapbox.mapboxsdk.location.LocationComponent;
-import com.mapbox.mapboxsdk.location.LocationComponentActivationOptions;
-import com.mapbox.mapboxsdk.location.modes.CameraMode;
-import com.mapbox.mapboxsdk.location.modes.RenderMode;
-import com.mapbox.mapboxsdk.maps.MapView;
-import com.mapbox.mapboxsdk.maps.MapboxMap;
-import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
-import com.mapbox.mapboxsdk.maps.Style;
-import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
-import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
-import com.mapbox.services.android.navigation.ui.v5.NavigationLauncher;
-import com.mapbox.services.android.navigation.ui.v5.NavigationLauncherOptions;
-import com.mapbox.services.android.navigation.ui.v5.route.NavigationMapRoute;
-import com.mapbox.services.android.navigation.v5.navigation.NavigationRoute;
+    import com.mapbox.android.core.location.LocationEngine;
+    import com.mapbox.android.core.location.LocationEngineCallback;
+    import com.mapbox.android.core.location.LocationEngineProvider;
+    import com.mapbox.android.core.location.LocationEngineRequest;
+    import com.mapbox.android.core.location.LocationEngineResult;
+    import com.mapbox.android.core.permissions.PermissionsListener;
+    import com.mapbox.android.core.permissions.PermissionsManager;
+    import com.mapbox.api.directions.v5.models.DirectionsResponse;
+    import com.mapbox.api.directions.v5.models.DirectionsRoute;
+    import com.mapbox.geojson.Feature;
+    import com.mapbox.geojson.Point;
+    import com.mapbox.mapboxsdk.Mapbox;
+    import com.mapbox.mapboxsdk.geometry.LatLng;
+    import com.mapbox.mapboxsdk.location.LocationComponent;
+    import com.mapbox.mapboxsdk.location.LocationComponentActivationOptions;
+    import com.mapbox.mapboxsdk.location.modes.CameraMode;
+    import com.mapbox.mapboxsdk.location.modes.RenderMode;
+    import com.mapbox.mapboxsdk.maps.MapView;
+    import com.mapbox.mapboxsdk.maps.MapboxMap;
+    import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
+    import com.mapbox.mapboxsdk.maps.Style;
+    import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
+    import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
+    import com.mapbox.services.android.navigation.ui.v5.NavigationLauncher;
+    import com.mapbox.services.android.navigation.ui.v5.NavigationLauncherOptions;
+    import com.mapbox.services.android.navigation.ui.v5.route.NavigationMapRoute;
+    import com.mapbox.services.android.navigation.v5.navigation.NavigationRoute;
 
-import org.jetbrains.annotations.NotNull;
+    import org.jetbrains.annotations.NotNull;
 
-import java.lang.ref.WeakReference;
-import java.util.List;
-import java.util.Objects;
+    import java.lang.ref.WeakReference;
+    import java.util.List;
+    import java.util.Objects;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+    import retrofit2.Call;
+    import retrofit2.Callback;
+    import retrofit2.Response;
 
-import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconAllowOverlap;
-import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconIgnorePlacement;
-import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconImage;
+    import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconAllowOverlap;
+    import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconIgnorePlacement;
+    import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconImage;
 
 
 // Mapbox Marker
@@ -69,6 +67,9 @@ import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconImage;
 // Classes for Location Engine
 // Classes for Location Component
 
+// TODO
+// 1. Set current user location after clicking compass
+//
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, PermissionsListener, MapboxMap.OnMapClickListener {
 
@@ -116,16 +117,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             addDestinationIconSymbolLayer(style);
                 });
         startButton = findViewById(R.id.startNavigation);
-        startButton.setOnClickListener((new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                boolean simulateRoute = true;
-                NavigationLauncherOptions options = NavigationLauncherOptions.builder()
-                        .directionsRoute(currentRoute)
-                        .shouldSimulateRoute(simulateRoute)
-                        .build();
-                NavigationLauncher.startNavigation(MainActivity.this, options);
-            }
+        startButton.setOnClickListener((v -> {
+            boolean simulateRoute = true;
+            NavigationLauncherOptions options = NavigationLauncherOptions.builder()
+                    .directionsRoute(currentRoute)
+                    .shouldSimulateRoute(simulateRoute)
+                    .build();
+            NavigationLauncher.startNavigation(MainActivity.this, options);
         }));
 
     }
@@ -163,8 +161,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private void addDestinationIconSymbolLayer(@NonNull Style loadedMapStyle) {
         Drawable unwrappedDrawable = AppCompatResources.getDrawable(this, R.drawable.mapbox_marker_icon_default);
-        Drawable wrappedDrawable = DrawableCompat.wrap(unwrappedDrawable);
-        DrawableCompat.setTint(wrappedDrawable, Color.RED);
+        Drawable wrappedDrawable;
+        wrappedDrawable = DrawableCompat.wrap(Objects.requireNonNull(unwrappedDrawable));
+        DrawableCompat.setTint(Objects.requireNonNull(wrappedDrawable), Color.RED);
         loadedMapStyle.addImage("destination-icon-id",
                 BitmapFactory.decodeResource(this.getResources(), R.drawable.mapbox_marker_icon_default));
         GeoJsonSource geoJsonSource = new GeoJsonSource("destination-source-id");
@@ -198,13 +197,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private void getRoute(Point origin, Point destination) {
         NavigationRoute.builder(this)
-                .accessToken(Mapbox.getAccessToken())
+                .accessToken(Objects.requireNonNull(Mapbox.getAccessToken()))
                 .origin(origin)
                 .destination(destination)
                 .build()
                 .getRoute(new Callback<DirectionsResponse>() {
                     @Override
-                    public void onResponse(Call<DirectionsResponse> call, Response<DirectionsResponse> response) {
+                    public void onResponse(@NotNull Call<DirectionsResponse> call, @NotNull Response<DirectionsResponse> response) {
                         Log.d(TAG, "Response Code: " + response.code());
                         if (response.body() == null) {
                             Log.e(TAG, "No routes found, make sure you set the right user and access token.");
@@ -225,7 +224,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     }
 
                     @Override
-                    public void onFailure(Call<DirectionsResponse> call, Throwable t) {
+                    public void onFailure(@NotNull Call<DirectionsResponse> call, @NotNull Throwable t) {
                         Log.e(TAG, "Error: " + t.getMessage());
                     }
                 });

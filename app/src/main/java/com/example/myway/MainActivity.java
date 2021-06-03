@@ -1,4 +1,4 @@
-package com.example.myway;
+    package com.example.myway;
 
 // Misc Classes
 
@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -24,6 +25,8 @@ import com.mapbox.android.core.location.LocationEngineRequest;
 import com.mapbox.android.core.location.LocationEngineResult;
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
+import com.mapbox.api.directions.v5.models.DirectionsResponse;
+import com.mapbox.api.directions.v5.models.DirectionsRoute;
 import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.Mapbox;
@@ -39,6 +42,10 @@ import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 import com.mapbox.mapboxsdk.maps.Style;
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
+import com.mapbox.services.android.navigation.ui.v5.NavigationLauncher;
+import com.mapbox.services.android.navigation.ui.v5.NavigationLauncherOptions;
+import com.mapbox.services.android.navigation.ui.v5.route.NavigationMapRoute;
+import com.mapbox.services.android.navigation.v5.navigation.NavigationRoute;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -46,9 +53,14 @@ import java.lang.ref.WeakReference;
 import java.util.List;
 import java.util.Objects;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconAllowOverlap;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconIgnorePlacement;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconImage;
+
 
 // Mapbox Marker
 
@@ -71,11 +83,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     // Location Update Variables
     private final MainActivityLocationCallback callback = new MainActivityLocationCallback(this);
 
-    private Point originPosition;
-    private Point destinationPosition;
-    private Marker destinationMarker;
     private Button startButton;
-    private Location originLocation;
+    private DirectionsRoute currentRoute;
+    private static final String TAG = "DirectionsActivity";
+    private NavigationMapRoute navigationMapRoute;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,6 +115,18 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             enableLocationComponent(style);
             addDestinationIconSymbolLayer(style);
                 });
+        startButton = findViewById(R.id.startNavigation);
+        startButton.setOnClickListener((new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                boolean simulateRoute = true;
+                NavigationLauncherOptions options = NavigationLauncherOptions.builder()
+                        .directionsRoute(currentRoute)
+                        .shouldSimulateRoute(simulateRoute)
+                        .build();
+                NavigationLauncher.startNavigation(MainActivity.this, options);
+            }
+        }));
 
     }
 
@@ -158,19 +181,54 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public boolean onMapClick(@NonNull LatLng point) {
         Point destinationPoint = Point.fromLngLat(point.getLongitude(), point.getLatitude());
+        Point originPoint = destinationPoint; // anyhow put first
         if (locationComponent.getLastKnownLocation() != null) {
-            Point originPoint = Point.fromLngLat(locationComponent.getLastKnownLocation().getLongitude(),
+            originPoint = Point.fromLngLat(locationComponent.getLastKnownLocation().getLongitude(),
                         locationComponent.getLastKnownLocation().getLatitude());
         }
-
         GeoJsonSource source = Objects.requireNonNull(mapboxMap.getStyle()).getSourceAs("destination-source-id");
         if (source != null) {
             source.setGeoJson(Feature.fromGeometry(destinationPoint));
         }
-//        getRoute(originPoint, destinationPoint);
+        getRoute(originPoint, destinationPoint);
         startButton.setEnabled(true);
         startButton.setBackgroundResource(R.color.mapboxBlue);
         return true;
+    }
+
+    private void getRoute(Point origin, Point destination) {
+        NavigationRoute.builder(this)
+                .accessToken(Mapbox.getAccessToken())
+                .origin(origin)
+                .destination(destination)
+                .build()
+                .getRoute(new Callback<DirectionsResponse>() {
+                    @Override
+                    public void onResponse(Call<DirectionsResponse> call, Response<DirectionsResponse> response) {
+                        Log.d(TAG, "Response Code: " + response.code());
+                        if (response.body() == null) {
+                            Log.e(TAG, "No routes found, make sure you set the right user and access token.");
+                            return;
+                        } else if (response.body().routes().size() < 1) {
+                            Log.e(TAG, "No routes found.");
+                            return;
+                        }
+
+                        currentRoute = response.body().routes().get(0);
+
+                        if (navigationMapRoute != null) {
+                            navigationMapRoute.removeRoute();
+                        } else {
+                            navigationMapRoute = new NavigationMapRoute(null, mapView, mapboxMap, R.style.NavigationMapRoute);
+                        }
+                        navigationMapRoute.addRoute(currentRoute);
+                    }
+
+                    @Override
+                    public void onFailure(Call<DirectionsResponse> call, Throwable t) {
+                        Log.e(TAG, "Error: " + t.getMessage());
+                    }
+                });
     }
 
     // Set up Location Engine and parameters to query device location

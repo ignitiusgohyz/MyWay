@@ -82,4 +82,11 @@ public class LoginActivity extends AppCompatActivity {
             createdPassword.setSelection(createdPassword.getText().length());
         });
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        createdPassword.setText("");
+        createdUsername.setText("");
+    }
 }

@@ -118,10 +118,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 });
         startButton = findViewById(R.id.startNavigation);
         startButton.setOnClickListener((v -> {
-            boolean simulateRoute = true;
             NavigationLauncherOptions options = NavigationLauncherOptions.builder()
                     .directionsRoute(currentRoute)
-                    .shouldSimulateRoute(simulateRoute)
+                    .shouldSimulateRoute(false)
                     .build();
             NavigationLauncher.startNavigation(MainActivity.this, options);
         }));

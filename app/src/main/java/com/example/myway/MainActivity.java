@@ -3,6 +3,7 @@
 // Misc Classes
 
     import android.annotation.SuppressLint;
+    import android.content.Intent;
     import android.graphics.BitmapFactory;
     import android.graphics.Color;
     import android.graphics.drawable.Drawable;
@@ -101,7 +102,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         startButton = findViewById(R.id.startNavigation);
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
-
         startButton.setOnClickListener(v -> {
 
         });
@@ -246,11 +246,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        this.recreate();
     }
 
     @Override
     public void onExplanationNeeded(List<String> permissionsToExplain) {
         Toast.makeText(this, R.string.user_location_permission_explanation, Toast.LENGTH_LONG).show();
+        //  enableLocationComponent(mapboxMap.getStyle());
     }
 
     @Override

@@ -3,14 +3,19 @@ package com.example.myway;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.PersistableBundle;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 @SuppressWarnings("deprecation")
 public class LoginActivity extends AppCompatActivity {
@@ -25,11 +30,11 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        Button loginButton = findViewById(R.id.login);
+        ImageButton loginButton = findViewById(R.id.login);
         createdUsername = findViewById(R.id.username);
         createdPassword = findViewById(R.id.password);
-        Button registerButton = findViewById(R.id.register);
-        Button tempClearDatabaseButton = findViewById(R.id.tempclearbutton);
+        ImageButton registerButton = findViewById(R.id.register);
+//        Button tempClearDatabaseButton = findViewById(R.id.tempclearbutton);
         visibilityButton = findViewById(R.id.visibility_button);
         DatabaseHelper databaseHelper = new DatabaseHelper(LoginActivity.this);
 
@@ -53,10 +58,10 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        tempClearDatabaseButton.setOnClickListener(v -> {
-                databaseHelper.clearDatabase();
-                Toast.makeText(LoginActivity.this, "All records deleted", Toast.LENGTH_SHORT).show();
-                });
+//        tempClearDatabaseButton.setOnClickListener(v -> {
+//                databaseHelper.clearDatabase();
+//                Toast.makeText(LoginActivity.this, "All records deleted", Toast.LENGTH_SHORT).show();
+//                });
 
         registerButton.setOnClickListener(v -> {
             Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);

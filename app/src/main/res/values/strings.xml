@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">MyWay</string>
     <string name="mapbox_access_token">pk.eyJ1IjoiaWduaXRpdXNnb2h5eiIsImEiOiJja3AzYzVrNTUwMm10Mm5vd2RmaTFvZHNhIn0.fnR4iM5I4dIYFoin-A4Mxg</string>
-    <string name="user_location_permission_explanation">Explanation Here</string>
+    <string name="user_location_permission_explanation">Location services must be enabled to use MyWay</string>
     <string name="user_location_permission_not_granted">Not granted explanation</string>
     <string name="new_location">New Location</string>
     <string name="login_hint_username">Username</string>
@@ -17,11 +17,11 @@
     <string name="re_enter_password">Re-Enter Password</string>
     <string name="different_password_warning">Passwords are different!</string>
     <string name="enter_username">Enter Username</string>
-    <string name="special_character_warning">Name cannot contain special characters!</string>
-    <string name="password_requirement">Password requirements not met!</string>
+    <string name="special_character_warning">Name cannot contain special characters</string>
+    <string name="password_requirement">Password requirements not met</string>
     <string name="password_popup">Password Requirements (at least one): \n
     &#x2022; Lowercase Alphabet \n &#x2022; Uppercase Alphabet \n &#x2022; Numerical Digits \n
         &#x2022; Special Characters \n &#x2022; 8 characters </string>
     <string name="start_navigating">Start Navigating</string>
-    <string name="invalid_email">Invalid Email!</string>
+    <string name="invalid_email">Invalid Email</string>
 </resources>

@@ -10,11 +10,12 @@ import java.util.List;
 // 1. Replace all deprecated methods --> Suppressed them, is this fine to do so?
 // 2. Reposition Toast messages to somewhere more visible such as the top of the UI.
 // 3. Add in number in registration fields.
-// 4. Ensure e-mail is truly in e-mail format.
 // 5. Disallow special characters for username as well.
 // 6. Lookout for areas to improve code efficiency to prevent frame skips.
 // 7. Potentially make the password info button permanently visible beside visibility button.
-// 8. Clear login page on resume.
+// 8. First login must restart the map backend to refresh
+// 9. Can we make this app more sensitive and receptive?
+// 10. Learn how to handle user denying permission scenario. User acceptance is fixed.
 
 public class CodeStore {
     // Online DB https connection
@@ -100,4 +101,106 @@ public class CodeStore {
 //        db.close();
 //        return list;
 //    }
+//
+//    <!--    <EditText-->
+//<!--        android:id="@+id/username"-->
+//<!--        android:layout_width="wrap_content"-->
+//<!--        android:layout_height="wrap_content"-->
+//<!--        android:autofillHints="firstName"-->
+//<!--        android:ems="10"-->
+//<!--        android:hint="@string/login_hint_username"-->
+//<!--        android:inputType="textPersonName"-->
+//<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+//<!--        app:layout_constraintEnd_toEndOf="parent"-->
+//<!--        app:layout_constraintHorizontal_bias="0.497"-->
+//<!--        app:layout_constraintStart_toStartOf="parent"-->
+//<!--        app:layout_constraintTop_toBottomOf="@+id/image"-->
+//<!--        app:layout_constraintVertical_bias="0.183" />-->
+//
+//<!--    <EditText-->
+//<!--        android:id="@+id/password"-->
+//<!--        android:layout_width="wrap_content"-->
+//<!--        android:layout_height="wrap_content"-->
+//<!--        android:layout_marginTop="20dp"-->
+//<!--        android:autofillHints="lastName"-->
+//<!--        android:ems="10"-->
+//<!--        android:hint="@string/login_hint_password"-->
+//<!--        android:inputType="textPassword"-->
+//<!--        app:layout_constraintEnd_toEndOf="parent"-->
+//<!--        app:layout_constraintStart_toStartOf="parent"-->
+//<!--        app:layout_constraintTop_toBottomOf="@+id/username" />-->
+//
+//<!--    <Button-->
+//<!--        android:id="@+id/login"-->
+//<!--        android:layout_width="wrap_content"-->
+//<!--        android:layout_height="wrap_content"-->
+//<!--        android:layout_marginTop="44dp"-->
+//<!--        android:background="#E91E63"-->
+//<!--        android:backgroundTint="#E91E63"-->
+//<!--        android:backgroundTintMode="add"-->
+//<!--        android:text="@string/Login"-->
+//<!--        android:textAppearance="@style/TextAppearance.AppCompat.Body1"-->
+//<!--        app:iconPadding="8dp"-->
+//<!--        app:iconTint="#808080"-->
+//<!--        app:layout_constraintEnd_toEndOf="parent"-->
+//<!--        app:layout_constraintHorizontal_bias="0.328"-->
+//<!--        app:layout_constraintStart_toStartOf="parent"-->
+//<!--        app:layout_constraintTop_toBottomOf="@+id/password"-->
+//<!--        app:rippleColor="@color/teal_200" />-->
+//
+//<!--    <Button-->
+//<!--        android:id="@+id/register"-->
+//<!--        android:layout_width="wrap_content"-->
+//<!--        android:layout_height="wrap_content"-->
+//<!--        android:layout_marginTop="44dp"-->
+//<!--        android:background="#E91E63"-->
+//<!--        android:backgroundTint="#E91E63"-->
+//<!--        android:backgroundTintMode="add"-->
+//<!--        android:text="@string/Register"-->
+//<!--        android:textAppearance="@style/TextAppearance.AppCompat.Body1"-->
+//<!--        app:iconPadding="8dp"-->
+//<!--        app:iconTint="#808080"-->
+//<!--        android:layout_marginEnd="90dp"-->
+//<!--        app:layout_constraintEnd_toEndOf="parent"-->
+//<!--        app:layout_constraintHorizontal_bias="0.687"-->
+//<!--        app:layout_constraintStart_toEndOf="@+id/login"-->
+//<!--        app:layout_constraintTop_toBottomOf="@+id/password"-->
+//<!--        app:rippleColor="@color/teal_200" />-->
+//
+//<!--    <ImageView-->
+//<!--        android:id="@+id/image"-->
+//<!--        android:layout_width="199dp"-->
+//<!--        android:layout_height="136dp"-->
+//<!--        android:contentDescription="@string/app_name"-->
+//<!--        android:src="@mipmap/ic_myway_logo"-->
+//<!--        android:layout_marginTop="130dp"-->
+//<!--        app:layout_constraintEnd_toEndOf="parent"-->
+//<!--        app:layout_constraintStart_toStartOf="parent"-->
+//<!--        app:layout_constraintTop_toTopOf="parent" />-->
+//
+//<!--    <ImageButton-->
+//<!--        android:id="@+id/visibility_button"-->
+//<!--        android:layout_width="wrap_content"-->
+//<!--        android:layout_height="wrap_content"-->
+//<!--        android:background="#0000"-->
+//<!--        android:contentDescription="@string/non_visible"-->
+//<!--        android:src="@drawable/ic_password_not_visible"-->
+//<!--        app:layout_constraintBottom_toBottomOf="@id/password"-->
+//<!--        app:layout_constraintHorizontal_bias="0.333"-->
+//<!--        app:layout_constraintLeft_toRightOf="@+id/password"-->
+//<!--        app:layout_constraintRight_toRightOf="parent"-->
+//<!--        app:layout_constraintTop_toTopOf="@id/password"-->
+//<!--        app:layout_constraintVertical_bias="0.476">-->
+//
+//<!--    </ImageButton>-->
+//
+//<!--    <Button-->
+//<!--        android:id="@+id/tempclearbutton"-->
+//<!--        android:layout_width="wrap_content"-->
+//<!--        android:layout_height="wrap_content"-->
+//<!--        android:text="Temporary Clear\nDatabase Button"-->
+//<!--        app:layout_constraintBottom_toTopOf="@+id/image"-->
+//<!--        app:layout_constraintEnd_toEndOf="parent"-->
+//<!--        app:layout_constraintStart_toStartOf="parent"-->
+//<!--        app:layout_constraintTop_toTopOf="parent" />-->
 }

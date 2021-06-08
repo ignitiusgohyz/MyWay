@@ -61,6 +61,7 @@ dependencies {
 
     // mapbox dependencies
     implementation 'com.mapbox.mapboxsdk:mapbox-android-sdk:9.6.1'
+    implementation 'com.mapbox.mapboxsdk:mapbox-sdk-services:4.9.0'
     implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-locationlayer:0.11.0'
     implementation 'com.mapbox.mapboxsdk:mapbox-android-telemetry:7.0.0'
 

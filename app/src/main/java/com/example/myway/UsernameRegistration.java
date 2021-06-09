@@ -32,13 +32,13 @@ public class UsernameRegistration extends AppCompatActivity {
 
         nextButton = findViewById(R.id.next_button);
         username = findViewById(R.id.register_username);
-        username_string = username.getText().toString().toLowerCase();
         special_characters_warning = findViewById(R.id.special_character_warning);
         canProceed = false;
 
         nextButton.setOnClickListener(v -> {
             if (canProceed) {
                 DatabaseHelper databaseHelper = new DatabaseHelper(UsernameRegistration.this);
+                username_string = username.getText().toString().toLowerCase();
                 if (databaseHelper.usernameExists(username_string)) {
                     Toast.makeText(UsernameRegistration.this, "Username already in use!", Toast.LENGTH_SHORT).show();
                 } else {

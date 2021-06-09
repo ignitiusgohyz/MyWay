@@ -80,7 +80,6 @@ public class PasswordRegistration extends AppCompatActivity {
                 Toast.makeText(PasswordRegistration.this, "Registered Successfully", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(PasswordRegistration.this, LoginActivity.class);
                 startActivity(intent);
-
             } else if (canProceedPassword) {
                 Toast.makeText(PasswordRegistration.this, "Please tick the checkbox", Toast.LENGTH_SHORT).show();
             } else {

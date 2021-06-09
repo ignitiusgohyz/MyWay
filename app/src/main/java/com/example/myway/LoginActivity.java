@@ -44,8 +44,8 @@ public class LoginActivity extends AppCompatActivity {
         DatabaseHelper databaseHelper = new DatabaseHelper(LoginActivity.this);
 
         loginButton.setOnClickListener(v -> {
-            createdUsername_string = createdUsername.getText().toString().toLowerCase();
-            createdPassword_string = createdPassword.getText().toString();
+            createdUsername_string = createdUsername.getText().toString().toLowerCase().trim();
+            createdPassword_string = createdPassword.getText().toString().trim();
 
             if (createdUsername_string.length() == 0 || createdPassword_string.length() == 0) {
                 Toast.makeText(LoginActivity.this, "Please fill in all fields.", Toast.LENGTH_SHORT).show();

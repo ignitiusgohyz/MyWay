@@ -31,12 +31,12 @@ public class EmailRegistration extends AppCompatActivity {
 
         nextButton = findViewById(R.id.next_button_email);
         email = findViewById(R.id.register_email);
-        email_string = email.getText().toString().toLowerCase();
         email_warning = findViewById(R.id.email_warning);
         canProceed = false;
 
         nextButton.setOnClickListener(v -> {
             if (canProceed) {
+                email_string = email.getText().toString().toLowerCase();
                 DatabaseHelper databaseHelper = new DatabaseHelper(EmailRegistration.this);
                 if (databaseHelper.emailExists(email_string)) {
                     Toast.makeText(EmailRegistration.this, "Email already in use!", Toast.LENGTH_SHORT).show();
@@ -52,6 +52,7 @@ public class EmailRegistration extends AppCompatActivity {
                     } else {
                         username = (String) savedInstanceState.getSerializable("username");
                     }
+
                     Intent intent = new Intent(EmailRegistration.this, PasswordRegistration.class);
                     intent.putExtra("username", username);
                     intent.putExtra("email", email_string);

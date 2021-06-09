@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     tools:context=".UsernameRegistration">
 
     <ImageView
@@ -27,6 +28,8 @@
         android:layout_marginEnd="40dp"
         android:ems="10"
         android:hint="@string/enter_username"
+        android:textColor="@color/black"
+        android:textColorHint="@color/grey"
         android:importantForAutofill="no"
         android:inputType="textNoSuggestions"
         android:paddingEnd="75dp"

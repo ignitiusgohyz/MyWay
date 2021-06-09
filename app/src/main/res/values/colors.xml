@@ -8,6 +8,7 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="red">#FF0000</color>
+    <color name="myway_blue">#4A69FF</color>
 
     <color name="mapboxBlue">#FF4760F3</color>
     <color name="mapboxPink">#FFFF33A9</color>

@@ -16,6 +16,8 @@ import java.util.List;
 // 8. First login must restart the map backend to refresh
 // 9. Can we make this app more sensitive and receptive?
 // 10. Learn how to handle user denying permission scenario. User acceptance is fixed.
+// 11. Fix database columns (remove firstname and lastname).
+// 12. Add popup inflater for user agreement and policy
 
 public class CodeStore {
     // Online DB https connection

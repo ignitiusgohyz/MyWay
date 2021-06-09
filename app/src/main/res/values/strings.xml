@@ -7,7 +7,7 @@
     <string name="login_hint_username">Username</string>
     <string name="login_hint_password">Password</string>
     <string name="Login">Login</string>
-    <string name="Register">Register</string>
+    <string name="Register">FINISH</string>
     <string name="visible">Password Visible</string>
     <string name="non_visible">Password Hidden</string>
     <string name="first_name">First Name</string>
@@ -19,9 +19,16 @@
     <string name="enter_username">Enter Username</string>
     <string name="special_character_warning">Name cannot contain special characters</string>
     <string name="password_requirement">Password requirements not met</string>
-    <string name="password_popup">Password Requirements (at least one): \n
+    <string name="password_popup">\n Password Requirements (at least one): \n
     &#x2022; Lowercase Alphabet \n &#x2022; Uppercase Alphabet \n &#x2022; Numerical Digits \n
-        &#x2022; Special Characters \n &#x2022; 8 characters </string>
+        &#x2022; Special Characters \n &#x2022; 8 characters \n </string>
     <string name="start_navigating">Start Navigating</string>
     <string name="invalid_email">Invalid Email</string>
+    <string name="next">NEXT</string>
+    <string name="username_too_long">Username is too long</string>
+    <string name="username_too_short">Username is too short</string>
+    <string name="user_agreement_1">I agree to the </string>
+    <string name="user_agreement">User Agreement </string>
+    <string name="and">and </string>
+    <string name="privacy_policy">Privacy Policy</string>
 </resources>

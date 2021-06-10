@@ -3,15 +3,11 @@
 // Misc Classes
 
     import android.annotation.SuppressLint;
-    import android.content.Intent;
     import android.graphics.BitmapFactory;
     import android.graphics.Color;
     import android.graphics.drawable.Drawable;
     import android.location.Location;
-    import android.net.Uri;
     import android.os.Bundle;
-    import android.provider.Settings;
-    import android.util.Log;
     import android.widget.Button;
     import android.widget.Toast;
 
@@ -35,6 +31,7 @@
     import com.mapbox.mapboxsdk.geometry.LatLng;
     import com.mapbox.mapboxsdk.location.LocationComponent;
     import com.mapbox.mapboxsdk.location.LocationComponentActivationOptions;
+    import com.mapbox.mapboxsdk.location.LocationUpdate;
     import com.mapbox.mapboxsdk.location.modes.CameraMode;
     import com.mapbox.mapboxsdk.location.modes.RenderMode;
     import com.mapbox.mapboxsdk.maps.MapView;
@@ -57,22 +54,14 @@
     import retrofit2.Call;
     import retrofit2.Callback;
     import retrofit2.Response;
+    import timber.log.Timber;
 
     import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconAllowOverlap;
     import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconIgnorePlacement;
     import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconImage;
 
-
-// Mapbox Marker
-
-// Classes for Permission
-// Classes for Map
-// Classes for Location Engine
-// Classes for Location Component
-
 // TODO
 // 1. Set current user location after clicking compass
-//
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, PermissionsListener, MapboxMap.OnMapClickListener {
 
@@ -104,7 +93,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         startButton = findViewById(R.id.startNavigation);
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
-
         startButton.setOnClickListener(v -> {
 
         });
@@ -123,7 +111,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         startButton.setOnClickListener((v -> {
             NavigationLauncherOptions options = NavigationLauncherOptions.builder()
                     .directionsRoute(currentRoute)
-                    .shouldSimulateRoute(false)
+                    .shouldSimulateRoute(true)
                     .build();
             NavigationLauncher.startNavigation(MainActivity.this, options);
         }));
@@ -206,19 +194,20 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .getRoute(new Callback<DirectionsResponse>() {
                     @Override
                     public void onResponse(@NotNull Call<DirectionsResponse> call, @NotNull Response<DirectionsResponse> response) {
-                        Log.d(TAG, "Response Code: " + response.code());
+                        Timber.tag(TAG).d("Response Code: %s", response.code());
                         if (response.body() == null) {
-                            Log.e(TAG, "No routes found, make sure you set the right user and access token.");
+                            Timber.tag(TAG).e("No routes found, make sure you set the right user and access token.");
                             return;
                         } else if (response.body().routes().size() < 1) {
-                            Log.e(TAG, "No routes found.");
+                            Timber.tag(TAG).e("No routes found.");
                             return;
                         }
 
                         currentRoute = response.body().routes().get(0);
 
                         if (navigationMapRoute != null) {
-                            navigationMapRoute.removeRoute();
+                            navigationMapRoute.updateRouteVisibilityTo(false);
+                            navigationMapRoute.updateRouteArrowVisibilityTo(false);
                         } else {
                             navigationMapRoute = new NavigationMapRoute(null, mapView, mapboxMap, R.style.NavigationMapRoute);
                         }
@@ -227,7 +216,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                     @Override
                     public void onFailure(@NotNull Call<DirectionsResponse> call, @NotNull Throwable t) {
-                        Log.e(TAG, "Error: " + t.getMessage());
+                        Timber.tag(TAG).e("Error: %s", t.getMessage());
                     }
                 });
     }
@@ -236,8 +225,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @SuppressWarnings("MissingPermission")
     private void initLocationEngine() {
         locationEngine = LocationEngineProvider.getBestLocationEngine(this);
-        long DEFAULT_INTERVAL_IN_MILLISECONDS = 1000L;
-        long DEFAULT_MAX_WAIT_TIME = DEFAULT_INTERVAL_IN_MILLISECONDS * 5;
+        long DEFAULT_INTERVAL_IN_MILLISECONDS = 1000L; // 1000L
+        long DEFAULT_MAX_WAIT_TIME = DEFAULT_INTERVAL_IN_MILLISECONDS * 5; // 5
         LocationEngineRequest request = new LocationEngineRequest.Builder(DEFAULT_INTERVAL_IN_MILLISECONDS)
                 .setPriority(LocationEngineRequest.PRIORITY_HIGH_ACCURACY)
                 .setMaxWaitTime(DEFAULT_MAX_WAIT_TIME).build();
@@ -249,11 +238,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        this.recreate();
     }
 
     @Override
     public void onExplanationNeeded(List<String> permissionsToExplain) {
         Toast.makeText(this, R.string.user_location_permission_explanation, Toast.LENGTH_LONG).show();
+        //  enableLocationComponent(mapboxMap.getStyle());
     }
 
     @Override
@@ -264,10 +255,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         } else {
             Toast.makeText(this, R.string.user_location_permission_not_granted, Toast.LENGTH_LONG).show();
-            Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-            Uri uri = Uri.fromParts("package", getPackageName(), null);
-            intent.setData(uri);
-            startActivityForResult(intent, 101);
             finish();
         }
     }
@@ -287,22 +274,19 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             MainActivity activity = activityWeakReference.get();
             if (activity != null) {
                 Location location = result.getLastLocation();
+                LocationUpdate.Builder locationUpdateBuilder =  new LocationUpdate.Builder();
+                LocationUpdate.Builder locationUpdated = locationUpdateBuilder.location(location);
+                LocationUpdate locationUpdate = locationUpdated.build();
                 if (location == null) { return; }
-
-                // Toast displaying user's new coordinates
-                /*Toast.makeText(activity, String.format(activity.getString(R.string.new_location),
-                        String.valueOf(result.getLastLocation().getLatitude()),
-                        String.valueOf(result.getLastLocation().getLongitude())),
-                        Toast.LENGTH_SHORT).show(); */
                 if (activity.mapboxMap != null && result.getLastLocation() != null) {
-                    activity.mapboxMap.getLocationComponent().forceLocationUpdate(result.getLastLocation());
+                    activity.mapboxMap.getLocationComponent().forceLocationUpdate(locationUpdate);
                 }
             }
         }
 
         @Override
         public void onFailure(@NonNull Exception exception) {
-            Log.d("LocationChangeActivity", exception.getLocalizedMessage());
+            Timber.tag("LocationChangeActivity").d(exception.getLocalizedMessage());
             MainActivity activity = activityWeakReference.get();
             if (activity != null) {
                 Toast.makeText(activity, exception.getLocalizedMessage(), Toast.LENGTH_SHORT).show();

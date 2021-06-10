@@ -1,9 +1,6 @@
 package com.example.myway;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
-import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -13,12 +10,14 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class EmailRegistration extends AppCompatActivity {
 
-    private ImageButton nextButton;
     private EditText email;
     private String email_string;
     private TextView email_warning;
@@ -29,7 +28,7 @@ public class EmailRegistration extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_email_registration);
 
-        nextButton = findViewById(R.id.next_button_email);
+        ImageButton nextButton = findViewById(R.id.next_button_email);
         email = findViewById(R.id.register_email);
         email_warning = findViewById(R.id.email_warning);
         canProceed = false;
@@ -76,11 +75,11 @@ public class EmailRegistration extends AppCompatActivity {
             public void afterTextChanged(Editable s) {
                 canProceed = false;
                 if (isValidEmail(email)) {
-                    email.getBackground().mutate().setColorFilter(getResources().getColor(R.color.black), PorterDuff.Mode.SRC_ATOP);
+                    email.setBackgroundTintList(ContextCompat.getColorStateList(getApplicationContext(), R.color.white));
                     email_warning.setVisibility(View.INVISIBLE);
                     canProceed = true;
                 } else {
-                    email.getBackground().mutate().setColorFilter(getResources().getColor(R.color.red), PorterDuff.Mode.SRC_ATOP);
+                    email.setBackgroundTintList(ContextCompat.getColorStateList(getApplicationContext(), R.color.red));
                     email_warning.setVisibility(View.VISIBLE);
                 }
             }

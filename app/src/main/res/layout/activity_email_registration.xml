@@ -29,6 +29,7 @@
         android:ems="10"
         android:hint="@string/email"
         android:importantForAutofill="no"
+        android:backgroundTint="#FFF"
         android:textColor="@color/black"
         android:textColorHint="@color/grey"
         android:inputType="textEmailAddress"

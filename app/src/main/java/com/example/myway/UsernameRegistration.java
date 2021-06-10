@@ -1,6 +1,7 @@
 package com.example.myway;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import android.content.Intent;
 import android.graphics.PorterDuff;
@@ -68,19 +69,19 @@ public class UsernameRegistration extends AppCompatActivity {
                 boolean containsSpecialChar = matcher.find();
                 canProceed = false;
                 if (containsSpecialChar) {
-                    username.getBackground().mutate().setColorFilter(getResources().getColor(R.color.red), PorterDuff.Mode.SRC_ATOP);
+                    username.setBackgroundTintList(ContextCompat.getColorStateList(getApplicationContext(), R.color.red));
                     special_characters_warning.setText(R.string.special_character_warning);
                     special_characters_warning.setVisibility(View.VISIBLE);
                 } else if (username.getText().toString().length() > 30) {
-                    username.getBackground().mutate().setColorFilter(getResources().getColor(R.color.red), PorterDuff.Mode.SRC_ATOP);
+                    username.setBackgroundTintList(ContextCompat.getColorStateList(getApplicationContext(), R.color.red));
                     special_characters_warning.setText(R.string.username_too_long);
                     special_characters_warning.setVisibility(View.VISIBLE);
                 } else if (username.getText().toString().length() < 6) {
-                    username.getBackground().mutate().setColorFilter(getResources().getColor(R.color.red), PorterDuff.Mode.SRC_ATOP);
+                    username.setBackgroundTintList(ContextCompat.getColorStateList(getApplicationContext(), R.color.red));
                     special_characters_warning.setText(R.string.username_too_short);
                     special_characters_warning.setVisibility(View.VISIBLE);
                 } else {
-                    username.getBackground().mutate().setColorFilter(getResources().getColor(R.color.black), PorterDuff.Mode.SRC_ATOP);
+                    username.setBackgroundTintList(ContextCompat.getColorStateList(getApplicationContext(), R.color.white));
                     special_characters_warning.setVisibility(View.INVISIBLE);
                     canProceed = true;
                 }

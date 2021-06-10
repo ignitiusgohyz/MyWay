@@ -1,12 +1,8 @@
 package com.example.myway;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.graphics.PorterDuff;
 import android.os.Bundle;
-import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.method.HideReturnsTransformationMethod;
@@ -15,13 +11,15 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -31,12 +29,9 @@ public class PasswordRegistration extends AppCompatActivity {
     private EditText first_password;
     private EditText second_password;
     private TextView password_warning;
-    private ImageButton passwordInfoButton;
     private ImageButton visibilityButton;
-    private CheckBox userAgreementCheckBox;
     private boolean canProceedPassword = false;
     private boolean canProceedChecked = false;
-    private ImageButton registerButton;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -47,10 +42,10 @@ public class PasswordRegistration extends AppCompatActivity {
         first_password = findViewById(R.id.register_password_top);
         second_password = findViewById(R.id.register_password_bottom);
         password_warning = findViewById(R.id.registration_password_warning);
-        passwordInfoButton = findViewById(R.id.register_password_requirement_popup);
+        ImageButton passwordInfoButton = findViewById(R.id.register_password_requirement_popup);
         visibilityButton = findViewById(R.id.registration_password_visibility_toggle);
-        userAgreementCheckBox = findViewById(R.id.user_agreement_checkbox);
-        registerButton = findViewById(R.id.register_button);
+        CheckBox userAgreementCheckBox = findViewById(R.id.user_agreement_checkbox);
+        ImageButton registerButton = findViewById(R.id.register_button);
 
         registerButton.setOnClickListener(v -> {
             if (canProceedPassword && canProceedChecked) {
@@ -131,18 +126,18 @@ public class PasswordRegistration extends AppCompatActivity {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 canProceedPassword = false;
                 if (!(first_password.getText().toString().equals(second_password.getText().toString()))) {
-                    first_password.getBackground().mutate().setColorFilter(getResources().getColor(R.color.red), PorterDuff.Mode.SRC_ATOP);
-                    second_password.getBackground().mutate().setColorFilter(getResources().getColor(R.color.red), PorterDuff.Mode.SRC_ATOP);
+                    first_password.setBackgroundTintList(ContextCompat.getColorStateList(getApplicationContext(), R.color.red));
+                    second_password.setBackgroundTintList(ContextCompat.getColorStateList(getApplicationContext(), R.color.red));
                     password_warning.setText(R.string.different_password_warning);
                     password_warning.setVisibility(View.VISIBLE);
                 } else if (isInvalidPassword(first_password)) {
-                    first_password.getBackground().mutate().setColorFilter(getResources().getColor(R.color.red), PorterDuff.Mode.SRC_ATOP);
-                    second_password.getBackground().mutate().setColorFilter(getResources().getColor(R.color.red), PorterDuff.Mode.SRC_ATOP);
+                    first_password.setBackgroundTintList(ContextCompat.getColorStateList(getApplicationContext(), R.color.red));
+                    second_password.setBackgroundTintList(ContextCompat.getColorStateList(getApplicationContext(), R.color.red));
                     password_warning.setText(R.string.password_requirement);
                     password_warning.setVisibility(View.VISIBLE);
                 } else {
-                    first_password.getBackground().mutate().setColorFilter(getResources().getColor(R.color.black), PorterDuff.Mode.SRC_ATOP);
-                    second_password.getBackground().mutate().setColorFilter(getResources().getColor(R.color.black), PorterDuff.Mode.SRC_ATOP);
+                    first_password.setBackgroundTintList(ContextCompat.getColorStateList(getApplicationContext(), R.color.white));
+                    second_password.setBackgroundTintList(ContextCompat.getColorStateList(getApplicationContext(), R.color.white));
                     password_warning.setVisibility(View.INVISIBLE);
                     canProceedPassword = true;
                 }
@@ -159,18 +154,18 @@ public class PasswordRegistration extends AppCompatActivity {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 canProceedPassword = false;
                 if (!(first_password.getText().toString().equals(second_password.getText().toString()))) {
-                    first_password.getBackground().mutate().setColorFilter(getResources().getColor(R.color.red), PorterDuff.Mode.SRC_ATOP);
-                    second_password.getBackground().mutate().setColorFilter(getResources().getColor(R.color.red), PorterDuff.Mode.SRC_ATOP);
+                    first_password.setBackgroundTintList(ContextCompat.getColorStateList(getApplicationContext(), R.color.red));
+                    second_password.setBackgroundTintList(ContextCompat.getColorStateList(getApplicationContext(), R.color.red));
                     password_warning.setText(R.string.different_password_warning);
                     password_warning.setVisibility(View.VISIBLE);
                 } else if (isInvalidPassword(first_password)) {
-                    first_password.getBackground().mutate().setColorFilter(getResources().getColor(R.color.red), PorterDuff.Mode.SRC_ATOP);
-                    second_password.getBackground().mutate().setColorFilter(getResources().getColor(R.color.red), PorterDuff.Mode.SRC_ATOP);
+                    first_password.setBackgroundTintList(ContextCompat.getColorStateList(getApplicationContext(), R.color.red));
+                    second_password.setBackgroundTintList(ContextCompat.getColorStateList(getApplicationContext(), R.color.red));
                     password_warning.setText(R.string.password_requirement);
                     password_warning.setVisibility(View.VISIBLE);
                 } else {
-                    first_password.getBackground().mutate().setColorFilter(getResources().getColor(R.color.black), PorterDuff.Mode.SRC_ATOP);
-                    second_password.getBackground().mutate().setColorFilter(getResources().getColor(R.color.black), PorterDuff.Mode.SRC_ATOP);
+                    first_password.setBackgroundTintList(ContextCompat.getColorStateList(getApplicationContext(), R.color.white));
+                    second_password.setBackgroundTintList(ContextCompat.getColorStateList(getApplicationContext(), R.color.white));
                     password_warning.setVisibility(View.INVISIBLE);
                     canProceedPassword = true;
                 }

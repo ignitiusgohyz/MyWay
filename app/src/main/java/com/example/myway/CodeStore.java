@@ -7,13 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 //TODO
-// 1. Replace all deprecated methods --> Suppressed them, is this fine to do so?
 // 2. Reposition Toast messages to somewhere more visible such as the top of the UI.
 // 3. Add in number in registration fields.
-// 5. Disallow special characters for username as well.
 // 6. Lookout for areas to improve code efficiency to prevent frame skips.
-// 7. Potentially make the password info button permanently visible beside visibility button.
-// 8. First login must restart the map backend to refresh
 // 9. Can we make this app more sensitive and receptive?
 // 10. Learn how to handle user denying permission scenario. User acceptance is fixed.
 // 11. Fix database columns (remove firstname and lastname).
@@ -205,4 +201,6 @@ public class CodeStore {
 //<!--        app:layout_constraintEnd_toEndOf="parent"-->
 //<!--        app:layout_constraintStart_toStartOf="parent"-->
 //<!--        app:layout_constraintTop_toTopOf="parent" />-->
+
+//                        first_password.getBackground().mutate().setColorFilter(getResources().getColor(R.color.black), PorterDuff.Mode.SRC_ATOP);
 }

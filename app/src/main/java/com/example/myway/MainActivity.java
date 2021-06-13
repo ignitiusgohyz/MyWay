@@ -10,6 +10,7 @@
     import android.graphics.drawable.Drawable;
     import android.location.Location;
     import android.os.Bundle;
+    import android.provider.Settings;
     import android.view.View;
     import android.widget.Button;
     import android.widget.Toast;
@@ -262,6 +263,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             // Permission Variables
             PermissionsManager permissionsManager = new PermissionsManager(this);
             permissionsManager.requestLocationPermissions(this);
+            if(!shouldShowRequestPermissionRationale(permissionsManager.toString()) && !PermissionsManager.areLocationPermissionsGranted(this)) {
+                //how to not go to settings on first ask
+                //need to indicate to the emulator that its a first ask and not after being denied beofre
+                startActivityForResult(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS), 0);
+            }
         }
     }
 

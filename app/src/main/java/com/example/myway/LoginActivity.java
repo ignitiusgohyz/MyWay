@@ -13,6 +13,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -29,6 +30,8 @@ public class LoginActivity extends AppCompatActivity {
     private EditText createdPassword;
     private String createdPassword_string;
     private CheckBox rememberMe;
+    private ImageView usernameAndPassword;
+    private float v = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,11 +40,23 @@ public class LoginActivity extends AppCompatActivity {
         ImageButton loginButton = findViewById(R.id.login);
         createdUsername = findViewById(R.id.username);
         createdPassword = findViewById(R.id.password);
+        usernameAndPassword = findViewById(R.id.username_password);
         rememberMe = findViewById(R.id.rememberMe);
         ImageButton registerButton = findViewById(R.id.register);
         Button tempClearDatabaseButton = findViewById(R.id.tempclearbutton);
         visibilityButton = findViewById(R.id.visibility_button);
         DatabaseHelper databaseHelper = new DatabaseHelper(LoginActivity.this);
+
+//        usernameAndPassword.setTranslationY(300);
+//        createdUsername.setTranslationY(300);
+//        createdPassword.setTranslationY(300);
+//        createdUsername.setAlpha(v);
+//        createdPassword.setAlpha(v);
+//        usernameAndPassword.setAlpha(v);
+//        createdUsername.animate().translationY(0).alpha(1).setDuration(1000).setStartDelay(400).start();
+//        createdPassword.animate().translationY(0).alpha(1).setDuration(1000).setStartDelay(400).start();
+//        usernameAndPassword.animate().translationY(0).alpha(1).setDuration(1000).setStartDelay(400).start();
+
 
         loginButton.setOnClickListener(v -> {
             createdUsername_string = createdUsername.getText().toString().toLowerCase().trim();

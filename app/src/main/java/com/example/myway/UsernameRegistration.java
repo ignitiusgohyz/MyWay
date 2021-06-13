@@ -12,19 +12,26 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import org.w3c.dom.Text;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class UsernameRegistration extends AppCompatActivity {
 
-    private ImageButton nextButton;
+    private ImageView usernameBox;
     private EditText username;
-    private String username_string;
+    private ImageButton nextButton;
+    private TextView next;
+    private ImageView userIcon;
     private TextView special_characters_warning;
+    private String username_string;
     private boolean canProceed;
+    private float v = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,8 +40,31 @@ public class UsernameRegistration extends AppCompatActivity {
 
         nextButton = findViewById(R.id.next_button);
         username = findViewById(R.id.register_username);
+        usernameBox = findViewById(R.id.registration_username_box);
+        next = findViewById(R.id.next);
+        userIcon = findViewById(R.id.user_icon);
         special_characters_warning = findViewById(R.id.special_character_warning);
         canProceed = false;
+
+        nextButton.setTranslationX(300);
+        username.setTranslationX(300);
+        usernameBox.setTranslationX(300);
+        next.setTranslationX(300);
+        userIcon.setTranslationX(300);
+        special_characters_warning.setTranslationX(300);
+        nextButton.setAlpha(v);
+        username.setAlpha(v);
+        usernameBox.setAlpha(v);
+        next.setAlpha(v);
+        userIcon.setAlpha(v);
+        special_characters_warning.setAlpha(v);
+        nextButton.animate().translationX(0).alpha(1).setDuration(1000).setStartDelay(600).start();
+        username.animate().translationX(0).alpha(1).setDuration(1000).setStartDelay(600).start();
+        usernameBox.animate().translationX(0).alpha(1).setDuration(1000).setStartDelay(600).start();
+        next.animate().translationX(0).alpha(1).setDuration(1000).setStartDelay(600).start();
+        userIcon.animate().translationX(0).alpha(1).setDuration(1000).setStartDelay(600).start();
+        special_characters_warning.animate().translationX(0).alpha(1).setDuration(1000).setStartDelay(600).start();
+
 
         nextButton.setOnClickListener(v -> {
             if (canProceed) {

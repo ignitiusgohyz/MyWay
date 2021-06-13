@@ -200,6 +200,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                                             ((Point) selectedCarmenFeature.geometry()).longitude()))
                                     .zoom(14)
                                     .build()), 4000);
+
+                    onMapClick(new LatLng(((Point) selectedCarmenFeature.geometry()).latitude(),
+                            ((Point) selectedCarmenFeature.geometry()).longitude()));
                 }
             }
         }

@@ -2,36 +2,48 @@
 
 // Misc Classes
 
+    import android.Manifest;
     import android.annotation.SuppressLint;
     import android.app.Activity;
     import android.content.Intent;
+    import android.content.pm.PackageManager;
     import android.graphics.BitmapFactory;
     import android.graphics.Color;
     import android.graphics.drawable.Drawable;
     import android.location.Location;
+    import android.net.Uri;
     import android.os.Bundle;
     import android.provider.Settings;
     import android.view.View;
     import android.widget.Button;
+    import android.widget.TextView;
     import android.widget.Toast;
 
     import androidx.annotation.NonNull;
+    import androidx.appcompat.app.AlertDialog;
     import androidx.appcompat.app.AppCompatActivity;
     import androidx.appcompat.content.res.AppCompatResources;
+    import androidx.core.app.ActivityCompat;
+    import androidx.core.content.ContextCompat;
     import androidx.core.graphics.drawable.DrawableCompat;
 
+    import com.google.android.material.snackbar.Snackbar;
+    import com.google.gson.JsonObject;
     import com.mapbox.android.core.location.LocationEngine;
     import com.mapbox.android.core.location.LocationEngineCallback;
     import com.mapbox.android.core.location.LocationEngineProvider;
     import com.mapbox.android.core.location.LocationEngineRequest;
     import com.mapbox.android.core.location.LocationEngineResult;
     import com.mapbox.android.core.permissions.PermissionsListener;
-    import com.mapbox.android.core.permissions.PermissionsManager;
     import com.mapbox.api.directions.v5.models.DirectionsResponse;
     import com.mapbox.api.directions.v5.models.DirectionsRoute;
+    import com.mapbox.api.geocoding.v5.models.CarmenFeature;
     import com.mapbox.geojson.Feature;
+    import com.mapbox.geojson.FeatureCollection;
     import com.mapbox.geojson.Point;
     import com.mapbox.mapboxsdk.Mapbox;
+    import com.mapbox.mapboxsdk.camera.CameraPosition;
+    import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
     import com.mapbox.mapboxsdk.geometry.LatLng;
     import com.mapbox.mapboxsdk.location.LocationComponent;
     import com.mapbox.mapboxsdk.location.LocationComponentActivationOptions;
@@ -42,6 +54,8 @@
     import com.mapbox.mapboxsdk.maps.MapboxMap;
     import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
     import com.mapbox.mapboxsdk.maps.Style;
+    import com.mapbox.mapboxsdk.plugins.places.autocomplete.PlaceAutocomplete;
+    import com.mapbox.mapboxsdk.plugins.places.autocomplete.model.PlaceOptions;
     import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
     import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
     import com.mapbox.services.android.navigation.ui.v5.NavigationLauncher;
@@ -62,26 +76,6 @@
 
     import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconAllowOverlap;
     import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconIgnorePlacement;
-    import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconImage;
-
-    import com.google.gson.JsonObject;
-    import com.mapbox.api.geocoding.v5.models.CarmenFeature;
-    import com.mapbox.geojson.Feature;
-    import com.mapbox.geojson.FeatureCollection;
-    import com.mapbox.geojson.Point;
-    import com.mapbox.mapboxsdk.Mapbox;
-    import com.mapbox.mapboxsdk.camera.CameraPosition;
-    import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
-    import com.mapbox.mapboxsdk.geometry.LatLng;
-    import com.mapbox.mapboxsdk.maps.MapView;
-    import com.mapbox.mapboxsdk.maps.MapboxMap;
-    import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
-    import com.mapbox.mapboxsdk.maps.Style;
-    import com.mapbox.mapboxsdk.plugins.places.autocomplete.PlaceAutocomplete;
-    import com.mapbox.mapboxsdk.plugins.places.autocomplete.model.PlaceOptions;
-    import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
-    import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
-
     import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconImage;
     import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconOffset;
 
@@ -109,8 +103,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private static final int REQUEST_CODE_AUTOCOMPLETE = 1;
     private CarmenFeature home;
     private CarmenFeature work;
-    private String geojsonSourceLayerId = "geojsonSourceLayerId";
-    private String symbolIconId = "symbolIconId";
+    private final String geojsonSourceLayerId = "geojsonSourceLayerId";
+    public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,26 +118,20 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         startButton = findViewById(R.id.startNavigation);
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
-        startButton.setOnClickListener(v -> {
-
-        });
     }
 
     private void initSearchFab() {
-        findViewById(R.id.fab_location_search).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new PlaceAutocomplete.IntentBuilder()
-                        .accessToken(Mapbox.getAccessToken() != null ? Mapbox.getAccessToken() : getString(R.string.mapbox_access_token))
-                        .placeOptions(PlaceOptions.builder()
-                                .backgroundColor(Color.parseColor("#EEEEEE"))
-                                .limit(10)
-                                .addInjectedFeature(home)
-                                .addInjectedFeature(work)
-                                .build(PlaceOptions.MODE_CARDS))
-                        .build(MainActivity.this);
-                startActivityForResult(intent, REQUEST_CODE_AUTOCOMPLETE);
-            }
+        findViewById(R.id.fab_location_search).setOnClickListener(view -> {
+            Intent intent = new PlaceAutocomplete.IntentBuilder()
+                    .accessToken(Mapbox.getAccessToken() != null ? Mapbox.getAccessToken() : getString(R.string.mapbox_access_token))
+                    .placeOptions(PlaceOptions.builder()
+                            .backgroundColor(Color.parseColor("#EEEEEE"))
+                            .limit(10)
+                            .addInjectedFeature(home)
+                            .addInjectedFeature(work)
+                            .build(PlaceOptions.MODE_CARDS))
+                    .build(MainActivity.this);
+            startActivityForResult(intent, REQUEST_CODE_AUTOCOMPLETE);
         });
     }
 
@@ -168,6 +156,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     private void setupLayer(@NonNull Style loadedMapStyle) {
+        String symbolIconId = "symbolIconId";
         loadedMapStyle.addLayer(new SymbolLayer("SYMBOL_LAYER_ID", geojsonSourceLayerId).withProperties(
                 iconImage(symbolIconId),
                 iconOffset(new Float[] {0f, -8f})
@@ -197,7 +186,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 // Move map camera to the selected location
                     mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(
                             new CameraPosition.Builder()
-                                    .target(new LatLng(((Point) selectedCarmenFeature.geometry()).latitude(),
+                                    .target(new LatLng(((Point) Objects.requireNonNull(selectedCarmenFeature.geometry())).latitude(),
                                             ((Point) selectedCarmenFeature.geometry()).longitude()))
                                     .zoom(14)
                                     .build()), 4000);
@@ -235,18 +224,17 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     }
 
-    @SuppressWarnings({"MissingPermission"})
     private void enableLocationComponent(@NonNull Style loadedMapStyle) {
-        // If permission is granted
-        if (PermissionsManager.areLocationPermissionsGranted(this)) {
+        if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) ==
+                PackageManager.PERMISSION_GRANTED) {
             // Get instance of component
             locationComponent = mapboxMap.getLocationComponent();
 
             // Set LocationComponent activation options
             LocationComponentActivationOptions locationComponentActivationOptions =
                     LocationComponentActivationOptions.builder(this, loadedMapStyle)
-                    .useDefaultLocationEngine(false)
-                    .build();
+                            .useDefaultLocationEngine(false)
+                            .build();
 
             // Activate with LocationComponentActivationOptions object
             locationComponent.activateLocationComponent(locationComponentActivationOptions);
@@ -260,14 +248,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
             initLocationEngine();
         } else {
-            // Permission Variables
-            PermissionsManager permissionsManager = new PermissionsManager(this);
-            permissionsManager.requestLocationPermissions(this);
-            if(!shouldShowRequestPermissionRationale(permissionsManager.toString()) && !PermissionsManager.areLocationPermissionsGranted(this)) {
-                //how to not go to settings on first ask
-                //need to indicate to the emulator that its a first ask and not after being denied beofre
-                startActivityForResult(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS), 0);
-            }
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    MY_PERMISSIONS_REQUEST_LOCATION);
         }
     }
 
@@ -360,13 +343,38 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        this.recreate();
+        if (requestCode == MY_PERMISSIONS_REQUEST_LOCATION) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (ContextCompat.checkSelfPermission(this,
+                        Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    this.recreate();
+                }
+            } else {
+                if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,
+                        Manifest.permission.ACCESS_FINE_LOCATION)) {
+                    new AlertDialog.Builder(this)
+                            .setTitle("Permissions Needed")
+                            .setMessage("Location Permission is to be enabled for navigation!")
+                            .setPositiveButton("Ok", (dialog, which) -> ActivityCompat.requestPermissions(MainActivity.this,
+                                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                                    MY_PERMISSIONS_REQUEST_LOCATION)).create().show();
+                } else {
+                    // Location denied permanently
+                    Snackbar snackbar = Snackbar.make(mapView, "You have previously declined this permission.\n" +
+                                    "You must approve this permission in \"Permissions\" in the app settings on your device.",
+                            Snackbar.LENGTH_INDEFINITE).setAction("Settings", v -> startActivity(new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:" + BuildConfig.APPLICATION_ID))));
+                    View snackbarView = snackbar.getView();
+                    TextView textView = snackbarView.findViewById(com.google.android.material.R.id.snackbar_text);
+                    textView.setMaxLines(5);
+                    snackbar.show();
+                }
+            }
+        }
     }
 
     @Override
     public void onExplanationNeeded(List<String> permissionsToExplain) {
         Toast.makeText(this, R.string.user_location_permission_explanation, Toast.LENGTH_LONG).show();
-        //  enableLocationComponent(mapboxMap.getStyle());
     }
 
     @Override

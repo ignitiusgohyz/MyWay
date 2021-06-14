@@ -64,6 +64,7 @@
     import com.mapbox.services.android.navigation.v5.navigation.NavigationRoute;
 
     import org.jetbrains.annotations.NotNull;
+    import org.w3c.dom.Text;
 
     import java.lang.ref.WeakReference;
     import java.util.List;
@@ -105,6 +106,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private CarmenFeature work;
     private final String geojsonSourceLayerId = "geojsonSourceLayerId";
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
+    private TextView searchText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,6 +118,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         setContentView(R.layout.activity_main);
         mapView = findViewById(R.id.mapView);
         startButton = findViewById(R.id.startNavigation);
+        searchText = findViewById(R.id.location_text);
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
     }
@@ -168,12 +171,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_CODE_AUTOCOMPLETE) {
 
-// Retrieve selected location's CarmenFeature
+            // Retrieve selected location's CarmenFeature
             CarmenFeature selectedCarmenFeature = PlaceAutocomplete.getPlace(data);
+            searchText.setText(selectedCarmenFeature.text());
 
-// Create a new FeatureCollection and add a new Feature to it using selectedCarmenFeature above.
-// Then retrieve and update the source designated for showing a selected location's symbol layer icon
-
+            // Create a new FeatureCollection and add a new Feature to it using selectedCarmenFeature above.
+            // Then retrieve and update the source designated for showing a selected location's symbol layer icon
             if (mapboxMap != null) {
                 Style style = mapboxMap.getStyle();
                 if (style != null) {
@@ -183,7 +186,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                                 new Feature[] {Feature.fromJson(selectedCarmenFeature.toJson())}));
                     }
 
-// Move map camera to the selected location
+                    // Move map camera to the selected location
                     mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(
                             new CameraPosition.Builder()
                                     .target(new LatLng(((Point) Objects.requireNonNull(selectedCarmenFeature.geometry())).latitude(),
@@ -363,6 +366,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     Snackbar snackbar = Snackbar.make(mapView, "You have previously declined this permission.\n" +
                                     "You must approve this permission in \"Permissions\" in the app settings on your device.",
                             Snackbar.LENGTH_INDEFINITE).setAction("Settings", v -> startActivity(new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:" + BuildConfig.APPLICATION_ID))));
+                    @SuppressWarnings("SpellCheckingInspection")
                     View snackbarView = snackbar.getView();
                     TextView textView = snackbarView.findViewById(com.google.android.material.R.id.snackbar_text);
                     textView.setMaxLines(5);

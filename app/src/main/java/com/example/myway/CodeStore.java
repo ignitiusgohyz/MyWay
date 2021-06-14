@@ -10,8 +10,7 @@ import java.util.List;
 // 2. Reposition Toast messages to somewhere more visible such as the top of the UI.
 // 3. Add in number in registration fields.
 // 6. Lookout for areas to improve code efficiency to prevent frame skips.
-// 9. Can we make this app more sensitive and receptive?
-// 10. Learn how to handle user denying permission scenario. User acceptance is fixed.
+// 10. Reload map on return from settings after permanent denial of permissions
 // 11. Fix database columns (remove firstname and lastname).
 // 12. Add popup inflater for user agreement and policy
 

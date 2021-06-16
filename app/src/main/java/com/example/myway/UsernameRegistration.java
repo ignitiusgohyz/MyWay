@@ -1,12 +1,7 @@
 package com.example.myway;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
-
 import android.content.Intent;
-import android.graphics.PorterDuff;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -16,33 +11,30 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.w3c.dom.Text;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class UsernameRegistration extends AppCompatActivity {
 
-    private ImageView usernameBox;
     private EditText username;
-    private ImageButton nextButton;
-    private TextView next;
-    private ImageView userIcon;
     private TextView special_characters_warning;
     private String username_string;
     private boolean canProceed;
-    private float v = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_username_registration);
 
-        nextButton = findViewById(R.id.next_button);
+        ImageButton nextButton = findViewById(R.id.next_button);
         username = findViewById(R.id.register_username);
-        usernameBox = findViewById(R.id.registration_username_box);
-        next = findViewById(R.id.next);
-        userIcon = findViewById(R.id.user_icon);
+        ImageView usernameBox = findViewById(R.id.registration_username_box);
+        TextView next = findViewById(R.id.next);
+        ImageView userIcon = findViewById(R.id.user_icon);
         special_characters_warning = findViewById(R.id.special_character_warning);
         canProceed = false;
 
@@ -52,18 +44,19 @@ public class UsernameRegistration extends AppCompatActivity {
         next.setTranslationX(300);
         userIcon.setTranslationX(300);
         special_characters_warning.setTranslationX(300);
-        nextButton.setAlpha(v);
-        username.setAlpha(v);
-        usernameBox.setAlpha(v);
-        next.setAlpha(v);
-        userIcon.setAlpha(v);
-        special_characters_warning.setAlpha(v);
-        nextButton.animate().translationX(0).alpha(1).setDuration(1000).setStartDelay(600).start();
-        username.animate().translationX(0).alpha(1).setDuration(1000).setStartDelay(600).start();
-        usernameBox.animate().translationX(0).alpha(1).setDuration(1000).setStartDelay(600).start();
-        next.animate().translationX(0).alpha(1).setDuration(1000).setStartDelay(600).start();
-        userIcon.animate().translationX(0).alpha(1).setDuration(1000).setStartDelay(600).start();
-        special_characters_warning.animate().translationX(0).alpha(1).setDuration(1000).setStartDelay(600).start();
+        float v1 = 0;
+        nextButton.setAlpha(v1);
+        username.setAlpha(v1);
+        usernameBox.setAlpha(v1);
+        next.setAlpha(v1);
+        userIcon.setAlpha(v1);
+        special_characters_warning.setAlpha(v1);
+        nextButton.animate().translationX(0).alpha(1).setDuration(500).setStartDelay(300).start();
+        username.animate().translationX(0).alpha(1).setDuration(500).setStartDelay(300).start();
+        usernameBox.animate().translationX(0).alpha(1).setDuration(500).setStartDelay(300).start();
+        next.animate().translationX(0).alpha(1).setDuration(500).setStartDelay(300).start();
+        userIcon.animate().translationX(0).alpha(1).setDuration(500).setStartDelay(300).start();
+        special_characters_warning.animate().translationX(0).alpha(1).setDuration(500).setStartDelay(300).start();
 
 
         nextButton.setOnClickListener(v -> {
@@ -76,6 +69,7 @@ public class UsernameRegistration extends AppCompatActivity {
                     Intent intent = new Intent(UsernameRegistration.this, EmailRegistration.class);
                     intent.putExtra("username", username_string);
                     startActivity(intent);
+                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                 }
             } else {
                 Toast.makeText(UsernameRegistration.this, "Please enter a proper username", Toast.LENGTH_SHORT).show();
@@ -122,7 +116,16 @@ public class UsernameRegistration extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
-        // Add popup inflater here for back confirmation
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Confirm").setMessage("Are you sure?");
+
+        builder.setPositiveButton("YES", (dialog, which) -> {
+            dialog.dismiss();
+            finish();
+            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+        });
+
+        builder.setNegativeButton("NO", (dialog, which) -> dialog.dismiss());
+        builder.create().show();
     }
 }

@@ -18,6 +18,7 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
@@ -107,6 +108,7 @@ public class LoginActivity extends AppCompatActivity {
         registerButton.setOnClickListener(v -> {
             Intent intent = new Intent(LoginActivity.this, UsernameRegistration.class);
             startActivity(intent);
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
         });
 
         visibilityButton.setOnClickListener(v -> {
@@ -134,5 +136,19 @@ public class LoginActivity extends AppCompatActivity {
         super.onResume();
         createdPassword.setText("");
         createdUsername.setText("");
+    }
+
+    @Override
+    public void onBackPressed() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Confirm").setMessage("Are you sure?");
+
+        builder.setPositiveButton("YES", (dialog, which) -> {
+            dialog.dismiss();
+            super.onBackPressed();
+        });
+
+        builder.setNegativeButton("NO", (dialog, which) -> dialog.dismiss());
+        builder.create().show();
     }
 }

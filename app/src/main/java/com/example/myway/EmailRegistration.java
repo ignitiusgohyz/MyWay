@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
@@ -19,26 +20,21 @@ import java.util.regex.Pattern;
 
 public class EmailRegistration extends AppCompatActivity {
 
-    private ImageView registrationBox;
     private EditText email;
-    private ImageButton nextButton;
-    private TextView nextText;
-    private ImageView emailIcon;
     private TextView email_warning;
     private String email_string;
     private boolean canProceed;
-    private float v = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_email_registration);
 
-        registrationBox = findViewById(R.id.registration_email_box);
+        ImageView registrationBox = findViewById(R.id.registration_email_box);
         email = findViewById(R.id.register_email);
-        nextButton = findViewById(R.id.next_button_email);
-        nextText = findViewById(R.id.next_email);
-        emailIcon = findViewById(R.id.email_icon);
+        ImageButton nextButton = findViewById(R.id.next_button_email);
+        TextView nextText = findViewById(R.id.next_email);
+        ImageView emailIcon = findViewById(R.id.email_icon);
         email_warning = findViewById(R.id.email_warning);
         canProceed = false;
 
@@ -49,19 +45,20 @@ public class EmailRegistration extends AppCompatActivity {
         emailIcon.setTranslationX(300);
         email_warning.setTranslationX(300);
 
-        registrationBox.setAlpha(v);
-        email.setAlpha(v);
-        nextButton.setAlpha(v);
-        nextText.setAlpha(v);
-        emailIcon.setAlpha(v);
-        email_warning.setAlpha(v);
+        float v1 = 0;
+        registrationBox.setAlpha(v1);
+        email.setAlpha(v1);
+        nextButton.setAlpha(v1);
+        nextText.setAlpha(v1);
+        emailIcon.setAlpha(v1);
+        email_warning.setAlpha(v1);
 
-        registrationBox.animate().translationX(0).alpha(1).setDuration(1000).setStartDelay(600).start();
-        email.animate().translationX(0).alpha(1).setDuration(1000).setStartDelay(600).start();
-        nextButton.animate().translationX(0).alpha(1).setDuration(1000).setStartDelay(600).start();
-        nextText.animate().translationX(0).alpha(1).setDuration(1000).setStartDelay(600).start();
-        emailIcon.animate().translationX(0).alpha(1).setDuration(1000).setStartDelay(600).start();
-        email_warning.animate().translationX(0).alpha(1).setDuration(1000).setStartDelay(600).start();
+        registrationBox.animate().translationX(0).alpha(1).setDuration(500).setStartDelay(300).start();
+        email.animate().translationX(0).alpha(1).setDuration(500).setStartDelay(300).start();
+        nextButton.animate().translationX(0).alpha(1).setDuration(500).setStartDelay(300).start();
+        nextText.animate().translationX(0).alpha(1).setDuration(500).setStartDelay(300).start();
+        emailIcon.animate().translationX(0).alpha(1).setDuration(500).setStartDelay(300).start();
+        email_warning.animate().translationX(0).alpha(1).setDuration(500).setStartDelay(300).start();
 
         nextButton.setOnClickListener(v -> {
             if (canProceed) {
@@ -86,6 +83,7 @@ public class EmailRegistration extends AppCompatActivity {
                     intent.putExtra("username", username);
                     intent.putExtra("email", email_string);
                     startActivity(intent);
+                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                 }
             } else {
                 Toast.makeText(EmailRegistration.this, "Please enter a proper email", Toast.LENGTH_SHORT).show();
@@ -121,5 +119,20 @@ public class EmailRegistration extends AppCompatActivity {
         Pattern emailPattern = Pattern.compile("[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+");
         Matcher matcher = emailPattern.matcher(target);
         return matcher.matches();
+    }
+
+    @Override
+    public void onBackPressed() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Confirm").setMessage("Are you sure?");
+
+        builder.setPositiveButton("YES", (dialog, which) -> {
+            dialog.dismiss();
+            finish();
+            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+        });
+
+        builder.setNegativeButton("NO", (dialog, which) -> dialog.dismiss());
+        builder.create().show();
     }
 }

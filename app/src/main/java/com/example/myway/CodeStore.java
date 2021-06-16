@@ -7,12 +7,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 //TODO
-// 2. Reposition Toast messages to somewhere more visible such as the top of the UI.
-// 3. Add in number in registration fields.
-// 6. Lookout for areas to improve code efficiency to prevent frame skips.
-// 10. Reload map on return from settings after permanent denial of permissions
-// 11. Fix database columns (remove firstname and lastname).
-// 12. Add popup inflater for user agreement and policy
+// 1. Add in number in registration fields ??.
+// 2. Lookout for areas to improve code efficiency to prevent frame skips.
+// 3. Reload map on return from settings after permanent denial of permissions.
+// 4. Fix database columns (remove firstname and lastname as not used anymore but can add phone number?).
+// 5. Add popup inflater for user agreement and policy
+// 6. Add in parking system.
+
 
 public class CodeStore {
     // Online DB https connection

@@ -19,6 +19,7 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
@@ -27,23 +28,12 @@ import java.util.regex.Pattern;
 
 public class PasswordRegistration extends AppCompatActivity {
 
-    private ImageView firstPasswordBox;
     private EditText first_password;
     private ImageButton visibilityButton;
-    private ImageView secondPasswordBox;
     private EditText second_password;
-    private ImageButton passwordRequirement;
-    private ImageButton finishButton;
-    private TextView finishText;
-    private TextView userAgreements;
-    private CheckBox checkBox;
-    private TextView userAgreements2;
-    private TextView privacyPolicy;
-    private TextView and;
     private TextView password_warning;
     private boolean canProceedPassword = false;
     private boolean canProceedChecked = false;
-    private float v = 0;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -51,19 +41,19 @@ public class PasswordRegistration extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_password_registration);
 
-        firstPasswordBox = findViewById(R.id.register_password_top_box);
+        ImageView firstPasswordBox = findViewById(R.id.register_password_top_box);
         first_password = findViewById(R.id.register_password_top);
         visibilityButton = findViewById(R.id.registration_password_visibility_toggle);
-        secondPasswordBox = findViewById(R.id.register_password_bottom_box);
+        ImageView secondPasswordBox = findViewById(R.id.register_password_bottom_box);
         second_password = findViewById(R.id.register_password_bottom);
-        passwordRequirement = findViewById(R.id.register_password_requirement_popup);
-        finishButton = findViewById(R.id.register_button);
-        finishText = findViewById(R.id.textView);
-        userAgreements = findViewById(R.id.user_agreement_1);
-        checkBox = findViewById(R.id.user_agreement_checkbox);
-        userAgreements2 = findViewById(R.id.user_agreement);
-        privacyPolicy = findViewById(R.id.privacy_policy);
-        and = findViewById(R.id.and);
+        ImageButton passwordRequirement = findViewById(R.id.register_password_requirement_popup);
+        ImageButton finishButton = findViewById(R.id.register_button);
+        TextView finishText = findViewById(R.id.textView);
+        TextView userAgreements = findViewById(R.id.user_agreement_1);
+        CheckBox checkBox = findViewById(R.id.user_agreement_checkbox);
+        TextView userAgreements2 = findViewById(R.id.user_agreement);
+        TextView privacyPolicy = findViewById(R.id.privacy_policy);
+        TextView and = findViewById(R.id.and);
         password_warning = findViewById(R.id.registration_password_warning);
 
         firstPasswordBox.setTranslationX(300);
@@ -81,35 +71,36 @@ public class PasswordRegistration extends AppCompatActivity {
         and.setTranslationX(300);
         password_warning.setTranslationX(300);
 
-        firstPasswordBox.setAlpha(v);
-        first_password.setAlpha(v);
-        visibilityButton.setAlpha(v);
-        secondPasswordBox.setAlpha(v);
-        second_password.setAlpha(v);
-        passwordRequirement.setAlpha(v);
-        finishButton.setAlpha(v);
-        finishText.setAlpha(v);
-        userAgreements.setAlpha(v);
-        checkBox.setAlpha(v);
-        userAgreements2.setAlpha(v);
-        privacyPolicy.setAlpha(v);
-        and.setAlpha(v);
-        password_warning.setAlpha(v);
+        float v2 = 0;
+        firstPasswordBox.setAlpha(v2);
+        first_password.setAlpha(v2);
+        visibilityButton.setAlpha(v2);
+        secondPasswordBox.setAlpha(v2);
+        second_password.setAlpha(v2);
+        passwordRequirement.setAlpha(v2);
+        finishButton.setAlpha(v2);
+        finishText.setAlpha(v2);
+        userAgreements.setAlpha(v2);
+        checkBox.setAlpha(v2);
+        userAgreements2.setAlpha(v2);
+        privacyPolicy.setAlpha(v2);
+        and.setAlpha(v2);
+        password_warning.setAlpha(v2);
 
-        firstPasswordBox.animate().translationX(0).alpha(1).setDuration(1000).setStartDelay(600).start();
-        first_password.animate().translationX(0).alpha(1).setDuration(1000).setStartDelay(600).start();
-        visibilityButton.animate().translationX(0).alpha(1).setDuration(1000).setStartDelay(600).start();
-        secondPasswordBox.animate().translationX(0).alpha(1).setDuration(1000).setStartDelay(600).start();
-        second_password.animate().translationX(0).alpha(1).setDuration(1000).setStartDelay(600).start();
-        passwordRequirement.animate().translationX(0).alpha(1).setDuration(1000).setStartDelay(600).start();
-        finishButton.animate().translationX(0).alpha(1).setDuration(1000).setStartDelay(600).start();
-        finishText.animate().translationX(0).alpha(1).setDuration(1000).setStartDelay(600).start();
-        userAgreements.animate().translationX(0).alpha(1).setDuration(1000).setStartDelay(600).start();
-        checkBox.animate().translationX(0).alpha(1).setDuration(1000).setStartDelay(600).start();
-        userAgreements2.animate().translationX(0).alpha(1).setDuration(1000).setStartDelay(600).start();
-        privacyPolicy.animate().translationX(0).alpha(1).setDuration(1000).setStartDelay(600).start();
-        and.animate().translationX(0).alpha(1).setDuration(1000).setStartDelay(600).start();
-        password_warning.animate().translationX(0).alpha(1).setDuration(1000).setStartDelay(600).start();
+        firstPasswordBox.animate().translationX(0).alpha(1).setDuration(500).setStartDelay(300).start();
+        first_password.animate().translationX(0).alpha(1).setDuration(500).setStartDelay(300).start();
+        visibilityButton.animate().translationX(0).alpha(1).setDuration(500).setStartDelay(300).start();
+        secondPasswordBox.animate().translationX(0).alpha(1).setDuration(500).setStartDelay(300).start();
+        second_password.animate().translationX(0).alpha(1).setDuration(500).setStartDelay(300).start();
+        passwordRequirement.animate().translationX(0).alpha(1).setDuration(500).setStartDelay(300).start();
+        finishButton.animate().translationX(0).alpha(1).setDuration(500).setStartDelay(300).start();
+        finishText.animate().translationX(0).alpha(1).setDuration(500).setStartDelay(300).start();
+        userAgreements.animate().translationX(0).alpha(1).setDuration(500).setStartDelay(300).start();
+        checkBox.animate().translationX(0).alpha(1).setDuration(500).setStartDelay(300).start();
+        userAgreements2.animate().translationX(0).alpha(1).setDuration(500).setStartDelay(300).start();
+        privacyPolicy.animate().translationX(0).alpha(1).setDuration(500).setStartDelay(300).start();
+        and.animate().translationX(0).alpha(1).setDuration(500).setStartDelay(300).start();
+        password_warning.animate().translationX(0).alpha(1).setDuration(500).setStartDelay(300).start();
 
 
         finishButton.setOnClickListener(v -> {
@@ -139,7 +130,9 @@ public class PasswordRegistration extends AppCompatActivity {
                 databaseHelper.addOne(userModel);
                 Toast.makeText(PasswordRegistration.this, "Registered Successfully", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(PasswordRegistration.this, LoginActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
+                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
             } else if (canProceedPassword) {
                 Toast.makeText(PasswordRegistration.this, "Please tick the checkbox", Toast.LENGTH_SHORT).show();
             } else {
@@ -167,12 +160,12 @@ public class PasswordRegistration extends AppCompatActivity {
 
         passwordRequirement.setOnClickListener(v -> {
             LayoutInflater layoutInflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+            @SuppressLint("InflateParams")
             View popupView = layoutInflater.inflate(R.layout.popup_password_requirement, null);
 
             int width = LinearLayout.LayoutParams.WRAP_CONTENT;
             int height = LinearLayout.LayoutParams.WRAP_CONTENT;
-            boolean focusable = true;
-            final PopupWindow popupWindow = new PopupWindow(popupView, width, height, focusable);
+            final PopupWindow popupWindow = new PopupWindow(popupView, width, height, true);
             popupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
             popupView.setOnTouchListener((v1, event) -> {
                 popupWindow.dismiss();
@@ -256,7 +249,16 @@ public class PasswordRegistration extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
-        // TODO
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Confirm").setMessage("Are you sure?");
+
+        builder.setPositiveButton("YES", (dialog, which) -> {
+            dialog.dismiss();
+            finish();
+            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+        });
+
+        builder.setNegativeButton("NO", (dialog, which) -> dialog.dismiss());
+        builder.create().show();
     }
 }

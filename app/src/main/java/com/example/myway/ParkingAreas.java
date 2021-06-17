@@ -1,14 +1,12 @@
 package com.example.myway;
 
-public class ParkingAreas {
+
+public class ParkingAreas implements Comparable<ParkingAreas> {
 
     private String carParkNo;
     private String address;
-//    private double xCoord;
-//    private double yCoord;
-//    tried Double.parseDouble but keep getting numberformatexception. passed as String first
-    private String xCoord;
-    private String yCoord;
+    private double xCoord;
+    private double yCoord;
     private String carParkType;
     private String parkingSystem;
     private String shortTermParking;
@@ -19,26 +17,43 @@ public class ParkingAreas {
     private String carParkBasement;
     private LatLonCoordinate parkingLatLon;
     private SVY21Coordinate parkingSVY21;
+    private double distanceApart;
 
     public ParkingAreas() {
     }
 
+    public String getAddress() {
+        return address;
+    }
+
+    public void setDistanceApart(double distanceApart) {
+        this.distanceApart = distanceApart;
+    }
+
+    public LatLonCoordinate getParkingLatLon() {
+        return parkingLatLon;
+    }
+
+    public SVY21Coordinate getParkingSVY21() {
+        return parkingSVY21;
+    }
+
     public void setCarParkNo(String carParkNo) {
-        this.carParkNo = carParkNo;
+        this.carParkNo = carParkNo.substring(1);
     }
 
     public void setAddress(String address) {
         this.address = address;
     }
 
-    public void setXCoord(String xCoord) {
+    public void setXCoord(double xCoord) {
         this.xCoord = xCoord;
     }
 
-    public void setYCoord(String yCoord) {
+    public void setYCoord(double yCoord) {
         this.yCoord = yCoord;
-//        parkingLatLon = new LatLonCoordinate(Double.parseDouble(this.xCoord), Double.parseDouble(this.yCoord));
-//        parkingSVY21 = parkingLatLon.asSVY21();
+        parkingSVY21 = new SVY21Coordinate(this.xCoord, this.yCoord);
+        parkingLatLon = parkingSVY21.asLatLon();
     }
 
     public void setCarParkType(String carParkType) {
@@ -70,10 +85,21 @@ public class ParkingAreas {
     }
 
     public void setCarParkBasement(String carParkBasement) {
-        this.carParkBasement = carParkBasement;
+        this.carParkBasement = carParkBasement.substring(0,carParkBasement.length()-2);
     }
 
     public String toString() {
-        return xCoord + " " + yCoord;
+        return "" + distanceApart;
+    }
+
+    @Override
+    public int compareTo(ParkingAreas o) {
+        if (this.distanceApart < o.distanceApart) {
+            return -1;
+        } else if(this.distanceApart > o.distanceApart) {
+            return 1;
+        } else {
+            return 0;
+        }
     }
 }

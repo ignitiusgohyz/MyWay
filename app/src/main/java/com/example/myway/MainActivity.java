@@ -97,6 +97,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private final MainActivityLocationCallback callback = new MainActivityLocationCallback(this);
 
     private Button startButton;
+    private Button checkParking;
+    private double destinationLng;
+    private double destinationLat;
     private DirectionsRoute currentRoute;
     private static final String TAG = "DirectionsActivity";
     private NavigationMapRoute navigationMapRoute;
@@ -118,6 +121,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         setContentView(R.layout.activity_main);
         mapView = findViewById(R.id.mapView);
         startButton = findViewById(R.id.startNavigation);
+        checkParking = findViewById(R.id.checkParking);
         searchText = findViewById(R.id.location_text);
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
@@ -224,7 +228,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     .build();
             NavigationLauncher.startNavigation(MainActivity.this, options);
         }));
-
+        checkParking = findViewById(R.id.checkParking);
+        checkParking.setOnClickListener((v -> {
+            Intent intent = new Intent(MainActivity.this, Parking.class);
+            Bundle bundle = new Bundle();
+            bundle.putDouble("destinationLng", destinationLng);
+            bundle.putDouble("destinationLat", destinationLat);
+            intent.putExtras(bundle);
+            startActivity(intent);
+        }));
     }
 
     private void enableLocationComponent(@NonNull Style loadedMapStyle) {
@@ -290,6 +302,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         getRoute(originPoint, destinationPoint);
         startButton.setEnabled(true);
         startButton.setBackgroundResource(R.color.mapboxBlue);
+        checkParking.setEnabled(true);
+        checkParking.setBackgroundResource(R.color.mapboxBlue);
+        destinationLat = point.getLatitude();
+        destinationLng = point.getLongitude();
         return true;
     }
 

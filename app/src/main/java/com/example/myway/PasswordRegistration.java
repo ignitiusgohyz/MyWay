@@ -129,8 +129,7 @@ public class PasswordRegistration extends AppCompatActivity {
                 userModel = new UserModel(-1,"", "", email, username, password);
                 databaseHelper.addOne(userModel);
                 Toast.makeText(PasswordRegistration.this, "Registered Successfully", Toast.LENGTH_SHORT).show();
-               // Intent intent = new Intent(PasswordRegistration.this, LoginActivity.class);
-                Intent intent = new Intent(PasswordRegistration.this, Parking.class);
+                Intent intent = new Intent(PasswordRegistration.this, LoginActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);

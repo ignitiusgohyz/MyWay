@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="4dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardCornerRadius="4dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/relativeLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="4dp">
+
+        <TextView
+            android:id="@+id/destination_1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Location"
+            android:layout_margin="4dp"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageButton
+            android:id="@+id/ic_ellipsis"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_ellipsis"
+            android:background="@color/white"
+            app:layout_constraintTop_toTopOf="@id/destination_1"
+            app:layout_constraintBottom_toBottomOf="@id/destination_1"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginEnd="5dp"
+            tools:ignore="ContentDescription" />
+
+        <TextView
+            android:id="@+id/carpark_availability_1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="xxx available\nparking spaces"
+            android:textSize="16sp"
+            android:textColor="@color/black"
+            android:layout_marginTop="20dp"
+            app:layout_constraintLeft_toLeftOf="@id/destination_1"
+            app:layout_constraintTop_toBottomOf="@id/destination_1"/>
+
+        <TextView
+            android:id="@+id/view_rates_1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="30dp"
+            android:text="view rates"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@+id/carpark_availability_1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/carpark_availability_1"/>
+
+        <ImageView
+            android:id="@+id/view_rate_img"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_carpark_rate"
+            app:layout_constraintTop_toTopOf="@id/view_rates_1"
+            app:layout_constraintBottom_toBottomOf="@id/view_rates_1"
+            app:layout_constraintRight_toLeftOf="@id/view_rates_1"
+            android:layout_marginEnd="5dp"
+            tools:ignore="ContentDescription" />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:scaleX="0.8"
+            android:scaleY="0.8"
+            android:layout_marginStart="5dp"
+            android:id="@+id/fragment_carpark_rates_arrow_right"
+            app:layout_constraintTop_toTopOf="@id/view_rates_1"
+            app:layout_constraintBottom_toBottomOf="@id/view_rates_1"
+            app:layout_constraintLeft_toRightOf="@id/view_rates_1"
+            android:src="@drawable/ic_double_arrow_right"/>
+
+        <TextView
+            android:id="@+id/timeslot_1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintLeft_toLeftOf="@id/carpark_availability_1"
+            android:text="13:00 - 16:00"
+            android:textSize="16sp"
+            android:textColor="@color/black"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/carpark_availability_1"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="16dp"/>
+
+        <ImageView
+            android:id="@+id/timeslot_img"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_carpark_timing"
+            app:layout_constraintTop_toTopOf="@id/timeslot_1"
+            app:layout_constraintBottom_toBottomOf="@id/timeslot_1"
+            app:layout_constraintRight_toLeftOf="@id/timeslot_1"
+            android:layout_marginEnd="5dp"
+            tools:ignore="ContentDescription" />
+
+        <TextView
+            android:id="@+id/est_price_1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="5dp"
+            app:layout_constraintTop_toTopOf="@id/timeslot_1"
+            app:layout_constraintBottom_toBottomOf="@id/timeslot_1"
+            app:layout_constraintLeft_toLeftOf="@id/view_rates_1"
+            app:layout_constraintRight_toRightOf="@id/view_rates_1"
+            android:text="est. $4.20 for 3 hrs"
+            android:textColor="@color/black"
+            android:textSize="16sp"/>
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/fragment_carpark_timing_arrow_down"
+            app:layout_constraintTop_toTopOf="@id/timeslot_1"
+            app:layout_constraintBottom_toBottomOf="@id/timeslot_1"
+            android:src="@drawable/ic_arrow_down"
+            android:background="@color/white"
+            app:layout_constraintLeft_toRightOf="@id/timeslot_1"
+            android:layout_marginStart="5dp"
+            android:scaleX="0.8"
+            android:scaleY="0.8"
+            tools:ignore="ContentDescription" />
+
+        <ImageView
+            android:id="@+id/est_price_img"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="@id/est_price_1"
+            app:layout_constraintBottom_toBottomOf="@id/est_price_1"
+            app:layout_constraintRight_toLeftOf="@id/est_price_1"
+            android:src="@drawable/ic_carpark_symbol"
+            android:layout_marginEnd="5dp"
+            android:scaleX="0.8"
+            android:scaleY="0.8"
+            tools:ignore="ContentDescription" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.cardview.widget.CardView>

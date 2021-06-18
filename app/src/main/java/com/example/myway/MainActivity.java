@@ -110,6 +110,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private final String geojsonSourceLayerId = "geojsonSourceLayerId";
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
     private TextView searchText;
+    private String searchText_string;
+
+    private TextView greetingText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,11 +126,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         startButton = findViewById(R.id.startNavigation);
         checkParking = findViewById(R.id.checkParking);
         searchText = findViewById(R.id.location_text);
+        greetingText = findViewById(R.id.fragment_main_greeting_text);
+        String username = "Hello, " + getIntent().getStringExtra("username");
+        greetingText.setText(username);
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
     }
 
     private void initSearchFab() {
+        searchText.setOnClickListener(v -> findViewById(R.id.fab_location_search).performClick());
         findViewById(R.id.fab_location_search).setOnClickListener(view -> {
             Intent intent = new PlaceAutocomplete.IntentBuilder()
                     .accessToken(Mapbox.getAccessToken() != null ? Mapbox.getAccessToken() : getString(R.string.mapbox_access_token))
@@ -178,6 +185,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             // Retrieve selected location's CarmenFeature
             CarmenFeature selectedCarmenFeature = PlaceAutocomplete.getPlace(data);
             searchText.setText(selectedCarmenFeature.text());
+            searchText_string = selectedCarmenFeature.text();
 
             // Create a new FeatureCollection and add a new Feature to it using selectedCarmenFeature above.
             // Then retrieve and update the source designated for showing a selected location's symbol layer icon
@@ -234,6 +242,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             Bundle bundle = new Bundle();
             bundle.putDouble("destinationLng", destinationLng);
             bundle.putDouble("destinationLat", destinationLat);
+            bundle.putString("destination", searchText_string);
             intent.putExtras(bundle);
             startActivity(intent);
         }));

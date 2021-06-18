@@ -13,6 +13,11 @@ import java.util.List;
 // 4. Fix database columns (remove firstname and lastname as not used anymore but can add phone number?).
 // 5. Add popup inflater for user agreement and policy
 // 6. Add in parking system.
+// 7. Add functionality to buttons on top fragment for main activity.
+// 8. Add functionality to buttons on top fragment for parking activity.
+// 9. Retrieve JSON code and feed into our RecycleView.
+// 10. Implement algo to read price and calculate based on price.
+// 11. Add functionality to the parking list.
 
 
 public class CodeStore {

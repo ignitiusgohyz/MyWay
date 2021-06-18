@@ -2,8 +2,11 @@ package com.example.myway;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.mapbox.geojson.Point;
 
@@ -15,14 +18,21 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class Parking extends AppCompatActivity {
 
     private double destinationLng;
     private double destinationLat;
+    private String destination;
+    private TextView destination_display;
     private LatLonCoordinate destinationLatLon;
     private SVY21Coordinate destinationSVY21;
+    private List<ParkingCardView> pcvArrayList = new ArrayList<>();
+    private RecyclerView recyclerView;
+    private RecyclerView.Adapter adapter;
+    private RecyclerView.LayoutManager layoutManager;
 
 
     @Override
@@ -32,6 +42,11 @@ public class Parking extends AppCompatActivity {
         Bundle bundle = getIntent().getExtras();
         destinationLat = bundle.getDouble("destinationLat");
         destinationLng = bundle.getDouble("destinationLng");
+
+        destination = "Destination:\n" + bundle.getString("destination");
+        destination_display = findViewById(R.id.fragment_parking_destination_text);
+        destination_display.setText(destination);
+
         destinationLatLon = new LatLonCoordinate(destinationLat,destinationLng);
         destinationSVY21 = destinationLatLon.asSVY21();
         try {
@@ -39,9 +54,20 @@ public class Parking extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Collections.sort(parkingAreasList);
+
+        // COMPARATOR FOR DISTANCE, IMPLEMENT FOR PRICE AND THE REST
+        Collections.sort(parkingAreasList, (o1, o2) -> {
+            if (o1.getDistanceApart() < o2.getDistanceApart()) {
+                return -1;
+            } else if(o1.getDistanceApart() > o2.getDistanceApart()) {
+                return 1;
+            } else {
+                return 0;
+            }
+        });
+
         Log.d("MyActivity", "print: " + parkingAreasList.toString());
-        getTopTenParkings();
+        getTopSixteenParkings();
     }
 
     private List<ParkingAreas> parkingAreasList = new ArrayList<>();
@@ -79,10 +105,10 @@ public class Parking extends AppCompatActivity {
                 parkingArea.setDistanceApart(Math.abs(distanceApart));
 //                Log.i("MyActivity", "LatLonCoordinates: " + parkingArea.getParkingLatLon());
 //                Log.i("MyActivity", "SVY21Coordinates: " + parkingArea.getParkingSVY21());
-                Log.i("MyActivity", "parkingNorthing: " + parkingArea.getParkingSVY21().getNorthing());
-                Log.i("MyActivity", "destinationNorthing: " + destinationSVY21.getNorthing());
-                Log.i("MyActivity", "parkEasting: " + parkingArea.getParkingSVY21().getEasting());
-                Log.i("MyActivity", "destinationEasting: " + destinationSVY21.getEasting());
+//                Log.i("MyActivity", "parkingNorthing: " + parkingArea.getParkingSVY21().getNorthing());
+//                Log.i("MyActivity", "destinationNorthing: " + destinationSVY21.getNorthing());
+//                Log.i("MyActivity", "parkEasting: " + parkingArea.getParkingSVY21().getEasting());
+//                Log.i("MyActivity", "destinationEasting: " + destinationSVY21.getEasting());
                 Log.i("MyActivity", "Address: " + parkingArea.getAddress() + ": " + distanceApart);
 //                Log.d("MyActivity", "Counter: " + i);
                 parkingAreasList.add(parkingArea);
@@ -94,13 +120,22 @@ public class Parking extends AppCompatActivity {
         }
     }
 
-    private List<ParkingAreas> topTenParkings;
-    private void getTopTenParkings() {
-        topTenParkings = parkingAreasList.subList(0,16);
-        Log.d("MyActivity", "toptenparking" + topTenParkings);
+    private void getTopSixteenParkings() {
+        List<ParkingAreas> topSixteenParkings = parkingAreasList.subList(0, 16);
+        Log.d("MyActivity", "toptenparking" + topSixteenParkings);
         for(int i=0; i<16; i++) {
-            Log.d("MyActivity", "Address: " + topTenParkings.get(i).getAddress());
+            Log.d("MyActivity", "Address: " + topSixteenParkings.get(i).getAddress());
+            String currentAddress = topSixteenParkings.get(i).getAddress();
+            pcvArrayList.add(new ParkingCardView(currentAddress,
+                    "200", "price is this"));
         }
+        recyclerView = findViewById(R.id.fragment_parking_recyclerview);
+        recyclerView.setHasFixedSize(true);
+        layoutManager = new LinearLayoutManager(this);
+        adapter = new ParkingCardViewAdapter((ArrayList<ParkingCardView>) pcvArrayList);
+
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setAdapter(adapter);
     }
 
 }

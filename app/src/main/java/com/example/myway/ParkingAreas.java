@@ -1,7 +1,7 @@
 package com.example.myway;
 
 
-public class ParkingAreas implements Comparable<ParkingAreas> {
+public class ParkingAreas {
 
     private String carParkNo;
     private String address;
@@ -29,6 +29,8 @@ public class ParkingAreas implements Comparable<ParkingAreas> {
     public void setDistanceApart(double distanceApart) {
         this.distanceApart = distanceApart;
     }
+
+    protected double getDistanceApart() { return this.distanceApart; }
 
     public LatLonCoordinate getParkingLatLon() {
         return parkingLatLon;
@@ -90,16 +92,5 @@ public class ParkingAreas implements Comparable<ParkingAreas> {
 
     public String toString() {
         return "" + distanceApart;
-    }
-
-    @Override
-    public int compareTo(ParkingAreas o) {
-        if (this.distanceApart < o.distanceApart) {
-            return -1;
-        } else if(this.distanceApart > o.distanceApart) {
-            return 1;
-        } else {
-            return 0;
-        }
     }
 }

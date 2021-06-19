@@ -37,7 +37,7 @@ android {
             firebaseAppDistribution {
                 appId="1:913572295861:android:a400be5c5e571d166d3afc"
                 artifactType="APK"
-                testers="e0543641@u.nus.edu, celestine.ng00@gmail.com"
+                testers="e0543641@u.nus.edu, celestine.ng00@gmail.com, tyler.blackblueaer@gmail.com"
             }
         }
     }
@@ -73,5 +73,5 @@ dependencies {
     implementation 'com.android.volley:volley:1.2.0'
 
     // navigation sdk
-    implementation 'com.mapbox.mapboxsdk:mapbox-android-navigation-ui:0.42.6'
+    implementation 'com.mapbox.mapboxsdk:mapbox-android-navigation-ui:0.43.0-alpha.1'
 }

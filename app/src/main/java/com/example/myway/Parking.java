@@ -1,6 +1,7 @@
 package com.example.myway;
 
 import android.os.Bundle;
+import android.renderscript.ScriptGroup;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,11 +17,16 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.gson.Gson;
 import com.mapbox.geojson.Point;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Array;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -42,6 +48,7 @@ public class Parking extends AppCompatActivity {
     private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
     private ImageButton filterButton;
+    ArrayList<ArrayList<String>> allCarparkDetails;
     List<ParkingAreas> topSixteenParkings;
 
 
@@ -140,8 +147,6 @@ public class Parking extends AppCompatActivity {
                 parkingArea.setCarParkDecks(tokens[9]);
                 parkingArea.setGantryHeight(tokens[10]);
                 parkingArea.setCarParkBasement(tokens[11]);
-//                double distance1 = parkingArea.getParkingLatLon().getLatitude() - destinationLatLon.getLatitude();
-//                double distance2 = parkingArea.getParkingLatLon().getLongitude() - destinationLatLon.getLongitude();
                 double distance1 = parkingArea.getParkingSVY21().getNorthing() - destinationSVY21.getEasting();
                 double distance2 = parkingArea.getParkingSVY21().getEasting() - destinationSVY21.getNorthing();
                 double distanceApart = Math.sqrt(Math.pow(distance1,2) + Math.pow(distance2,2));
@@ -152,7 +157,7 @@ public class Parking extends AppCompatActivity {
 //                Log.i("MyActivity", "destinationNorthing: " + destinationSVY21.getNorthing());
 //                Log.i("MyActivity", "parkEasting: " + parkingArea.getParkingSVY21().getEasting());
 //                Log.i("MyActivity", "destinationEasting: " + destinationSVY21.getEasting());
-                Log.i("MyActivity", "Address: " + parkingArea.getAddress() + ": " + distanceApart);
+//                Log.i("MyActivity", "Address: " + parkingArea.getAddress() + ": " + distanceApart);
 //                Log.d("MyActivity", "Counter: " + i);
                 parkingAreasList.add(parkingArea);
 
@@ -165,45 +170,77 @@ public class Parking extends AppCompatActivity {
 
     private void getTopSixteenParkings() {
         topSixteenParkings = parkingAreasList.subList(0, 16);
-        Log.d("MyActivity", "toptenparking" + topSixteenParkings);
+//        Log.d("MyActivity", "toptenparking" + topSixteenParkings);
         fillPCVArrayList();
         inflateRecycler();
     }
 
-    static class Item {
-        String title;
-        String link;
-        String description;
-    }
-
-    static class Page {
-        String title;
-        String link;
-        String description;
-        String language;
-        List<Item> items;
-    }
-
     private void fillPCVArrayList() {
         pcvArrayList.clear();
-        String json;
-        try {
-            json = fetchCarparkAvailability();
-            Gson gson = new Gson();
-            Page page = gson.fromJson(json, Page.class);
-            Log.d("Parking", "Page Title:" + page.title);
-            for (Item item : page.items)
-                System.out.println("    " + item.title);
-        } catch (Exception exception) {
-            exception.printStackTrace();
-        }
+        JSONObject JSONresponse = CarparkAvailabilityRetriever.fetchCarparkAvailability();
+        allCarparkDetails = parseAPI(JSONresponse);
+        ArrayList<String> CarparkNumberFinder = allCarparkDetails.get(0);
+        ArrayList<String> CarparkTotalFinder = allCarparkDetails.get(1);
+        ArrayList<String> CarparkAvailableFinder = allCarparkDetails.get(2);
+        ArrayList<String> CarparkTypeFinder = allCarparkDetails.get(3);
         for(int i=0; i<16; i++) {
-            Log.d("MyActivity", "Address: " + topSixteenParkings.get(i).getAddress());
-            String currentAddress = topSixteenParkings.get(i).getAddress();
-            double distance = topSixteenParkings.get(i).getDistanceApart();
+//            Log.d("MyActivity", "Address: " + topSixteenParkings.get(i).getAddress());
+            ParkingAreas currentCP = topSixteenParkings.get(i);
+            String currentCarparkNo = currentCP.getCarParkNo();
+            int index = CarparkNumberFinder.indexOf(currentCarparkNo);
+            String available = CarparkAvailableFinder.get(index);
+            String total = CarparkTotalFinder.get(index);
+//            Log.d("Carpark No: ", currentCarparkNo);
+            String currentAddress = currentCP.getAddress();
+            double distance = currentCP.getDistanceApart();
             pcvArrayList.add(new ParkingCardView(currentAddress,
-                    "200", "price is this", distance));
+                    available + "/" + total + " lots available"
+                    , "price is this", distance));
         }
+    }
+
+    private ArrayList<ArrayList<String>> parseAPI(JSONObject JSONresponse) {
+        ArrayList<ArrayList<String>> masterArrayList = new ArrayList<>();
+        ArrayList<String> totalLots = new ArrayList<>();
+        ArrayList<String> availableLots = new ArrayList<>();
+        ArrayList<String> lotType = new ArrayList<>();
+        ArrayList<String> carparkNum = new ArrayList<>();
+        try {
+            if (JSONresponse.has("items")) {
+                JSONArray jsonItemArray = JSONresponse.getJSONArray("items");
+                for (int i = 0; i < jsonItemArray.length(); i++) {
+                    if (jsonItemArray.getJSONObject(i).has("carpark_data")) {
+                        JSONArray jsonArray = jsonItemArray.getJSONObject(i).getJSONArray("carpark_data");
+                        for (int j = 0; j < jsonArray.length(); j++) {
+                            JSONObject currentObj = jsonArray.getJSONObject(j);
+                            if (currentObj.has("carpark_number")) {
+                                carparkNum.add(currentObj.getString("carpark_number"));
+//                                Log.d("CP: ", currentObj.getString("carpark_number"));
+                            }
+                            if (currentObj.has("carpark_info")) {
+                                JSONArray jsonLotsArray = currentObj.getJSONArray("carpark_info");
+                                JSONObject obj = jsonLotsArray.getJSONObject(0);
+                                String total_lots = obj.getString("total_lots");
+                                String available_lots = obj.getString("lots_available");
+                                String lot_type = obj.getString("lot_type");
+                                totalLots.add(total_lots);
+                                availableLots.add(available_lots);
+                                lotType.add(lot_type);
+//                                Log.d("DETAILS: ", "total: " + total_lots + " avail: " + available_lots + " type: " + lot_type);
+                            }
+                        }
+                    }
+                }
+            }
+            masterArrayList.add(carparkNum);
+            masterArrayList.add(totalLots);
+            masterArrayList.add(availableLots);
+            masterArrayList.add(lotType);
+            return masterArrayList;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     private void inflateRecycler() {
@@ -211,30 +248,9 @@ public class Parking extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(this);
         adapter = new ParkingCardViewAdapter((ArrayList<ParkingCardView>) pcvArrayList);
-
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
     }
 
-    private String fetchCarparkAvailability() throws Exception {
-        String link = "https://api.data.gov.sg/v1/transport/carpark-availability";
-        BufferedReader reader = null;
-        try {
-            URL url = new URL(link);
-            reader = new BufferedReader(new InputStreamReader(url.openStream()));
-            StringBuffer buffer = new StringBuffer();
-            int read;
-            char[] chars = new char[1024];
-            while ((read = reader.read(chars)) != -1) {
-                buffer.append(chars, 0, read);
-            }
-            return buffer.toString();
-        } finally {
-            if (reader != null) {
-                reader.close();
-            }
-        }
-
-    }
 
 }

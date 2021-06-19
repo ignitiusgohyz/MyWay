@@ -22,6 +22,8 @@ public class ParkingAreas {
     public ParkingAreas() {
     }
 
+    public String getCarParkNo() { return carParkNo; }
+
     public String getAddress() {
         return address;
     }

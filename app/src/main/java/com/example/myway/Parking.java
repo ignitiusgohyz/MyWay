@@ -2,18 +2,26 @@ package com.example.myway;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageButton;
+import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.gson.Gson;
 import com.mapbox.geojson.Point;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,6 +41,8 @@ public class Parking extends AppCompatActivity {
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
+    private ImageButton filterButton;
+    List<ParkingAreas> topSixteenParkings;
 
 
     @Override
@@ -46,6 +56,20 @@ public class Parking extends AppCompatActivity {
         destination = "Destination:\n" + bundle.getString("destination");
         destination_display = findViewById(R.id.fragment_parking_destination_text);
         destination_display.setText(destination);
+        filterButton = findViewById(R.id.parking_filter_button);
+
+        filterButton.setOnClickListener(v -> {
+            PopupMenu popupMenu = new PopupMenu(Parking.this, filterButton);
+            popupMenu.getMenuInflater().inflate(R.menu.filter_popup, popupMenu.getMenu());
+            popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                @Override
+                public boolean onMenuItemClick(MenuItem item) {
+                    filter((String) item.getTitle());
+                    return true;
+                }
+            });
+            popupMenu.show();
+        });
 
         destinationLatLon = new LatLonCoordinate(destinationLat,destinationLng);
         destinationSVY21 = destinationLatLon.asSVY21();
@@ -55,7 +79,6 @@ public class Parking extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        // COMPARATOR FOR DISTANCE, IMPLEMENT FOR PRICE AND THE REST
         Collections.sort(parkingAreasList, (o1, o2) -> {
             if (o1.getDistanceApart() < o2.getDistanceApart()) {
                 return -1;
@@ -68,6 +91,26 @@ public class Parking extends AppCompatActivity {
 
         Log.d("MyActivity", "print: " + parkingAreasList.toString());
         getTopSixteenParkings();
+    }
+
+    private void filter(String type) {
+        if (type.equals("Distance")) {
+            Collections.sort(topSixteenParkings, (o1, o2) -> {
+                if (o1.getDistanceApart() < o2.getDistanceApart()) {
+                    return -1;
+                } else if(o1.getDistanceApart() > o2.getDistanceApart()) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            });
+        } else if (type.equals("Price")) {
+
+        } else {
+            // Availability
+        }
+        fillPCVArrayList();
+        inflateRecycler();
     }
 
     private List<ParkingAreas> parkingAreasList = new ArrayList<>();
@@ -121,14 +164,49 @@ public class Parking extends AppCompatActivity {
     }
 
     private void getTopSixteenParkings() {
-        List<ParkingAreas> topSixteenParkings = parkingAreasList.subList(0, 16);
+        topSixteenParkings = parkingAreasList.subList(0, 16);
         Log.d("MyActivity", "toptenparking" + topSixteenParkings);
+        fillPCVArrayList();
+        inflateRecycler();
+    }
+
+    static class Item {
+        String title;
+        String link;
+        String description;
+    }
+
+    static class Page {
+        String title;
+        String link;
+        String description;
+        String language;
+        List<Item> items;
+    }
+
+    private void fillPCVArrayList() {
+        pcvArrayList.clear();
+        String json;
+        try {
+            json = fetchCarparkAvailability();
+            Gson gson = new Gson();
+            Page page = gson.fromJson(json, Page.class);
+            Log.d("Parking", "Page Title:" + page.title);
+            for (Item item : page.items)
+                System.out.println("    " + item.title);
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
         for(int i=0; i<16; i++) {
             Log.d("MyActivity", "Address: " + topSixteenParkings.get(i).getAddress());
             String currentAddress = topSixteenParkings.get(i).getAddress();
+            double distance = topSixteenParkings.get(i).getDistanceApart();
             pcvArrayList.add(new ParkingCardView(currentAddress,
-                    "200", "price is this"));
+                    "200", "price is this", distance));
         }
+    }
+
+    private void inflateRecycler() {
         recyclerView = findViewById(R.id.fragment_parking_recyclerview);
         recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(this);
@@ -136,6 +214,27 @@ public class Parking extends AppCompatActivity {
 
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
+    }
+
+    private String fetchCarparkAvailability() throws Exception {
+        String link = "https://api.data.gov.sg/v1/transport/carpark-availability";
+        BufferedReader reader = null;
+        try {
+            URL url = new URL(link);
+            reader = new BufferedReader(new InputStreamReader(url.openStream()));
+            StringBuffer buffer = new StringBuffer();
+            int read;
+            char[] chars = new char[1024];
+            while ((read = reader.read(chars)) != -1) {
+                buffer.append(chars, 0, read);
+            }
+            return buffer.toString();
+        } finally {
+            if (reader != null) {
+                reader.close();
+            }
+        }
+
     }
 
 }

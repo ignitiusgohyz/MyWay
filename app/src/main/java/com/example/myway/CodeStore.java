@@ -18,6 +18,7 @@ import java.util.List;
 // 9. Retrieve JSON code and feed into our RecycleView.
 // 10. Implement algo to read price and calculate based on price.
 // 11. Add functionality to the parking list.
+// 12. Convert postal code to address? How?
 
 
 public class CodeStore {

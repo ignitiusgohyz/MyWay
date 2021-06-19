@@ -30,7 +30,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_ellipsis"
-            android:background="@color/white"
+            android:padding="0dp"
+            android:backgroundTint="@color/white"
             app:layout_constraintTop_toTopOf="@id/destination_1"
             app:layout_constraintBottom_toBottomOf="@id/destination_1"
             app:layout_constraintEnd_toEndOf="parent"
@@ -41,7 +42,7 @@
             android:id="@+id/carpark_availability_1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="xxx available\nparking spaces"
+            android:text="carpark space unavailable"
             android:textSize="16sp"
             android:textColor="@color/black"
             android:layout_marginTop="20dp"
@@ -75,7 +76,8 @@
         <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@color/white"
+            android:backgroundTint="@color/white"
+            android:padding="0dp"
             android:scaleX="0.8"
             android:scaleY="0.8"
             android:layout_marginStart="5dp"
@@ -129,11 +131,12 @@
             app:layout_constraintTop_toTopOf="@id/timeslot_1"
             app:layout_constraintBottom_toBottomOf="@id/timeslot_1"
             android:src="@drawable/ic_arrow_down"
-            android:background="@color/white"
+            android:backgroundTint="@color/white"
             app:layout_constraintLeft_toRightOf="@id/timeslot_1"
             android:layout_marginStart="5dp"
             android:scaleX="0.8"
             android:scaleY="0.8"
+            android:padding="0dp"
             tools:ignore="ContentDescription" />
 
         <ImageView

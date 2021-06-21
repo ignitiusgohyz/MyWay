@@ -188,14 +188,20 @@ public class Parking extends AppCompatActivity {
             ParkingAreas currentCP = topSixteenParkings.get(i);
             String currentCarparkNo = currentCP.getCarParkNo();
             int index = CarparkNumberFinder.indexOf(currentCarparkNo);
-            String available = CarparkAvailableFinder.get(index);
-            String total = CarparkTotalFinder.get(index);
-//            Log.d("Carpark No: ", currentCarparkNo);
             String currentAddress = currentCP.getAddress();
             double distance = currentCP.getDistanceApart();
-            pcvArrayList.add(new ParkingCardView(currentAddress,
-                    available + "/" + total + " lots available"
-                    , "price is this", distance));
+            if (index == -1) {
+                pcvArrayList.add(new ParkingCardView(currentAddress,
+                        "carpark space unavailable", "price is this",
+                        distance));
+            } else {
+                String available = CarparkAvailableFinder.get(index);
+                String total = CarparkTotalFinder.get(index);
+//            Log.d("Carpark No: ", currentCarparkNo);
+                pcvArrayList.add(new ParkingCardView(currentAddress,
+                        available + "/" + total + " lots available"
+                        , "price is this", distance));
+            }
         }
     }
 

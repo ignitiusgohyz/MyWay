@@ -13,7 +13,9 @@
     import android.location.Location;
     import android.net.Uri;
     import android.os.Bundle;
+    import android.os.Handler;
     import android.provider.Settings;
+    import android.util.Log;
     import android.view.View;
     import android.widget.Button;
     import android.widget.TextView;
@@ -64,11 +66,19 @@
     import com.mapbox.services.android.navigation.v5.navigation.NavigationRoute;
 
     import org.jetbrains.annotations.NotNull;
-    import org.w3c.dom.Text;
+    import org.json.JSONObject;
 
+    import java.io.IOException;
     import java.lang.ref.WeakReference;
+    import java.util.ArrayList;
     import java.util.List;
     import java.util.Objects;
+    import java.util.concurrent.Callable;
+    import java.util.concurrent.CompletableFuture;
+    import java.util.concurrent.Executor;
+    import java.util.concurrent.ExecutorService;
+    import java.util.concurrent.Executors;
+    import java.util.concurrent.FutureTask;
 
     import retrofit2.Call;
     import retrofit2.Callback;
@@ -114,6 +124,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private TextView greetingText;
 
+    private Button URAbutton;
+    private final String ak = "dc82311d-b99a-412e-9f12-6f607b758479";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -127,10 +140,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         checkParking = findViewById(R.id.checkParking);
         searchText = findViewById(R.id.location_text);
         greetingText = findViewById(R.id.fragment_main_greeting_text);
+        URAbutton = findViewById(R.id.URAtest);
         String username = "Hello, " + getIntent().getStringExtra("username");
         greetingText.setText(username);
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
+
     }
 
     private void initSearchFab() {
@@ -198,16 +213,27 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                                 new Feature[] {Feature.fromJson(selectedCarmenFeature.toJson())}));
                     }
 
+                    LatLng point = new LatLng(((Point) Objects.requireNonNull(selectedCarmenFeature.geometry())).latitude(),
+                            ((Point) selectedCarmenFeature.geometry()).longitude());
+
+                    SVY21Coordinate destinationSVY21 = new LatLonCoordinate(point.getLatitude(), point.getLongitude()).asSVY21();
+
+                    FutureTask<Void> task = new FutureTask<>(() -> {
+                        String token = generateURAToken.getToken(ak);
+                        generateURADetails.setList(generateURADetails.getURACarparkDetails(token, ak, destinationSVY21));
+                        return null;
+                    });
+
+                    Executor executor = Executors.newFixedThreadPool(1);
+                    executor.execute(task);
                     // Move map camera to the selected location
                     mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(
                             new CameraPosition.Builder()
-                                    .target(new LatLng(((Point) Objects.requireNonNull(selectedCarmenFeature.geometry())).latitude(),
-                                            ((Point) selectedCarmenFeature.geometry()).longitude()))
+                                    .target(point)
                                     .zoom(14)
                                     .build()), 4000);
 
-                    onMapClick(new LatLng(((Point) selectedCarmenFeature.geometry()).latitude(),
-                            ((Point) selectedCarmenFeature.geometry()).longitude()));
+                    onMapClick(point);
                 }
             }
         }
@@ -237,12 +263,16 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             NavigationLauncher.startNavigation(MainActivity.this, options);
         }));
         checkParking = findViewById(R.id.checkParking);
+        LoadingDialog loadingDialog = new LoadingDialog(MainActivity.this);
         checkParking.setOnClickListener((v -> {
+
             Intent intent = new Intent(MainActivity.this, Parking.class);
             Bundle bundle = new Bundle();
             bundle.putDouble("destinationLng", destinationLng);
             bundle.putDouble("destinationLat", destinationLat);
             bundle.putString("destination", searchText_string);
+            String accessToken = generateURAToken.getToken(ak);
+            bundle.putString("token", accessToken);
             intent.putExtras(bundle);
             startActivity(intent);
         }));

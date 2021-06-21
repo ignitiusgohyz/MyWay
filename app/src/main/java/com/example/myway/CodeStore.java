@@ -19,6 +19,7 @@ import java.util.List;
 // 10. Implement algo to read price and calculate based on price.
 // 11. Add functionality to the parking list.
 // 12. Convert postal code to address? How?
+// 13. SHIFT HDB READINGS INTO ANOTHER FILE FOR CONCURRENT PROGRAMMING.
 
 
 public class CodeStore {

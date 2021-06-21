@@ -1,21 +1,18 @@
 package com.example.myway;
 
 import android.os.Bundle;
-import android.renderscript.ScriptGroup;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.gson.Gson;
-import com.mapbox.geojson.Point;
+import com.android.volley.CacheDispatcher;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -25,15 +22,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Array;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ExecutionException;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class Parking extends AppCompatActivity {
 
@@ -49,8 +46,11 @@ public class Parking extends AppCompatActivity {
     private RecyclerView.LayoutManager layoutManager;
     private ImageButton filterButton;
     ArrayList<ArrayList<String>> allCarparkDetails;
-    List<ParkingAreas> topSixteenParkings;
+    List<Carpark> topSixteenParkings;
+    ArrayList<Carpark> masterList;
 
+    private static final String accessKey = "dc82311d-b99a-412e-9f12-6f607b758479";
+    private static String accessToken;
 
     @Override
     protected void onCreate (Bundle savedInstanceState) {
@@ -59,6 +59,7 @@ public class Parking extends AppCompatActivity {
         Bundle bundle = getIntent().getExtras();
         destinationLat = bundle.getDouble("destinationLat");
         destinationLng = bundle.getDouble("destinationLng");
+        accessToken = bundle.getString("token");
 
         destination = "Destination:\n" + bundle.getString("destination");
         destination_display = findViewById(R.id.fragment_parking_destination_text);
@@ -78,25 +79,39 @@ public class Parking extends AppCompatActivity {
             popupMenu.show();
         });
 
-        destinationLatLon = new LatLonCoordinate(destinationLat,destinationLng);
+        destinationLatLon = new LatLonCoordinate(destinationLat, destinationLng);
         destinationSVY21 = destinationLatLon.asSVY21();
-        try {
-            readHDBParkingData();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
-        Collections.sort(parkingAreasList, (o1, o2) -> {
+        CompletableFuture<ArrayList<Carpark>> futureURA = CompletableFuture.supplyAsync(() -> {
+            ArrayList<Carpark> temp = generateURADetails.getURAList();
+            return temp;
+        });
+        CompletableFuture<ArrayList<Carpark>> futureHDB = CompletableFuture.supplyAsync(() -> {
+            try {
+                ArrayList<Carpark> temp = readHDBParkingData();
+                return temp;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        });
+        ArrayList<Carpark> HDB = futureHDB.join();
+        ArrayList<Carpark> URA = futureURA.join();
+
+        for (Carpark cp : HDB) {
+            URA.add(cp);
+        }
+        HDB.clear();
+        masterList = URA;
+        Collections.sort(masterList, (o1, o2) -> {
             if (o1.getDistanceApart() < o2.getDistanceApart()) {
                 return -1;
-            } else if(o1.getDistanceApart() > o2.getDistanceApart()) {
+            } else if (o1.getDistanceApart() > o2.getDistanceApart()) {
                 return 1;
             } else {
                 return 0;
             }
         });
-
-        Log.d("MyActivity", "print: " + parkingAreasList.toString());
         getTopSixteenParkings();
     }
 
@@ -120,91 +135,52 @@ public class Parking extends AppCompatActivity {
         inflateRecycler();
     }
 
-    private List<ParkingAreas> parkingAreasList = new ArrayList<>();
-    private void readHDBParkingData() throws IOException {
+    // Retrieves URA Carpark Details
+    protected ArrayList<Carpark> readURAParkingData() {
+        return generateURADetails.getURACarparkDetails(accessToken, accessKey, destinationSVY21);
+    }
+
+    // Retrieves HDB Carpark Details
+    protected ArrayList<Carpark> readHDBParkingData() throws IOException {
+
         InputStream hdbparking = getResources().openRawResource(R.raw.hdbparking);
         BufferedReader reader = new BufferedReader(new InputStreamReader(hdbparking, Charset.forName("UTF-8")));
-
         String line = "";
+        ArrayList<Carpark> temp = new ArrayList<>();
+
         try {
             reader.readLine();
-            int i = 1;
             while ((line = reader.readLine()) != null) {
-//                Log.d("MyActivity", "Line: " + line);
                 String[] tokens = line.split("\",\"");
-                //should we replace , with /n if its displaying of these information
-                //useful if we accessing these information
-                ParkingAreas parkingArea = new ParkingAreas();
-                parkingArea.setCarParkNo(tokens[0]);
-                parkingArea.setAddress(tokens[1]);
-                parkingArea.setXCoord(Double.parseDouble(tokens[2].replace("\"", "")));
-                parkingArea.setYCoord(Double.parseDouble(tokens[3].replace("\"", "")));
-                parkingArea.setCarParkType(tokens[4]);
-                parkingArea.setParkingSystem(tokens[5]);
-                parkingArea.setShortTermParking(tokens[6]);
-                parkingArea.setFreeParking(tokens[7]);
-                parkingArea.setNightParking(tokens[8]);
-                parkingArea.setCarParkDecks(tokens[9]);
-                parkingArea.setGantryHeight(tokens[10]);
-                parkingArea.setCarParkBasement(tokens[11]);
-                double distance1 = parkingArea.getParkingSVY21().getNorthing() - destinationSVY21.getEasting();
-                double distance2 = parkingArea.getParkingSVY21().getEasting() - destinationSVY21.getNorthing();
+                Carpark carpark = new Carpark();
+                carpark.setCarParkNo(tokens[0]);
+                carpark.setAddress(tokens[1]);
+                carpark.setXCoord(Double.parseDouble(tokens[2].replace("\"", "")));
+                carpark.setYCoord(Double.parseDouble(tokens[3].replace("\"", "")));
+                carpark.setCarParkType(tokens[4]);
+                carpark.setParkingSystem(tokens[5]);
+                carpark.setShortTermParking(tokens[6]);
+                carpark.setFreeParking(tokens[7]);
+                carpark.setNightParking(tokens[8]);
+                carpark.setCarParkDecks(tokens[9]);
+                carpark.setGantryHeight(tokens[10]);
+                carpark.setCarParkBasement(tokens[11]);
+                carpark.setOwnedBy("HDB");
+                double distance1 = carpark.getParkingSVY21().getNorthing() - destinationSVY21.getEasting();
+                double distance2 = carpark.getParkingSVY21().getEasting() - destinationSVY21.getNorthing();
                 double distanceApart = Math.sqrt(Math.pow(distance1,2) + Math.pow(distance2,2));
-                parkingArea.setDistanceApart(Math.abs(distanceApart));
-//                Log.i("MyActivity", "LatLonCoordinates: " + parkingArea.getParkingLatLon());
-//                Log.i("MyActivity", "SVY21Coordinates: " + parkingArea.getParkingSVY21());
-//                Log.i("MyActivity", "parkingNorthing: " + parkingArea.getParkingSVY21().getNorthing());
-//                Log.i("MyActivity", "destinationNorthing: " + destinationSVY21.getNorthing());
-//                Log.i("MyActivity", "parkEasting: " + parkingArea.getParkingSVY21().getEasting());
-//                Log.i("MyActivity", "destinationEasting: " + destinationSVY21.getEasting());
-//                Log.i("MyActivity", "Address: " + parkingArea.getAddress() + ": " + distanceApart);
-//                Log.d("MyActivity", "Counter: " + i);
-                parkingAreasList.add(parkingArea);
-
+                carpark.setDistanceApart(Math.abs(distanceApart));
+                temp.add(carpark);
             }
+            return temp;
         } catch (IOException e) {
             Log.wtf("MyActivity", "Error reading data file on line" + line , e);
             e.printStackTrace();
         }
+        return temp;
     }
 
-    private void getTopSixteenParkings() {
-        topSixteenParkings = parkingAreasList.subList(0, 16);
-//        Log.d("MyActivity", "toptenparking" + topSixteenParkings);
-        fillPCVArrayList();
-        inflateRecycler();
-    }
-
-    private void fillPCVArrayList() {
-        pcvArrayList.clear();
-        JSONObject JSONresponse = CarparkAvailabilityRetriever.fetchCarparkAvailability();
-        allCarparkDetails = parseAPI(JSONresponse);
-        ArrayList<String> CarparkNumberFinder = allCarparkDetails.get(0);
-        ArrayList<String> CarparkTotalFinder = allCarparkDetails.get(1);
-        ArrayList<String> CarparkAvailableFinder = allCarparkDetails.get(2);
-        ArrayList<String> CarparkTypeFinder = allCarparkDetails.get(3);
-        for(int i=0; i<16; i++) {
-//            Log.d("MyActivity", "Address: " + topSixteenParkings.get(i).getAddress());
-            ParkingAreas currentCP = topSixteenParkings.get(i);
-            String currentCarparkNo = currentCP.getCarParkNo();
-            int index = CarparkNumberFinder.indexOf(currentCarparkNo);
-            String currentAddress = currentCP.getAddress();
-            double distance = currentCP.getDistanceApart();
-            if (index == -1) {
-                pcvArrayList.add(new ParkingCardView(currentAddress,
-                        "carpark space unavailable", "price is this",
-                        distance));
-            } else {
-                String available = CarparkAvailableFinder.get(index);
-                String total = CarparkTotalFinder.get(index);
-//            Log.d("Carpark No: ", currentCarparkNo);
-                pcvArrayList.add(new ParkingCardView(currentAddress,
-                        available + "/" + total + " lots available"
-                        , "price is this", distance));
-            }
-        }
-    }
-
+    // Retrieves HDB Carpark Availability
     private ArrayList<ArrayList<String>> parseAPI(JSONObject JSONresponse) {
         ArrayList<ArrayList<String>> masterArrayList = new ArrayList<>();
         ArrayList<String> totalLots = new ArrayList<>();
@@ -248,6 +224,49 @@ public class Parking extends AppCompatActivity {
         }
         return null;
     }
+
+    private void getTopSixteenParkings() {
+        topSixteenParkings = masterList.subList(0, 16);
+        int count = 0;
+        for (Carpark cp : masterList) {
+            Log.d("CP>>>>", "CP " + count + " " + cp.getOwnedBy() + " " + cp.getDistanceApart());
+            count++;
+        }
+//        Log.d("MyActivity", "top16parking" + topSixteenParkings);
+        fillPCVArrayList();
+        inflateRecycler();
+    }
+
+    private void fillPCVArrayList() {
+        pcvArrayList.clear();
+        JSONObject JSONresponse = CarparkAvailabilityRetrieverHDB.fetchCarparkAvailability();
+        allCarparkDetails = parseAPI(JSONresponse);
+        ArrayList<String> CarparkNumberFinder = allCarparkDetails.get(0);
+        ArrayList<String> CarparkTotalFinder = allCarparkDetails.get(1);
+        ArrayList<String> CarparkAvailableFinder = allCarparkDetails.get(2);
+        ArrayList<String> CarparkTypeFinder = allCarparkDetails.get(3);
+        for(int i=0; i<16; i++) {
+//            Log.d("MyActivity", "Address: " + topSixteenParkings.get(i).getAddress() + " " + topSixteenParkings.get(i).getOwnedBy());
+            Carpark currentCP = topSixteenParkings.get(i);
+            String currentCarparkNo = currentCP.getCarParkNo();
+            int index = CarparkNumberFinder.indexOf(currentCarparkNo);
+            String currentAddress = currentCP.getAddress();
+            double distance = currentCP.getDistanceApart();
+            if (index == -1) {
+                pcvArrayList.add(new ParkingCardView(currentAddress,
+                        "carpark space unavailable", "price is this",
+                        distance));
+            } else {
+                String available = CarparkAvailableFinder.get(index);
+                String total = CarparkTotalFinder.get(index);
+//            Log.d("Carpark No: ", currentCarparkNo);
+                pcvArrayList.add(new ParkingCardView(currentAddress,
+                        available + "/" + total + " lots available"
+                        , "price is this", distance));
+            }
+        }
+    }
+
 
     private void inflateRecycler() {
         recyclerView = findViewById(R.id.fragment_parking_recyclerview);

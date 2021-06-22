@@ -218,14 +218,21 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                     SVY21Coordinate destinationSVY21 = new LatLonCoordinate(point.getLatitude(), point.getLongitude()).asSVY21();
 
-                    FutureTask<Void> task = new FutureTask<>(() -> {
-                        String token = generateURAToken.getToken(ak);
-                        generateURADetails.setList(generateURADetails.getURACarparkDetails(token, ak, destinationSVY21));
+                    FutureTask<Void> setURADistance = new FutureTask<>(() -> {
+                        generateURADetails.fillCPDistances(destinationSVY21);
                         return null;
                     });
 
                     Executor executor = Executors.newFixedThreadPool(1);
-                    executor.execute(task);
+                    executor.execute(setURADistance);
+
+                    FutureTask<Void> setHDBDistance = new FutureTask<>(() -> {
+                        generateHDBDetails.fillCPDistances(destinationSVY21);
+                        return null;
+                    });
+
+                    executor.execute(setHDBDistance);
+
                     // Move map camera to the selected location
                     mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(
                             new CameraPosition.Builder()

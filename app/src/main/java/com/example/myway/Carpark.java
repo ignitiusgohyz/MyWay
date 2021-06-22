@@ -23,6 +23,26 @@ public class Carpark {
     private String ownedBy; // HDB  or URA
     private LatLonCoordinate parkingLatLon;
     private SVY21Coordinate parkingSVY21;
+    private double SVY21xCoord;
+
+    public double getSVY21xCoord() {
+        return SVY21xCoord;
+    }
+
+    public void setSVY21xCoord(double SVY21xCoord) {
+        this.SVY21xCoord = SVY21xCoord;
+    }
+
+    public double getSVY21yCoord() {
+        return SVY21yCoord;
+    }
+
+    public void setSVY21yCoord(double SVY21yCoord) {
+        this.SVY21yCoord = SVY21yCoord;
+        parkingSVY21 = new SVY21Coordinate(getSVY21xCoord(), getSVY21yCoord());
+    }
+
+    private double SVY21yCoord;
     private double distanceApart;
 
     public double getyCoord() {
@@ -74,7 +94,7 @@ public class Carpark {
         this.sunPHRate.add(sunPHRate);
     }
 
-    public void setParkCapacity(int parkCapacity) {
+    public void setParkCapacity(String parkCapacity) {
         this.parkCapacity.add(parkCapacity);
     }
 
@@ -90,7 +110,7 @@ public class Carpark {
     private ArrayList<String> satdayRate = new ArrayList<>();
     private ArrayList<String> sunPHMin = new ArrayList<>();
     private ArrayList<String> sunPHRate = new ArrayList<>();
-    private ArrayList<Integer> parkCapacity = new ArrayList<>();
+    private ArrayList<String> parkCapacity = new ArrayList<>();
     private ArrayList<String> vehCat = new ArrayList<>();
     private String remarks;
 

@@ -6,8 +6,10 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.PersistableBundle;
+import android.renderscript.ScriptGroup;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -23,6 +25,13 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.FutureTask;
+
 @SuppressWarnings("deprecation")
 public class LoginActivity extends AppCompatActivity {
 
@@ -34,6 +43,7 @@ public class LoginActivity extends AppCompatActivity {
     private CheckBox rememberMe;
     private ImageView usernameAndPassword;
     private float v = 0;
+    private final String key = "dc82311d-b99a-412e-9f12-6f607b758479";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,16 +59,28 @@ public class LoginActivity extends AppCompatActivity {
         visibilityButton = findViewById(R.id.visibility_button);
         DatabaseHelper databaseHelper = new DatabaseHelper(LoginActivity.this);
 
-//        usernameAndPassword.setTranslationY(300);
-//        createdUsername.setTranslationY(300);
-//        createdPassword.setTranslationY(300);
-//        createdUsername.setAlpha(v);
-//        createdPassword.setAlpha(v);
-//        usernameAndPassword.setAlpha(v);
-//        createdUsername.animate().translationY(0).alpha(1).setDuration(1000).setStartDelay(400).start();
-//        createdPassword.animate().translationY(0).alpha(1).setDuration(1000).setStartDelay(400).start();
-//        usernameAndPassword.animate().translationY(0).alpha(1).setDuration(1000).setStartDelay(400).start();
+        // Does these task in the background of Login
+        FutureTask<Void> setURA = new FutureTask<>(() -> {
+            InputStream uraParking = getResources().openRawResource(R.raw.uraparking);
+            generateURADetails.setList(generateURADetails.getURACarparkDetails(uraParking));
+            Log.d("URA>>>>", "DONE");
+            return null;
+        });
 
+        Executor executor = Executors.newFixedThreadPool(2);
+        executor.execute(setURA);
+
+        FutureTask<Void> setHDB = new FutureTask<>(() -> {
+            InputStream hdbparking = getResources().openRawResource(R.raw.hdbparking);
+            generateHDBDetails g = new generateHDBDetails();
+            generateHDBDetails.setHDBList(g.readHDBParkingData(hdbparking));
+            Log.d("HDB>>>>", "DONE");
+            return null;
+        });
+
+        executor.execute(setHDB);
+
+        final LoadingDialog loadingDialog = new LoadingDialog(LoginActivity.this);
 
         loginButton.setOnClickListener(v -> {
             createdUsername_string = createdUsername.getText().toString().toLowerCase().trim();
@@ -69,10 +91,16 @@ public class LoginActivity extends AppCompatActivity {
             } else if (databaseHelper.usernameExists(createdUsername_string)) {
                 boolean authenticity = databaseHelper.verifyPassword(createdUsername_string, createdPassword_string);
                 if (authenticity) {
-                    Toast.makeText(LoginActivity.this, "Logging In...", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                    intent.putExtra("username", createdUsername_string);
-                    startActivity(intent);
+                    loadingDialog.startLoading();
+                    Handler handler = new Handler();
+                    handler.postDelayed(() -> {
+                        loadingDialog.dismissDialog();
+                        Toast.makeText(LoginActivity.this, "Logging In...", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                        intent.putExtra("username", createdUsername_string);
+                        startActivity(intent);
+                    }, 1000);
+
                 } else {
                     Toast.makeText(LoginActivity.this, "Wrong Password!", Toast.LENGTH_SHORT).show();
                 }

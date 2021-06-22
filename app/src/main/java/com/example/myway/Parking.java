@@ -82,25 +82,15 @@ public class Parking extends AppCompatActivity {
         destinationLatLon = new LatLonCoordinate(destinationLat, destinationLng);
         destinationSVY21 = destinationLatLon.asSVY21();
 
-        CompletableFuture<ArrayList<Carpark>> futureURA = CompletableFuture.supplyAsync(() -> {
-            ArrayList<Carpark> temp = generateURADetails.getURAList();
-            return temp;
-        });
-        CompletableFuture<ArrayList<Carpark>> futureHDB = CompletableFuture.supplyAsync(() -> {
-            try {
-                ArrayList<Carpark> temp = readHDBParkingData();
-                return temp;
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return null;
-        });
+        CompletableFuture<ArrayList<Carpark>> futureURA = CompletableFuture.supplyAsync(() -> generateURADetails.getURAList());
+        CompletableFuture<ArrayList<Carpark>> futureHDB = CompletableFuture.supplyAsync(() -> generateHDBDetails.getList());
         ArrayList<Carpark> HDB = futureHDB.join();
         ArrayList<Carpark> URA = futureURA.join();
 
         for (Carpark cp : HDB) {
             URA.add(cp);
         }
+
         HDB.clear();
         masterList = URA;
         Collections.sort(masterList, (o1, o2) -> {
@@ -136,49 +126,9 @@ public class Parking extends AppCompatActivity {
     }
 
     // Retrieves URA Carpark Details
-    protected ArrayList<Carpark> readURAParkingData() {
-        return generateURADetails.getURACarparkDetails(accessToken, accessKey, destinationSVY21);
-    }
-
-    // Retrieves HDB Carpark Details
-    protected ArrayList<Carpark> readHDBParkingData() throws IOException {
-
-        InputStream hdbparking = getResources().openRawResource(R.raw.hdbparking);
-        BufferedReader reader = new BufferedReader(new InputStreamReader(hdbparking, Charset.forName("UTF-8")));
-        String line = "";
-        ArrayList<Carpark> temp = new ArrayList<>();
-
-        try {
-            reader.readLine();
-            while ((line = reader.readLine()) != null) {
-                String[] tokens = line.split("\",\"");
-                Carpark carpark = new Carpark();
-                carpark.setCarParkNo(tokens[0]);
-                carpark.setAddress(tokens[1]);
-                carpark.setXCoord(Double.parseDouble(tokens[2].replace("\"", "")));
-                carpark.setYCoord(Double.parseDouble(tokens[3].replace("\"", "")));
-                carpark.setCarParkType(tokens[4]);
-                carpark.setParkingSystem(tokens[5]);
-                carpark.setShortTermParking(tokens[6]);
-                carpark.setFreeParking(tokens[7]);
-                carpark.setNightParking(tokens[8]);
-                carpark.setCarParkDecks(tokens[9]);
-                carpark.setGantryHeight(tokens[10]);
-                carpark.setCarParkBasement(tokens[11]);
-                carpark.setOwnedBy("HDB");
-                double distance1 = carpark.getParkingSVY21().getNorthing() - destinationSVY21.getEasting();
-                double distance2 = carpark.getParkingSVY21().getEasting() - destinationSVY21.getNorthing();
-                double distanceApart = Math.sqrt(Math.pow(distance1,2) + Math.pow(distance2,2));
-                carpark.setDistanceApart(Math.abs(distanceApart));
-                temp.add(carpark);
-            }
-            return temp;
-        } catch (IOException e) {
-            Log.wtf("MyActivity", "Error reading data file on line" + line , e);
-            e.printStackTrace();
-        }
-        return temp;
-    }
+//    protected ArrayList<Carpark> readURAParkingData() {
+//        return generateURADetails.getURACarparkDetails(accessToken, accessKey);
+//    }
 
     // Retrieves HDB Carpark Availability
     private ArrayList<ArrayList<String>> parseAPI(JSONObject JSONresponse) {
@@ -227,12 +177,10 @@ public class Parking extends AppCompatActivity {
 
     private void getTopSixteenParkings() {
         topSixteenParkings = masterList.subList(0, 16);
-        int count = 0;
-        for (Carpark cp : masterList) {
-            Log.d("CP>>>>", "CP " + count + " " + cp.getOwnedBy() + " " + cp.getDistanceApart());
-            count++;
-        }
 //        Log.d("MyActivity", "top16parking" + topSixteenParkings);
+        for (Carpark cp : topSixteenParkings) {
+            Log.d("TOP CP>>>>", cp + " " + cp.getOwnedBy());
+        }
         fillPCVArrayList();
         inflateRecycler();
     }

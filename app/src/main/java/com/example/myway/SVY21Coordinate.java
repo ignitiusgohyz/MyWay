@@ -1,5 +1,7 @@
 package com.example.myway;
 
+import org.jetbrains.annotations.NotNull;
+
 public class SVY21Coordinate {
     private double easting;
     private double northing;
@@ -26,10 +28,8 @@ public class SVY21Coordinate {
         if (Double.doubleToLongBits(easting) != Double
                 .doubleToLongBits(other.easting))
             return false;
-        if (Double.doubleToLongBits(northing) != Double
-                .doubleToLongBits(other.northing))
-            return false;
-        return true;
+        return Double.doubleToLongBits(northing) == Double
+                .doubleToLongBits(other.northing);
     }
 
     public double getEasting() {
@@ -53,7 +53,7 @@ public class SVY21Coordinate {
     }
 
     @Override
-    public String toString() {
+    public @NotNull String toString() {
         return "SVY21Coordinate [northing=" + northing + ", easting=" + easting
                 + "]";
     }

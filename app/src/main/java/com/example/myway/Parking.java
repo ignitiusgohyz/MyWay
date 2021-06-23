@@ -1,9 +1,7 @@
 package com.example.myway;
 
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.util.Log;
-import android.view.MenuItem;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
 import android.widget.TextView;
@@ -12,110 +10,64 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.android.volley.CacheDispatcher;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.lang.reflect.Array;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
-import java.util.concurrent.ExecutionException;
-import java.util.function.Function;
-import java.util.function.Supplier;
 
 public class Parking extends AppCompatActivity {
 
-    private double destinationLng;
-    private double destinationLat;
-    private String destination;
-    private TextView destination_display;
-    private LatLonCoordinate destinationLatLon;
-    private SVY21Coordinate destinationSVY21;
     private List<ParkingCardView> pcvArrayList = new ArrayList<>();
-    private RecyclerView recyclerView;
-    private RecyclerView.Adapter adapter;
-    private RecyclerView.LayoutManager layoutManager;
     private ImageButton filterButton;
     ArrayList<ArrayList<String>> allCarparkDetails;
     List<Carpark> topSixteenParkings;
     ArrayList<Carpark> masterList;
 
     private static final String accessKey = "dc82311d-b99a-412e-9f12-6f607b758479";
-    private static String accessToken;
 
     @Override
     protected void onCreate (Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.parking);
         Bundle bundle = getIntent().getExtras();
-        destinationLat = bundle.getDouble("destinationLat");
-        destinationLng = bundle.getDouble("destinationLng");
-        accessToken = bundle.getString("token");
+        double destinationLat = bundle.getDouble("destinationLat");
+        double destinationLng = bundle.getDouble("destinationLng");
+        String accessToken = bundle.getString("token");
 
-        destination = "Destination:\n" + bundle.getString("destination");
-        destination_display = findViewById(R.id.fragment_parking_destination_text);
+        String destination = "Destination:\n" + bundle.getString("destination");
+        TextView destination_display = findViewById(R.id.fragment_parking_destination_text);
         destination_display.setText(destination);
         filterButton = findViewById(R.id.parking_filter_button);
 
         filterButton.setOnClickListener(v -> {
             PopupMenu popupMenu = new PopupMenu(Parking.this, filterButton);
             popupMenu.getMenuInflater().inflate(R.menu.filter_popup, popupMenu.getMenu());
-            popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                @Override
-                public boolean onMenuItemClick(MenuItem item) {
-                    filter((String) item.getTitle());
-                    return true;
-                }
+            popupMenu.setOnMenuItemClickListener(item -> {
+                filter((String) item.getTitle());
+                return true;
             });
             popupMenu.show();
         });
 
-        destinationLatLon = new LatLonCoordinate(destinationLat, destinationLng);
-        destinationSVY21 = destinationLatLon.asSVY21();
-
-        CompletableFuture<ArrayList<Carpark>> futureURA = CompletableFuture.supplyAsync(() -> generateURADetails.getURAList());
-        CompletableFuture<ArrayList<Carpark>> futureHDB = CompletableFuture.supplyAsync(() -> generateHDBDetails.getList());
+        CompletableFuture<ArrayList<Carpark>> futureURA = CompletableFuture.supplyAsync(generateURADetails::getURAList);
+        CompletableFuture<ArrayList<Carpark>> futureHDB = CompletableFuture.supplyAsync(generateHDBDetails::getList);
         ArrayList<Carpark> HDB = futureHDB.join();
         ArrayList<Carpark> URA = futureURA.join();
 
-        for (Carpark cp : HDB) {
-            URA.add(cp);
-        }
+        URA.addAll(HDB);
 
         HDB.clear();
         masterList = URA;
-        Collections.sort(masterList, (o1, o2) -> {
-            if (o1.getDistanceApart() < o2.getDistanceApart()) {
-                return -1;
-            } else if (o1.getDistanceApart() > o2.getDistanceApart()) {
-                return 1;
-            } else {
-                return 0;
-            }
-        });
+        masterList.sort((o1, o2) -> Double.compare(o1.getDistanceApart(), o2.getDistanceApart()));
         getTopSixteenParkings();
     }
 
     private void filter(String type) {
         if (type.equals("Distance")) {
-            Collections.sort(topSixteenParkings, (o1, o2) -> {
-                if (o1.getDistanceApart() < o2.getDistanceApart()) {
-                    return -1;
-                } else if(o1.getDistanceApart() > o2.getDistanceApart()) {
-                    return 1;
-                } else {
-                    return 0;
-                }
-            });
+            topSixteenParkings.sort((o1, o2) -> Double.compare(o1.getDistanceApart(), o2.getDistanceApart()));
         } else if (type.equals("Price")) {
 
         } else {
@@ -189,7 +141,7 @@ public class Parking extends AppCompatActivity {
         pcvArrayList.clear();
         JSONObject JSONresponse = CarparkAvailabilityRetrieverHDB.fetchCarparkAvailability();
         allCarparkDetails = parseAPI(JSONresponse);
-        ArrayList<String> CarparkNumberFinder = allCarparkDetails.get(0);
+        ArrayList<String> CarparkNumberFinder = Objects.requireNonNull(allCarparkDetails).get(0);
         ArrayList<String> CarparkTotalFinder = allCarparkDetails.get(1);
         ArrayList<String> CarparkAvailableFinder = allCarparkDetails.get(2);
         ArrayList<String> CarparkTypeFinder = allCarparkDetails.get(3);
@@ -217,10 +169,10 @@ public class Parking extends AppCompatActivity {
 
 
     private void inflateRecycler() {
-        recyclerView = findViewById(R.id.fragment_parking_recyclerview);
+        RecyclerView recyclerView = findViewById(R.id.fragment_parking_recyclerview);
         recyclerView.setHasFixedSize(true);
-        layoutManager = new LinearLayoutManager(this);
-        adapter = new ParkingCardViewAdapter((ArrayList<ParkingCardView>) pcvArrayList);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
+        RecyclerView.Adapter adapter = new ParkingCardViewAdapter((ArrayList<ParkingCardView>) pcvArrayList);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
     }

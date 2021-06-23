@@ -38,8 +38,7 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
     @Override
     public ParkingCardViewHolder onCreateViewHolder(@NonNull @NotNull ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.fragment_parking_scrollview_cardview, parent, false);
-        ParkingCardViewHolder parkingCardViewHolder = new ParkingCardViewHolder(v);
-        return parkingCardViewHolder;
+        return new ParkingCardViewHolder(v);
     }
 
     @Override

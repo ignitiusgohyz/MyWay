@@ -13,9 +13,7 @@
     import android.location.Location;
     import android.net.Uri;
     import android.os.Bundle;
-    import android.os.Handler;
     import android.provider.Settings;
-    import android.util.Log;
     import android.view.View;
     import android.widget.Button;
     import android.widget.TextView;
@@ -66,17 +64,11 @@
     import com.mapbox.services.android.navigation.v5.navigation.NavigationRoute;
 
     import org.jetbrains.annotations.NotNull;
-    import org.json.JSONObject;
 
-    import java.io.IOException;
     import java.lang.ref.WeakReference;
-    import java.util.ArrayList;
     import java.util.List;
     import java.util.Objects;
-    import java.util.concurrent.Callable;
-    import java.util.concurrent.CompletableFuture;
     import java.util.concurrent.Executor;
-    import java.util.concurrent.ExecutorService;
     import java.util.concurrent.Executors;
     import java.util.concurrent.FutureTask;
 
@@ -122,9 +114,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private TextView searchText;
     private String searchText_string;
 
-    private TextView greetingText;
-
-    private Button URAbutton;
     private final String ak = "dc82311d-b99a-412e-9f12-6f607b758479";
 
     @Override
@@ -139,8 +128,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         startButton = findViewById(R.id.startNavigation);
         checkParking = findViewById(R.id.checkParking);
         searchText = findViewById(R.id.location_text);
-        greetingText = findViewById(R.id.fragment_main_greeting_text);
-        URAbutton = findViewById(R.id.URAtest);
+        TextView greetingText = findViewById(R.id.fragment_main_greeting_text);
         String username = "Hello, " + getIntent().getStringExtra("username");
         greetingText.setText(username);
         mapView.onCreate(savedInstanceState);
@@ -270,7 +258,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             NavigationLauncher.startNavigation(MainActivity.this, options);
         }));
         checkParking = findViewById(R.id.checkParking);
-        LoadingDialog loadingDialog = new LoadingDialog(MainActivity.this);
         checkParking.setOnClickListener((v -> {
 
             Intent intent = new Intent(MainActivity.this, Parking.class);

@@ -1,8 +1,8 @@
 package com.example.myway;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.text.Layout;
 import android.view.LayoutInflater;
 
 public class LoadingDialog {
@@ -14,6 +14,7 @@ public class LoadingDialog {
         this.activity = activity;
     }
 
+    @SuppressLint("InflateParams")
     void startLoading() {
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
 

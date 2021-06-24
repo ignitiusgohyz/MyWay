@@ -24,6 +24,15 @@ public class Carpark {
     private LatLonCoordinate parkingLatLon;
     private SVY21Coordinate parkingSVY21;
     private double SVY21xCoord;
+    private Integer availableLots;
+
+    public Integer getAvailableLots() {
+        return availableLots;
+    }
+
+    public void setAvailableLots(Integer availableLots) {
+        this.availableLots = availableLots;
+    }
 
     public double getSVY21xCoord() {
         return SVY21xCoord;

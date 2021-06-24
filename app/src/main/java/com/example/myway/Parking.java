@@ -16,6 +16,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -73,12 +74,13 @@ public class Parking extends AppCompatActivity {
     private void filter(String type) {
         if (type.equals("Distance")) {
             topSixteenParkings.sort((o1, o2) -> Double.compare(o1.getDistanceApart(), o2.getDistanceApart()));
+            fillPCVArrayList();
         } else if (type.equals("Price")) {
-
+            fillPCVArrayList();
         } else {
             // Availability
+            fillPCVArrayList(true);
         }
-        fillPCVArrayList();
         inflateRecycler();
     }
 
@@ -259,5 +261,96 @@ public class Parking extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
     }
 
+    private void fillPCVArrayList(boolean overload) {
+        pcvArrayList.clear();
+        JSONObject JSONresponse = CarparkAvailabilityRetrieverHDB.fetchCarparkAvailability();
+        HDBList = parseHDBAPI(JSONresponse);
+
+        JSONObject URAresponse = CarparkAvailabilityRetreiverURA.fetchCarparkAvailability(accessKey);
+        URAList = parseURAAPI(URAresponse);
+
+        Log.d("TestHDB", "Read: " + HDBList);
+        Log.d("TestHDB", "Read: " + HDBList.get(0).size());
+        Log.d("TestURA", "Read: " + URAList);
+        Log.d("TestURA", "Read: " + URAList.get(0).size());
+
+        ArrayList<String> HDBCarparkNum = HDBList.get(0);
+        ArrayList<String> HDBTotal = HDBList.get(1);
+        ArrayList<String> HDBAvailable = HDBList.get(2);
+        ArrayList<String> HDBType = HDBList.get(3);
+        ArrayList<String> URACarparkNum = URAList.get(0);
+        ArrayList<String> URATotal = new ArrayList<>();
+        ArrayList<String> URAAvailable = URAList.get(1);
+        ArrayList<String> URAType = URAList.get(2);
+
+        for(int i=0; i<URACarparkNum.size(); i++) {
+            URATotal.add("capacity");
+        }
+
+        URACarparkNum.addAll(HDBCarparkNum);
+        URATotal.addAll(HDBTotal);
+        URAAvailable.addAll(HDBAvailable);
+        URAType.addAll(HDBType);
+
+        ArrayList<String> CarparkNumberFinder = new ArrayList<>(URACarparkNum);
+        ArrayList<String> CarparkTotalFinder = new ArrayList<>(URATotal);
+        ArrayList<String> CarparkAvailableFinder = new ArrayList<>(URAAvailable);
+        ArrayList<String> CarparkTypeFinder = new ArrayList<>(URAType);
+
+        URACarparkNum.clear();
+        HDBCarparkNum.clear();
+        URAAvailable.clear();
+        HDBAvailable.clear();
+        URATotal.clear();
+        HDBTotal.clear();
+        URAType.clear();
+        HDBType.clear();
+
+        for(int i=0; i<16; i++) {
+            Carpark currentCp = topSixteenParkings.get(i);
+            String curentCarparkNo = currentCp.getCarParkNo();
+            int index = CarparkNumberFinder.indexOf(curentCarparkNo);
+            if (index == -1) {
+                currentCp.setAvailableLots(-1);
+            } else {
+                String available = CarparkAvailableFinder.get(index);
+                currentCp.setAvailableLots(Integer.parseInt(available));
+            }
+        }
+        topSixteenParkings.sort((o1,o2) -> Integer.compare(o2.getAvailableLots(), o1.getAvailableLots()));
+        for(int i=0; i<16; i++) {
+//            Log.d("MyActivity", "Address: " + topSixteenParkings.get(i).getAddress() + " " + topSixteenParkings.get(i).getOwnedBy());
+            Carpark currentCP = topSixteenParkings.get(i);
+            String currentCarparkNo = currentCP.getCarParkNo();
+            int index = CarparkNumberFinder.indexOf(currentCarparkNo);
+            Log.d("Inside For Loop", "Carpark No: " + currentCarparkNo);
+            Log.d("Inside For Loop", "Index: " + index);
+            String currentAddress = currentCP.getAddress();
+            Log.d("Inside For Loop", "Address: " + currentAddress);
+            double distance = currentCP.getDistanceApart();
+
+            if (index == -1) {
+                pcvArrayList.add(new ParkingCardView(currentAddress,
+                        "info unavailable", "price is this",
+                        distance));
+            } else {
+                if (currentCP.getOwnedBy().equals("URA")) {
+                    String available = CarparkAvailableFinder.get(index);
+                    String total = currentCP.getParkCapacity().get(0);
+//            Log.d("Carpark No: ", currentCarparkNo);
+                    pcvArrayList.add(new ParkingCardView(currentAddress,
+                            available + "/" + total + " lots available"
+                            , "price is this", distance));
+                } else {
+                    String available = CarparkAvailableFinder.get(index);
+                    String total = CarparkTotalFinder.get(index);
+//            Log.d("Carpark No: ", currentCarparkNo);
+                    pcvArrayList.add(new ParkingCardView(currentAddress,
+                            available + "/" + total + " lots available"
+                            , "price is this", distance));
+                }
+            }
+        }
+    }
 
 }

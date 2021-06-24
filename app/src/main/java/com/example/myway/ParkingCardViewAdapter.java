@@ -1,5 +1,6 @@
 package com.example.myway;
 
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,8 +45,15 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
     @Override
     public void onBindViewHolder(@NonNull @NotNull ParkingCardViewAdapter.ParkingCardViewHolder holder, int position) {
         ParkingCardView currentItem = parkingCardViewArrayList.get(position);
+        if(currentItem.isRedColour()) {
+            //make red colour
+            holder.carpark_availability.setTextColor(Color.RED);
+            holder.carpark_availability.setText(currentItem.getCarpark_availability());
+        } else {
+            holder.carpark_availability.setTextColor(Color.BLACK);
+            holder.carpark_availability.setText(currentItem.getCarpark_availability());
+        }
         holder.location.setText(currentItem.getLocation());
-        holder.carpark_availability.setText(currentItem.getCarpark_availability());
         holder.price_calculator.setText(currentItem.getPrice_calculator());
     }
 

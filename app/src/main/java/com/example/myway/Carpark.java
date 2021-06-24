@@ -114,6 +114,10 @@ public class Carpark {
     private ArrayList<String> vehCat = new ArrayList<>();
     private String remarks;
 
+    public ArrayList<String> getParkCapacity() {
+        return parkCapacity;
+    }
+
     public Carpark() {
     }
     public double getxCoord() {
@@ -195,7 +199,7 @@ public class Carpark {
     }
 
     public String toString() {
-        return "" + distanceApart;
+        return "" + carParkNo;
     }
 
     @Override

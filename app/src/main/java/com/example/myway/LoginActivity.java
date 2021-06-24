@@ -2,22 +2,32 @@ package com.example.myway;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.PersistableBundle;
+import android.renderscript.ScriptGroup;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.concurrent.Callable;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
@@ -30,6 +40,9 @@ public class LoginActivity extends AppCompatActivity {
     private String createdUsername_string;
     private EditText createdPassword;
     private String createdPassword_string;
+    private CheckBox rememberMe;
+    private ImageView usernameAndPassword;
+    private float v = 0;
     private final String key = "dc82311d-b99a-412e-9f12-6f607b758479";
 
     @Override
@@ -39,8 +52,8 @@ public class LoginActivity extends AppCompatActivity {
         ImageButton loginButton = findViewById(R.id.login);
         createdUsername = findViewById(R.id.username);
         createdPassword = findViewById(R.id.password);
-        ImageView usernameAndPassword = findViewById(R.id.username_password);
-        CheckBox rememberMe = findViewById(R.id.rememberMe);
+        usernameAndPassword = findViewById(R.id.username_password);
+        rememberMe = findViewById(R.id.rememberMe);
         ImageButton registerButton = findViewById(R.id.register);
         Button tempClearDatabaseButton = findViewById(R.id.tempclearbutton);
         visibilityButton = findViewById(R.id.visibility_button);
@@ -50,7 +63,7 @@ public class LoginActivity extends AppCompatActivity {
         FutureTask<Void> setURA = new FutureTask<>(() -> {
             InputStream uraParking = getResources().openRawResource(R.raw.uraparking);
             generateURADetails.setList(generateURADetails.getURACarparkDetails(uraParking));
-            Log.d("URA>>>>","DONE");
+            Log.d("URA>>>>", "DONE");
             return null;
         });
 

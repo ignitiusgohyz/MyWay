@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class generateURADetails {
 
@@ -39,11 +40,12 @@ public class generateURADetails {
         ArrayList<String> carparkCodes = new ArrayList<>();
         try {
             reader.readLine();
-            reader.readLine();
-            reader.readLine();
             while ((line = reader.readLine()) != null) {
                 String[] tokens = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
-                if (carparkCodes.contains(tokens[2])) {
+                Log.d("Generating", "token array: " + Arrays.toString(tokens));
+                if (carparkCodes.contains("A" + tokens[2])) {
+                    tokens[2] = "A" + tokens[2];
+                    Log.d("Generating", "tokens[2] (IF): " + tokens[2]);
                     int index = carparkCodes.indexOf(tokens[2]);
                     Carpark retrieved = temp.get(index);
                     retrieved.setWeekdayMin(tokens[0]);
@@ -57,6 +59,8 @@ public class generateURADetails {
                     retrieved.setParkCapacity(tokens[13]);
                     retrieved.setEndTime(tokens[14]);
                 } else {
+                    tokens[2] = "A" + tokens[2];
+                    Log.d("Generating", "tokens[2] (ELSE): " + tokens[2]);
                     Carpark carpark = new Carpark();
                     carpark.setWeekdayMin(tokens[0]);
                     carpark.setWeekdayRate(tokens[1]);
@@ -84,6 +88,7 @@ public class generateURADetails {
                     carparkCodes.add(tokens[2]);
                 }
             }
+            Log.d("Generating", "Reading:" + temp);
             return temp;
         } catch (IOException e) {
             Log.d("URA", "Error reading data file on line" + line , e);

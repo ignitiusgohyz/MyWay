@@ -1,7 +1,5 @@
 package com.example.myway;
 
-import android.util.Log;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -17,17 +15,19 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 
-public class CarparkAvailabilityRetrieverHDB {
-
-    public static JSONObject fetchCarparkAvailability() {
+public class CarparkAvailabilityRetrieverURA {
+    public static JSONObject fetchCarparkAvailability(String accessKey, String accessToken) {
 
         FutureTask<String> task = new FutureTask<>(() -> {
-            String link = "https://api.data.gov.sg/v1/transport/carpark-availability";
+            String link = "https://www.ura.gov.sg/uraDataService/invokeUraDS?service=Car_Park_Availability";
             BufferedReader reader = null;
             HttpURLConnection connection = null;
             try {
                 URL url = new URL(link);
                 connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("GET");
+                connection.setRequestProperty("AccessKey", accessKey);
+                connection.setRequestProperty("Token", accessToken);
                 connection.connect();
                 InputStream stream = connection.getInputStream();
                 reader = new BufferedReader(new InputStreamReader(stream));
@@ -62,7 +62,6 @@ public class CarparkAvailabilityRetrieverHDB {
 
         try {
             response = (String) task.get();
-            Log.d("RESPONSE URA >>>>>", response);
             return new JSONObject(Objects.requireNonNull(response));
         } catch (ExecutionException | InterruptedException | JSONException e) {
             e.printStackTrace();

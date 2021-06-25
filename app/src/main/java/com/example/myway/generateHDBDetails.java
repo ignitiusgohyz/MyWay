@@ -38,21 +38,19 @@ public class generateHDBDetails {
             reader.readLine();
             while ((line = reader.readLine()) != null) {
                 String[] tokens = line.split("\",\"");
-                Carpark carpark = new Carpark();
-                carpark.setCarParkNo(tokens[0]);
-                carpark.setAddress(tokens[1]);
+                Carpark.HDB carpark = new Carpark.HDB(tokens[0], tokens[1],
+                        Double.parseDouble(tokens[2].replace("\"", "")),
+                        Double.parseDouble(tokens[3].replace("\"", "")),
+                        tokens[5]);
+
 //                Log.d("COORDINATES X --> ", carpark.getAddress() + " " + Double.parseDouble(tokens[2].replace("\"", "")) + " Y:" + Double.parseDouble(tokens[3].replace("\"", "")));
-                carpark.setSVY21xCoord(Double.parseDouble(tokens[2].replace("\"", "")));
-                carpark.setSVY21yCoord(Double.parseDouble(tokens[3].replace("\"", "")));
                 carpark.setCarParkType(tokens[4]);
-                carpark.setParkingSystem(tokens[5]);
                 carpark.setShortTermParking(tokens[6]);
                 carpark.setFreeParking(tokens[7]);
                 carpark.setNightParking(tokens[8]);
                 carpark.setCarParkDecks(tokens[9]);
                 carpark.setGantryHeight(tokens[10]);
                 carpark.setCarParkBasement(tokens[11]);
-                carpark.setOwnedBy("HDB");
                 temp.add(carpark);
             }
             return temp;

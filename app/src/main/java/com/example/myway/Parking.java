@@ -2,14 +2,11 @@ package com.example.myway;
 
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -18,7 +15,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 public class Parking extends AppCompatActivity {
 
@@ -36,9 +32,6 @@ public class Parking extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.parking);
         Bundle bundle = getIntent().getExtras();
-        double destinationLat = bundle.getDouble("destinationLat");
-        double destinationLng = bundle.getDouble("destinationLng");
-        String accessToken = bundle.getString("token");
 
         String destination = "Destination:\n" + bundle.getString("destination");
         TextView destination_display = findViewById(R.id.fragment_parking_destination_text);
@@ -249,7 +242,7 @@ public class Parking extends AppCompatActivity {
             } else {
                 String available = CarparkAvailableFinder.get(index);
                 currentCP.setAvailableLots(Integer.parseInt(available));
-                String total = currentCP.getOwnedBy().equals("URA") ? currentCP.getParkCapacity().get(0) : CarparkTotalFinder.get(index);
+                String total = currentCP instanceof Carpark.URA ? ((Carpark.URA) currentCP).getParkCapacity(0) : CarparkTotalFinder.get(index);
                 pcvArrayList.add(new ParkingCardView(currentAddress,
                         available + "/" + total + " lots available"
                         , "price is this", distance, currentCP.getxCoord(), currentCP.getyCoord()));

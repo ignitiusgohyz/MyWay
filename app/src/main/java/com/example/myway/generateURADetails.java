@@ -42,12 +42,10 @@ public class generateURADetails {
             reader.readLine();
             while ((line = reader.readLine()) != null) {
                 String[] tokens = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
-//                Log.d("Generating", "token array: " + Arrays.toString(tokens));
-                if (carparkCodes.contains("A" + tokens[2])) {
-                    tokens[2] = "A" + tokens[2];
+                if (carparkCodes.contains(tokens[2])) {
 //                    Log.d("Generating", "tokens[2] (IF): " + tokens[2]);
                     int index = carparkCodes.indexOf(tokens[2]);
-                    Carpark retrieved = temp.get(index);
+                    Carpark.URA retrieved = (Carpark.URA) temp.get(index);
                     retrieved.setWeekdayMin(tokens[0]);
                     retrieved.setWeekdayRate(tokens[1]);
                     retrieved.setVehCat(tokens[5]);
@@ -59,25 +57,19 @@ public class generateURADetails {
                     retrieved.setParkCapacity(tokens[13]);
                     retrieved.setEndTime(tokens[14]);
                 } else {
-                    tokens[2] = "A" + tokens[2];
-//                    Log.d("Generating", "tokens[2] (ELSE): " + tokens[2]);
-                    Carpark carpark = new Carpark();
+
+                    String coordinate_string = tokens[10];
+                    double y = parseCoordinates(coordinate_string, "y");
+                    double x = parseCoordinates(coordinate_string, "x");
+
+                    Carpark.URA carpark = new Carpark.URA(tokens[2], tokens[4], x, y, tokens[3].equals("C") ? "COUPON PARKING" : "ELECTRONIC PARKING");
                     carpark.setWeekdayMin(tokens[0]);
                     carpark.setWeekdayRate(tokens[1]);
-                    carpark.setCarParkNo(tokens[2]);
-                    carpark.setParkingSystem(tokens[3].equals("C") ? "COUPON PARKING" : "ELECTRONIC PARKING");
-                    carpark.setAddress(tokens[4]);
                     carpark.setVehCat(tokens[5]);
                     carpark.setSatdayMin(tokens[6]);
                     carpark.setSatdayRate(tokens[7]);
                     carpark.setSunPHMin(tokens[8]);
                     carpark.setSunPHRate(tokens[9]);
-
-                    String coordinate_string = tokens[10];
-                    double y = parseCoordinates(coordinate_string, "y");
-                    double x = parseCoordinates(coordinate_string, "x");
-                    carpark.setSVY21xCoord(x);
-                    carpark.setSVY21yCoord(y);
 
 //                    Log.d("Carpark>>>>", carpark.getAddress() + " long: " + carpark.getxCoord() + " lat: " + carpark.getyCoord());
 
@@ -85,7 +77,7 @@ public class generateURADetails {
                     carpark.setParkCapacity(tokens[13]);
                     carpark.setEndTime(tokens[14]);
                     carpark.setRemarks(tokens[15]);
-                    carpark.setOwnedBy("URA");
+
                     temp.add(carpark);
                     carparkCodes.add(tokens[2]);
                 }

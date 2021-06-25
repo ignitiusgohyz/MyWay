@@ -12,19 +12,210 @@ public class Carpark {
     private String address; // URA and HDB different addresses
     private double xCoord; // Set to 0.0 if doesn't exist
     private double yCoord; // Set to 0.0 if doesn't exist
-    private String carParkType; // HDB has types, URA does not and will be filled with "none"
-    private String parkingSystem; // B for electronic, C for coupon
-    private String shortTermParking; // HDB exclusive
-    private String freeParking; // HDB exclusive
-    private String nightParking; // HDB exclusive
-    private String carParkDecks; // HDB exclusive
-    private String gantryHeight; // HDB exclusive
-    private String carParkBasement; // HDB exclusive
-    private String ownedBy; // HDB  or URA
+    private double SVY21xCoord; // Easting
+    private double SVY21yCoord; // Northing
     private LatLonCoordinate parkingLatLon;
     private SVY21Coordinate parkingSVY21;
-    private double SVY21xCoord;
+    private String parkingSystem; // B for electronic, C for coupon
+    private double distanceApart; // Distance from current location
     private Integer availableLots;
+
+    public Carpark(String carParkNo, String address, double SVY21xCoord, double SVY21yCoord, String parkingSystem) {
+        this.carParkNo = carParkNo.replace("\"", "");
+        this.address = address;
+        this.SVY21xCoord = SVY21xCoord;
+        this.SVY21yCoord = SVY21yCoord;
+        this.parkingSystem = parkingSystem;
+        parkingSVY21 = new SVY21Coordinate(SVY21xCoord, SVY21yCoord);
+        parkingLatLon = parkingSVY21.asLatLon();
+        xCoord = parkingLatLon.getLongitude();
+        yCoord = parkingLatLon.getLatitude();
+    }
+
+    public static class URA extends Carpark {
+
+        private ArrayList<String> weekdayMin = new ArrayList<>();
+        private ArrayList<String> weekdayRate = new ArrayList<>();
+        private ArrayList<String> startTime = new ArrayList<>();
+        private ArrayList<String> endTime = new ArrayList<>();
+        private ArrayList<String> satdayMin = new ArrayList<>();
+        private ArrayList<String> satdayRate = new ArrayList<>();
+        private ArrayList<String> sunPHMin = new ArrayList<>();
+        private ArrayList<String> sunPHRate = new ArrayList<>();
+        private ArrayList<String> parkCapacity = new ArrayList<>();
+        private ArrayList<String> vehCat = new ArrayList<>();
+        private String remarks;
+
+        public URA(String cPN, String a, double svyX, double svyY, String pS) {
+            super(cPN, a, svyX, svyY, pS);
+        }
+
+        public String getWeekdayMin(int index) {
+            return this.weekdayMin.get(index);
+        }
+
+        public void setWeekdayMin(String weekdayMin) {
+            this.weekdayMin.add(weekdayMin);
+        }
+
+        public String getWeekdayRate(int index) {
+            return this.weekdayRate.get(index);
+        }
+
+        public void setWeekdayRate(String weekdayRate) {
+            this.weekdayRate.add(weekdayRate);
+        }
+
+        public String getStartTime(int index) {
+            return this.startTime.get(index);
+        }
+
+        public void setStartTime(String startTime) {
+            this.startTime.add(startTime);
+        }
+
+        public String getEndTime(int index) {
+            return this.endTime.get(index);
+        }
+
+        public void setEndTime(String endTime) {
+            this.endTime.add(endTime);
+        }
+
+        public String getSatdayMin(int index) {
+            return this.satdayMin.get(index);
+        }
+
+        public void setSatdayMin(String satdayMin) {
+            this.satdayMin.add(satdayMin);
+        }
+
+        public String getSatdayRate(int index) {
+            return this.satdayRate.get(index);
+        }
+
+        public void setSatdayRate(String satdayRate) {
+            this.satdayRate.add(satdayRate);
+        }
+
+        public String getSunPHMin(int index) {
+            return this.sunPHMin.get(index);
+        }
+
+        public void setSunPHMin(String sunPHMin) {
+            this.sunPHMin.add(sunPHMin);
+        }
+
+        public String getSunPHRate(int index) {
+            return this.sunPHRate.get(index);
+        }
+
+        public void setSunPHRate(String sunPHRate) {
+            this.sunPHRate.add(sunPHRate);
+        }
+
+        public String getParkCapacity(int index) {
+            return this.parkCapacity.get(index);
+        }
+
+        public void setParkCapacity(String parkCapacity) {
+            this.parkCapacity.add(parkCapacity);
+        }
+
+        public String getVehCat(int index) {
+            return this.vehCat.get(index);
+        }
+
+        public void setVehCat(String vehCat) {
+            this.vehCat.add(vehCat);
+        }
+
+        public String getRemarks() {
+            return remarks;
+        }
+
+        public void setRemarks(String remarks) {
+            this.remarks = remarks;
+        }
+    }
+
+    public static class HDB extends Carpark {
+        private String carParkType; // Multi-Storey, Basement etc.
+        private String shortTermParking; // Timeframe, e.g. Whole Day
+        private String freeParking; // Yes, No, or Timeframe
+        private String nightParking; // Yes / No
+        private String carParkDecks; // Number of decks
+        private String gantryHeight; // Height of gantry
+        private String carParkBasement; // Y / N
+
+        public HDB(String cPN, String a, double svyX, double svyY, String pS) {
+            super(cPN, a, svyX, svyY, pS);
+        }
+
+        public String getCarParkBasement() {
+            return carParkBasement;
+        }
+
+        public void setCarParkBasement(String carParkBasement) {
+            this.carParkBasement = carParkBasement;
+        }
+
+        public String getGantryHeight() {
+            return gantryHeight;
+        }
+
+        public void setGantryHeight(String gantryHeight) {
+            this.gantryHeight = gantryHeight;
+        }
+
+        public String getCarParkDecks() {
+            return carParkDecks;
+        }
+
+        public void setCarParkDecks(String carParkDecks) {
+            this.carParkDecks = carParkDecks;
+        }
+
+        public String getNightParking() {
+            return nightParking;
+        }
+
+        public void setNightParking(String nightParking) {
+            this.nightParking = nightParking;
+        }
+
+        public String getFreeParking() {
+            return freeParking;
+        }
+
+        public void setFreeParking(String freeParking) {
+            this.freeParking = freeParking;
+        }
+
+        public String getShortTermParking() {
+            return shortTermParking;
+        }
+
+        public void setShortTermParking(String shortTermParking) {
+            this.shortTermParking = shortTermParking;
+        }
+
+        public String getCarParkType() {
+            return carParkType;
+        }
+
+        public void setCarParkType(String carParkType) {
+            this.carParkType = carParkType;
+        }
+    }
+
+    public static class LTA {
+
+    }
+
+    public String getParkingSystem() {
+        return parkingSystem;
+    }
 
     public Integer getAvailableLots() {
         return availableLots;
@@ -38,94 +229,13 @@ public class Carpark {
         return SVY21xCoord;
     }
 
-    public void setSVY21xCoord(double SVY21xCoord) {
-        this.SVY21xCoord = SVY21xCoord;
-    }
-
     public double getSVY21yCoord() { return SVY21yCoord; }
-
-    public void setSVY21yCoord(double SVY21yCoord) {
-        this.SVY21yCoord = SVY21yCoord;
-        parkingSVY21 = new SVY21Coordinate(getSVY21xCoord(), getSVY21yCoord());
-        parkingLatLon = parkingSVY21.asLatLon();
-        xCoord = parkingLatLon.getLongitude();
-        yCoord = parkingLatLon.getLatitude();
-    }
-
-    private double SVY21yCoord;
-    private double distanceApart;
 
     public double getyCoord() {
         return yCoord;
     }
 
-    public void setParkingLatLon(LatLonCoordinate parkingLatLon) {
-        this.parkingLatLon = parkingLatLon;
-    }
 
-    public void setParkingSVY21(SVY21Coordinate parkingSVY21) {
-        this.parkingSVY21 = parkingSVY21;
-    }
-
-    public void setWeekdayMin(String weekdayMin) {
-        this.weekdayMin.add(weekdayMin);
-    }
-
-    public void setWeekdayRate(String weekdayRate) {
-        this.weekdayRate.add(weekdayRate);
-    }
-
-    public void setStartTime(String startTime) {
-        this.startTime.add(startTime);
-    }
-
-    public void setEndTime(String endTime) {
-        this.endTime.add(endTime);
-    }
-
-    public void setSatdayMin(String satdayMin) {
-        this.satdayMin.add(satdayMin);
-    }
-
-    public void setSatdayRate(String satdayRate) {
-        this.satdayRate.add(satdayRate);
-    }
-
-    public void setSunPHMin(String sunPHMin) {
-        this.sunPHMin.add(sunPHMin);
-    }
-
-
-    public void setSunPHRate(String sunPHRate) {
-        this.sunPHRate.add(sunPHRate);
-    }
-
-    public void setParkCapacity(String parkCapacity) {
-        this.parkCapacity.add(parkCapacity);
-    }
-
-    public void setVehCat(String vehCat) {
-        this.vehCat.add(vehCat);
-    }
-
-    private ArrayList<String> weekdayMin = new ArrayList<>();
-    private ArrayList<String> weekdayRate = new ArrayList<>();
-    private ArrayList<String> startTime = new ArrayList<>();
-    private ArrayList<String> endTime = new ArrayList<>();
-    private ArrayList<String> satdayMin = new ArrayList<>();
-    private ArrayList<String> satdayRate = new ArrayList<>();
-    private ArrayList<String> sunPHMin = new ArrayList<>();
-    private ArrayList<String> sunPHRate = new ArrayList<>();
-    private ArrayList<String> parkCapacity = new ArrayList<>();
-    private ArrayList<String> vehCat = new ArrayList<>();
-    private String remarks;
-
-    public ArrayList<String> getParkCapacity() {
-        return parkCapacity;
-    }
-
-    public Carpark() {
-    }
     public double getxCoord() {
         return xCoord;
     }
@@ -150,56 +260,6 @@ public class Carpark {
         return parkingSVY21;
     }
 
-    public void setCarParkNo(String carParkNo) {
-        this.carParkNo = carParkNo.substring(1);
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public void setXCoord(double xCoord) {
-        this.xCoord = xCoord;
-    }
-
-    public void setYCoord(double yCoord) {
-        this.yCoord = yCoord;
-        parkingSVY21 = new SVY21Coordinate(this.xCoord, this.yCoord);
-        parkingLatLon = parkingSVY21.asLatLon();
-    }
-
-    public void setCarParkType(String carParkType) {
-        this.carParkType = carParkType;
-    }
-
-    public void setParkingSystem(String parkingSystem) {
-        this.parkingSystem = parkingSystem;
-    }
-
-    public void setShortTermParking(String shortTermParking) {
-        this.shortTermParking = shortTermParking;
-    }
-
-    public void setFreeParking(String freeParking) {
-        this.freeParking = freeParking;
-    }
-
-    public void setNightParking(String nightParking) {
-        this.nightParking = nightParking;
-    }
-
-    public void setCarParkDecks(String carParkDecks) {
-        this.carParkDecks = carParkDecks;
-    }
-
-    public void setGantryHeight(String gantryHeight) {
-        this.gantryHeight = gantryHeight;
-    }
-
-    public void setCarParkBasement(String carParkBasement) {
-        this.carParkBasement = carParkBasement.substring(0,carParkBasement.length()-2);
-    }
-
     public String toString() {
         return "" + carParkNo;
     }
@@ -214,51 +274,4 @@ public class Carpark {
         }
     }
 
-    public String getOwnedBy() {
-        return ownedBy;
-    }
-
-    public void setOwnedBy(String ownedBy) {
-        this.ownedBy = ownedBy;
-    }
-
-    public String getCarParkBasement() {
-        return carParkBasement;
-    }
-
-    public String getGantryHeight() {
-        return gantryHeight;
-    }
-
-    public String getCarParkDecks() {
-        return carParkDecks;
-    }
-
-    public String getNightParking() {
-        return nightParking;
-    }
-
-    public String getFreeParking() {
-        return freeParking;
-    }
-
-    public String getShortTermParking() {
-        return shortTermParking;
-    }
-
-    public String getParkingSystem() {
-        return parkingSystem;
-    }
-
-    public String getCarParkType() {
-        return carParkType;
-    }
-
-    public String getRemarks() {
-        return remarks;
-    }
-
-    public void setRemarks(String remarks) {
-        this.remarks = remarks;
-    }
 }

@@ -18,6 +18,7 @@ public class ParkingCardView {
         this.distanceFromCurrent = distanceFromCurrent;
         this.latitude = latitude;
         this.longitude = longitude;
+
         if (carpark_availability.equals("info unavailable")) {
             redColour = true;
         } else {

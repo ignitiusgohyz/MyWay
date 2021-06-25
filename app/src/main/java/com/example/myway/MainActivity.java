@@ -6,7 +6,6 @@
     import android.annotation.SuppressLint;
     import android.app.Activity;
     import android.content.Intent;
-    import android.content.SharedPreferences;
     import android.content.pm.PackageManager;
     import android.graphics.BitmapFactory;
     import android.graphics.Color;
@@ -15,7 +14,6 @@
     import android.net.Uri;
     import android.os.Bundle;
     import android.provider.Settings;
-    import android.util.Log;
     import android.view.View;
     import android.widget.Button;
     import android.widget.TextView;
@@ -68,7 +66,6 @@
     import org.jetbrains.annotations.NotNull;
 
     import java.lang.ref.WeakReference;
-    import java.util.ArrayList;
     import java.util.List;
     import java.util.Objects;
     import java.util.concurrent.Executor;
@@ -221,7 +218,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         return null;
                     });
 
+                    FutureTask<Void> setLTADistance = new FutureTask<>(() -> {
+                        generateLTADetails.fillCPDistances(destinationSVY21);
+                        return null;
+                    });
+
                     executor.execute(setHDBDistance);
+                    executor.execute(setLTADistance);
 
                     // Move map camera to the selected location
                     mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(

@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.renderscript.ScriptGroup;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
@@ -66,7 +67,17 @@ public class LoginActivity extends AppCompatActivity {
             return null;
         });
 
+        FutureTask<Void> setLTA = new FutureTask<>(() -> {
+            InputStream ltaparking = getResources().openRawResource(R.raw.ltaparking);
+            generateLTADetails g = new generateLTADetails();
+            generateLTADetails.setLTAList(g.readLTAParkingData(ltaparking));
+            Log.d("LTA>>>>", "DONE");
+            return null;
+        });
+
         executor.execute(setHDB);
+        executor.execute(setLTA);
+
 
         final LoadingDialog loadingDialog = new LoadingDialog(LoginActivity.this);
 

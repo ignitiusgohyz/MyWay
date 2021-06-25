@@ -137,6 +137,16 @@ public class Carpark {
         public void setRemarks(String remarks) {
             this.remarks = remarks;
         }
+
+        @Override
+        public boolean equals(@Nullable @org.jetbrains.annotations.Nullable Object obj) {
+            if (obj instanceof Carpark.URA) {
+                Carpark.URA compareObj = (Carpark.URA) obj;
+                return compareObj.getCarParkNo().equals(this.getCarParkNo());
+            } else {
+                return false;
+            }
+        }
     }
 
     public static class HDB extends Carpark {
@@ -207,10 +217,33 @@ public class Carpark {
         public void setCarParkType(String carParkType) {
             this.carParkType = carParkType;
         }
+
+        @Override
+        public boolean equals(@Nullable @org.jetbrains.annotations.Nullable Object obj) {
+            if (obj instanceof Carpark.HDB) {
+                Carpark.HDB compareObj = (Carpark.HDB) obj;
+                return compareObj.getCarParkNo().equals(this.getCarParkNo());
+            } else {
+                return false;
+            }
+        }
     }
 
-    public static class LTA {
+    public static class LTA extends Carpark {
 
+        public LTA(String cPN, String a, double svyX, double svyY, String pS) {
+            super(cPN, a, svyX, svyY, pS); // pS in this case would be the C - Car, Y - Motor, H - Heavy Vehicles
+        }
+
+        @Override
+        public boolean equals(@Nullable @org.jetbrains.annotations.Nullable Object obj) {
+            if (obj instanceof Carpark.LTA) {
+                Carpark.LTA compareObj = (Carpark.LTA) obj;
+                return compareObj.getCarParkNo().equals(this.getCarParkNo());
+            } else {
+                return false;
+            }
+        }
     }
 
     public String getParkingSystem() {
@@ -273,5 +306,4 @@ public class Carpark {
             return false;
         }
     }
-
 }

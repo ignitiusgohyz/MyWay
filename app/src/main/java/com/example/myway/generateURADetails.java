@@ -42,10 +42,10 @@ public class generateURADetails {
             reader.readLine();
             while ((line = reader.readLine()) != null) {
                 String[] tokens = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
-                Log.d("Generating", "token array: " + Arrays.toString(tokens));
+//                Log.d("Generating", "token array: " + Arrays.toString(tokens));
                 if (carparkCodes.contains("A" + tokens[2])) {
                     tokens[2] = "A" + tokens[2];
-                    Log.d("Generating", "tokens[2] (IF): " + tokens[2]);
+//                    Log.d("Generating", "tokens[2] (IF): " + tokens[2]);
                     int index = carparkCodes.indexOf(tokens[2]);
                     Carpark retrieved = temp.get(index);
                     retrieved.setWeekdayMin(tokens[0]);
@@ -60,7 +60,7 @@ public class generateURADetails {
                     retrieved.setEndTime(tokens[14]);
                 } else {
                     tokens[2] = "A" + tokens[2];
-                    Log.d("Generating", "tokens[2] (ELSE): " + tokens[2]);
+//                    Log.d("Generating", "tokens[2] (ELSE): " + tokens[2]);
                     Carpark carpark = new Carpark();
                     carpark.setWeekdayMin(tokens[0]);
                     carpark.setWeekdayRate(tokens[1]);
@@ -74,10 +74,12 @@ public class generateURADetails {
                     carpark.setSunPHRate(tokens[9]);
 
                     String coordinate_string = tokens[10];
-                    double x = parseCoordinates(coordinate_string, "x");
                     double y = parseCoordinates(coordinate_string, "y");
+                    double x = parseCoordinates(coordinate_string, "x");
                     carpark.setSVY21xCoord(x);
                     carpark.setSVY21yCoord(y);
+
+                    Log.d("Carpark>>>>", carpark.getAddress() + " long: " + carpark.getxCoord() + " lat: " + carpark.getyCoord());
 
                     carpark.setStartTime(tokens[12]);
                     carpark.setParkCapacity(tokens[13]);
@@ -88,7 +90,7 @@ public class generateURADetails {
                     carparkCodes.add(tokens[2]);
                 }
             }
-            Log.d("Generating", "Reading:" + temp);
+//            Log.d("Generating", "Reading:" + temp);
             return temp;
         } catch (IOException e) {
             Log.d("URA", "Error reading data file on line" + line , e);

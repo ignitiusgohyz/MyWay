@@ -6,15 +6,19 @@ public class ParkingCardView {
     private String location;
     private String carpark_availability;
     private String price_calculator;
+    private double latitude;
+    private double longitude;
     private double distanceFromCurrent;
     private boolean redColour;
 
-    public ParkingCardView(String location, String carpark_availability, String price_calculator, double distanceFromCurrent) {
+    public ParkingCardView(String location, String carpark_availability, String price_calculator, double distanceFromCurrent, double longitude, double latitude) {
         this.location = location;
         this.carpark_availability = carpark_availability;
         this.price_calculator = price_calculator;
         this.distanceFromCurrent = distanceFromCurrent;
-        if(carpark_availability.equals("info unavailable")) {
+        this.latitude = latitude;
+        this.longitude = longitude;
+        if (carpark_availability.equals("info unavailable")) {
             redColour = true;
         } else {
             String[] temp = carpark_availability.split("/");
@@ -53,4 +57,8 @@ public class ParkingCardView {
     }
 
     public double getDistanceFromCurrent() { return distanceFromCurrent; }
+
+    public double getLatitude() { return latitude; }
+
+    public double getLongitude() { return longitude; }
 }

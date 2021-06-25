@@ -42,13 +42,14 @@ public class Carpark {
         this.SVY21xCoord = SVY21xCoord;
     }
 
-    public double getSVY21yCoord() {
-        return SVY21yCoord;
-    }
+    public double getSVY21yCoord() { return SVY21yCoord; }
 
     public void setSVY21yCoord(double SVY21yCoord) {
         this.SVY21yCoord = SVY21yCoord;
         parkingSVY21 = new SVY21Coordinate(getSVY21xCoord(), getSVY21yCoord());
+        parkingLatLon = parkingSVY21.asLatLon();
+        xCoord = parkingLatLon.getLongitude();
+        yCoord = parkingLatLon.getLatitude();
     }
 
     private double SVY21yCoord;
@@ -56,10 +57,6 @@ public class Carpark {
 
     public double getyCoord() {
         return yCoord;
-    }
-
-    public void setyCoord(double yCoord) {
-        this.yCoord = yCoord;
     }
 
     public void setParkingLatLon(LatLonCoordinate parkingLatLon) {
@@ -131,10 +128,6 @@ public class Carpark {
     }
     public double getxCoord() {
         return xCoord;
-    }
-
-    public void setxCoord(double xCoord) {
-        this.xCoord = xCoord;
     }
 
     public String getCarParkNo() { return carParkNo; }

@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 public class generateHDBDetails {
@@ -29,7 +30,7 @@ public class generateHDBDetails {
 
     protected ArrayList<Carpark> readHDBParkingData(InputStream hdbparking) {
 
-        BufferedReader reader = new BufferedReader(new InputStreamReader(hdbparking, Charset.forName("UTF-8")));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(hdbparking, StandardCharsets.UTF_8));
         String line = "";
         ArrayList<Carpark> temp = new ArrayList<>();
 
@@ -40,8 +41,8 @@ public class generateHDBDetails {
                 Carpark carpark = new Carpark();
                 carpark.setCarParkNo(tokens[0]);
                 carpark.setAddress(tokens[1]);
-                carpark.setXCoord(Double.parseDouble(tokens[2].replace("\"", "")));
-                carpark.setYCoord(Double.parseDouble(tokens[3].replace("\"", "")));
+                carpark.setSVY21xCoord(Double.parseDouble(tokens[2].replace("\"", "")));
+                carpark.setSVY21yCoord(Double.parseDouble(tokens[3].replace("\"", "")));
                 carpark.setCarParkType(tokens[4]);
                 carpark.setParkingSystem(tokens[5]);
                 carpark.setShortTermParking(tokens[6]);

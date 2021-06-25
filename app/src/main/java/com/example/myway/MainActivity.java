@@ -6,6 +6,7 @@
     import android.annotation.SuppressLint;
     import android.app.Activity;
     import android.content.Intent;
+    import android.content.SharedPreferences;
     import android.content.pm.PackageManager;
     import android.graphics.BitmapFactory;
     import android.graphics.Color;
@@ -14,6 +15,7 @@
     import android.net.Uri;
     import android.os.Bundle;
     import android.provider.Settings;
+    import android.util.Log;
     import android.view.View;
     import android.widget.Button;
     import android.widget.TextView;
@@ -66,6 +68,7 @@
     import org.jetbrains.annotations.NotNull;
 
     import java.lang.ref.WeakReference;
+    import java.util.ArrayList;
     import java.util.List;
     import java.util.Objects;
     import java.util.concurrent.Executor;
@@ -129,11 +132,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         checkParking = findViewById(R.id.checkParking);
         searchText = findViewById(R.id.location_text);
         TextView greetingText = findViewById(R.id.fragment_main_greeting_text);
-        String username = "Hello, " + getIntent().getStringExtra("username");
-        greetingText.setText(username);
+        String greet = "Hello, " + getIntent().getStringExtra("username");
+        greetingText.setText(greet);
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
-
     }
 
     private void initSearchFab() {
@@ -248,6 +250,17 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     setupLayer(style);
                     enableLocationComponent(style);
                     addDestinationIconSymbolLayer(style);
+
+                    Intent intent = getIntent();
+                    double longitude = intent.getDoubleExtra("longitude", 0.0);
+                    double latitude = intent.getDoubleExtra("latitude", 0.0);
+
+                    if (latitude != 0.0 && longitude != 0.0) {
+                        Log.d("ENTER>>>>>>>>>>>>>", "long: " + longitude + " lat: " + latitude);
+                        LatLng latLng = new LatLng(latitude, longitude);
+                        onMapClick(latLng);
+                    }
+
                 });
         startButton = findViewById(R.id.startNavigation);
         startButton.setOnClickListener((v -> {
@@ -259,7 +272,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }));
         checkParking = findViewById(R.id.checkParking);
         checkParking.setOnClickListener((v -> {
-
             Intent intent = new Intent(MainActivity.this, Parking.class);
             Bundle bundle = new Bundle();
             bundle.putDouble("destinationLng", destinationLng);
@@ -339,6 +351,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         checkParking.setBackgroundResource(R.color.mapboxBlue);
         destinationLat = point.getLatitude();
         destinationLng = point.getLongitude();
+        mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(
+                new CameraPosition.Builder()
+                .target(point)
+                .zoom(14)
+                .build()), 4000);
         return true;
     }
 
@@ -476,6 +493,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         }
     }
+
 
     @Override
     protected void onStart() {

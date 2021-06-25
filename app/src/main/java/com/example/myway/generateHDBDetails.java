@@ -41,6 +41,7 @@ public class generateHDBDetails {
                 Carpark carpark = new Carpark();
                 carpark.setCarParkNo(tokens[0]);
                 carpark.setAddress(tokens[1]);
+//                Log.d("COORDINATES X --> ", carpark.getAddress() + " " + Double.parseDouble(tokens[2].replace("\"", "")) + " Y:" + Double.parseDouble(tokens[3].replace("\"", "")));
                 carpark.setSVY21xCoord(Double.parseDouble(tokens[2].replace("\"", "")));
                 carpark.setSVY21yCoord(Double.parseDouble(tokens[3].replace("\"", "")));
                 carpark.setCarParkType(tokens[4]);

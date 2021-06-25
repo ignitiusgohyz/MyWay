@@ -6,7 +6,7 @@ public class SVY21Coordinate {
     private double easting;
     private double northing;
 
-    public SVY21Coordinate(double northing, double easting) {
+    public SVY21Coordinate(double easting, double northing) {
         super();
         this.northing = northing;
         this.easting = easting;

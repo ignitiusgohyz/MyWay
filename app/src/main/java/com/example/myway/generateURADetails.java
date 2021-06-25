@@ -79,7 +79,7 @@ public class generateURADetails {
                     carpark.setSVY21xCoord(x);
                     carpark.setSVY21yCoord(y);
 
-                    Log.d("Carpark>>>>", carpark.getAddress() + " long: " + carpark.getxCoord() + " lat: " + carpark.getyCoord());
+//                    Log.d("Carpark>>>>", carpark.getAddress() + " long: " + carpark.getxCoord() + " lat: " + carpark.getyCoord());
 
                     carpark.setStartTime(tokens[12]);
                     carpark.setParkCapacity(tokens[13]);

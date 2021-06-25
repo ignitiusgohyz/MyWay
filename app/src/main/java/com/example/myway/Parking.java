@@ -239,7 +239,7 @@ public class Parking extends AppCompatActivity {
             String currentAddress = currentCP.getAddress();
             double distance = currentCP.getDistanceApart();
 
-            Log.d("CP DETAILS>>>", currentAddress + " LONG" + currentCP.getxCoord() + " LAT: " + currentCP.getyCoord());
+            Log.d("CP DETAILS>>>", currentCarparkNo + " " + currentAddress + " LONG" + currentCP.getxCoord() + " LAT: " + currentCP.getyCoord());
 
             if (index == -1) {
                 currentCP.setAvailableLots(-1);

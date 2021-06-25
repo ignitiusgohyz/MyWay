@@ -256,7 +256,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     double latitude = intent.getDoubleExtra("latitude", 0.0);
 
                     if (latitude != 0.0 && longitude != 0.0) {
-                        Log.d("ENTER>>>>>>>>>>>>>", "long: " + longitude + " lat: " + latitude);
                         LatLng latLng = new LatLng(latitude, longitude);
                         onMapClick(latLng);
                     }

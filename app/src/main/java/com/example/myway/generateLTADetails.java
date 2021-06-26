@@ -23,8 +23,8 @@ public class generateLTADetails {
 
     }
 
-    protected static void setLTAList(ArrayList<Carpark> hdbList) {
-        LTAList = hdbList;
+    protected static void setLTAList(ArrayList<Carpark> ltaList) {
+        LTAList = ltaList;
     }
 
     protected ArrayList<Carpark> readLTAParkingData(InputStream ltaparking) {

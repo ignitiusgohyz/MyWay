@@ -116,6 +116,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private final String ak = "dc82311d-b99a-412e-9f12-6f607b758479";
 
+    private SVY21Coordinate destinationSVY21 = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -203,7 +205,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     LatLng point = new LatLng(((Point) Objects.requireNonNull(selectedCarmenFeature.geometry())).latitude(),
                             ((Point) selectedCarmenFeature.geometry()).longitude());
 
-                    SVY21Coordinate destinationSVY21 = new LatLonCoordinate(point.getLatitude(), point.getLongitude()).asSVY21();
+                    destinationSVY21 = new LatLonCoordinate(point.getLatitude(), point.getLongitude()).asSVY21();
 
                     FutureTask<Void> setURADistance = new FutureTask<>(() -> {
                         generateURADetails.fillCPDistances(destinationSVY21);
@@ -507,6 +509,29 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     protected void onResume() {
         super.onResume();
         mapView.onResume();
+        if (destinationSVY21 != null) {
+            FutureTask<Void> setURADistance = new FutureTask<>(() -> {
+                generateURADetails.fillCPDistances(destinationSVY21);
+                return null;
+            });
+
+            Executor executor = Executors.newFixedThreadPool(1);
+            executor.execute(setURADistance);
+
+            FutureTask<Void> setHDBDistance = new FutureTask<>(() -> {
+                generateHDBDetails.fillCPDistances(destinationSVY21);
+                return null;
+            });
+
+            FutureTask<Void> setLTADistance = new FutureTask<>(() -> {
+                generateLTADetails.fillCPDistances(destinationSVY21);
+                return null;
+            });
+
+            executor.execute(setHDBDistance);
+            executor.execute(setLTADistance);
+
+        }
     }
 
     @Override

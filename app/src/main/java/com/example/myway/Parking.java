@@ -22,7 +22,7 @@ public class Parking extends AppCompatActivity {
     private List<ParkingCardView> pcvArrayList = new ArrayList<>();
     private ImageButton filterButton;
     List<Carpark> topSixteenParkings;
-    ArrayList<Carpark> masterList; // Contains both URA and HDB carparks
+    ArrayList<Carpark> masterList = new ArrayList<>(); // Contains both URA and HDB carparks
     ArrayList<ArrayList<String>> URAList;
     ArrayList<ArrayList<String>> HDBList;
 
@@ -51,19 +51,30 @@ public class Parking extends AppCompatActivity {
             popupMenu.show();
         });
 
+        resumption();
+    }
+
+    private void resumption() {
 
         ArrayList<Carpark> HDB = generateHDBDetails.getList();
         ArrayList<Carpark> URA = generateURADetails.getURAList();
         ArrayList<Carpark> LTA = generateLTADetails.getList();
+        ArrayList<Carpark> tempMaster = new ArrayList<>();
 
+//        ArrayList<Carpark> tempMaster = new ArrayList<>();
         // Adds HDB & LTA car parks into URA, so from here URA contains all carparks
-        URA.addAll(HDB);
-        URA.addAll(LTA);
-        HDB.clear();
-        LTA.clear();
+        tempMaster.addAll(URA);
+        tempMaster.addAll(HDB);
+        tempMaster.addAll(LTA);
+
+        Log.d("MASTERLIST SIZE>>>>", masterList.size() +"");
+        Log.d("LTA SIZE>>>>", LTA.size() +"");
+        Log.d("URA SIZE>>>>", URA.size() + "");
+        Log.d("HDB SIZE>>>>", HDB.size() + "");
+
 
         // masterList contains all HDB and URA carparks
-        masterList = URA;
+        masterList = tempMaster;
 
         // Sorts masterList by distance first
         masterList.sort((o1, o2) -> Double.compare(o1.getDistanceApart(), o2.getDistanceApart()));
@@ -274,4 +285,9 @@ public class Parking extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
 }

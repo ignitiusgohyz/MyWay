@@ -1,13 +1,17 @@
 package com.example.myway;
 
+import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.NumberPicker;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -27,6 +31,7 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
     private ArrayList<ParkingCardView> parkingCardViewArrayList;
     private static String username;
 
+
     public static class ParkingCardViewHolder extends RecyclerView.ViewHolder {
         private TextView location;
         private TextView carpark_availability;
@@ -35,7 +40,7 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
         private TextView longitude;
         private TextView latitude;
         private ImageButton arrowDropDown;
-
+        private Dialog mDialog;
 
         public ParkingCardViewHolder(@NonNull @NotNull View itemView) {
             super(itemView);
@@ -46,10 +51,39 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
             longitude = itemView.findViewById(R.id.longitude);
             latitude = itemView.findViewById(R.id.latitude);
             arrowDropDown = itemView.findViewById(R.id.fragment_carpark_timing_arrow_down);
+            mDialog = new Dialog(itemView.getContext());
 
-            arrowDropDown.setOnClickListener(v -> {
+            arrowDropDown.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
 
+                    mDialog.setContentView(R.layout.number_picker_dialog);
+                    NumberPicker hourPicker = (NumberPicker) mDialog.findViewById(R.id.hourPicker);
+                    NumberPicker minutePicker = (NumberPicker) mDialog.findViewById(R.id.minutePicker);
+                    hourPicker.setMaxValue(23);
+//                    minutePicker.setMaxValue(45);
+                    minutePicker.setMinValue(1);
+                    minutePicker.setMaxValue(4);
+                    minutePicker.setDisplayedValues(new String[] {"0", "15", "30", "45"});
+//                    minutePicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+//                        @Override
+//                        public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+//                            picker.setValue((newVal < oldVal)? oldVal-15 : oldVal+15);
+//                        }
+//                    });
+                    hourPicker.setWrapSelectorWheel(false);
+                    minutePicker.setWrapSelectorWheel(false);
+                    mDialog.show();
+                    Button confirmTime = mDialog.findViewById(R.id.confirm_button);
+                    confirmTime.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+
+                        }
+                    });
+                }
             });
+
 
 
             cardView.setOnClickListener(new View.OnClickListener() {

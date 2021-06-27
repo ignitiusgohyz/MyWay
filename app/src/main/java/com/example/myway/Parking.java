@@ -25,6 +25,7 @@ public class Parking extends AppCompatActivity {
     ArrayList<Carpark> masterList = new ArrayList<>(); // Contains both URA and HDB carparks
     ArrayList<ArrayList<String>> URAList;
     ArrayList<ArrayList<String>> HDBList;
+    String username;
 
     private static final String accessKey = "dc82311d-b99a-412e-9f12-6f607b758479"; // URA access key, to be changed yearly
 
@@ -33,7 +34,7 @@ public class Parking extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.parking);
         Bundle bundle = getIntent().getExtras();
-
+        username = bundle.getString("username");
         String destination = "Destination:\n" + bundle.getString("destination");
         TextView destination_display = findViewById(R.id.fragment_parking_destination_text);
         destination_display.setText(destination);
@@ -280,7 +281,7 @@ public class Parking extends AppCompatActivity {
         RecyclerView recyclerView = findViewById(R.id.fragment_parking_recyclerview);
         recyclerView.setHasFixedSize(true);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
-        RecyclerView.Adapter adapter = new ParkingCardViewAdapter((ArrayList<ParkingCardView>) pcvArrayList);
+        RecyclerView.Adapter adapter = new ParkingCardViewAdapter((ArrayList<ParkingCardView>) pcvArrayList, username);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
     }

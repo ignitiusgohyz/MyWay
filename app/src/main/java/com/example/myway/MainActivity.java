@@ -281,6 +281,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             bundle.putDouble("destinationLng", destinationLng);
             bundle.putDouble("destinationLat", destinationLat);
             bundle.putString("destination", searchText_string);
+            bundle.putString("username", getIntent().getStringExtra("username"));
             String accessToken = generateURAToken.getToken(ak);
             bundle.putString("token", accessToken);
             intent.putExtras(bundle);

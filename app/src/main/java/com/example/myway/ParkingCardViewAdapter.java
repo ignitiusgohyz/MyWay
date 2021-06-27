@@ -1,11 +1,16 @@
 package com.example.myway;
 
+import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -15,10 +20,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardViewAdapter.ParkingCardViewHolder> {
 
     private ArrayList<ParkingCardView> parkingCardViewArrayList;
+    private static String username;
 
     public static class ParkingCardViewHolder extends RecyclerView.ViewHolder {
         private TextView location;
@@ -27,6 +34,8 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
         private CardView cardView;
         private TextView longitude;
         private TextView latitude;
+        private ImageButton arrowDropDown;
+
 
         public ParkingCardViewHolder(@NonNull @NotNull View itemView) {
             super(itemView);
@@ -36,6 +45,12 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
             cardView = itemView.findViewById(R.id.cardviewLayout);
             longitude = itemView.findViewById(R.id.longitude);
             latitude = itemView.findViewById(R.id.latitude);
+            arrowDropDown = itemView.findViewById(R.id.fragment_carpark_timing_arrow_down);
+
+            arrowDropDown.setOnClickListener(v -> {
+
+            });
+
 
             cardView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -45,6 +60,7 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
                     double lon = Double.parseDouble((String) longitude.getText());
                     intent.putExtra("latitude", lat);
                     intent.putExtra("longitude", lon);
+                    intent.putExtra("username", username);
                     Toast.makeText(v.getContext(), "CLICKED" + location.getText() + " long: " + longitude.getText() + " lat :" + latitude.getText(), Toast.LENGTH_SHORT).show();
                     v.getContext().startActivity(intent);
                 }
@@ -52,8 +68,9 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
         }
     }
 
-    public ParkingCardViewAdapter(ArrayList<ParkingCardView> parkingCardViewArrayList) {
+    public ParkingCardViewAdapter(ArrayList<ParkingCardView> parkingCardViewArrayList, String username) {
         this.parkingCardViewArrayList = parkingCardViewArrayList;
+        this.username = username;
     }
 
     @NonNull
@@ -61,6 +78,7 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
     @Override
     public ParkingCardViewHolder onCreateViewHolder(@NonNull @NotNull ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.fragment_parking_scrollview_cardview, parent, false);
+
         return new ParkingCardViewHolder(v);
     }
 

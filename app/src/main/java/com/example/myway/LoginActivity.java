@@ -33,6 +33,7 @@ public class LoginActivity extends AppCompatActivity {
     private String createdPassword_string;
     private float v = 0;
     private final String key = "dc82311d-b99a-412e-9f12-6f607b758479";
+    private String rememberedUsername;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +84,7 @@ public class LoginActivity extends AppCompatActivity {
 
         loginButton.setOnClickListener(v -> {
             createdUsername_string = createdUsername.getText().toString().toLowerCase().trim();
+            rememberedUsername = createdUsername_string;
             createdPassword_string = createdPassword.getText().toString().trim();
 
             if (createdUsername_string.length() == 0 || createdPassword_string.length() == 0) {
@@ -113,7 +115,6 @@ public class LoginActivity extends AppCompatActivity {
                 SharedPreferences preferences = getSharedPreferences("checkbox", MODE_PRIVATE);
                 SharedPreferences.Editor editor = preferences.edit();
                 editor.putString("remember","true");
-                editor.putString("username", createdUsername_string);
                 editor.apply();
             } else if(!buttonView.isChecked()) {
                 SharedPreferences preferences = getSharedPreferences("checkbox", MODE_PRIVATE);
@@ -128,6 +129,8 @@ public class LoginActivity extends AppCompatActivity {
 
         if (checkbox.equals("true")) {
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+            Log.d("LoginActivity", "rememberedUsername: " + rememberedUsername);
+            intent.putExtra("username", rememberedUsername);
             startActivity(intent);
         }
 

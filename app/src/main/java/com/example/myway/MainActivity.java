@@ -208,7 +208,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     destinationSVY21 = new LatLonCoordinate(point.getLatitude(), point.getLongitude()).asSVY21();
 
                     FutureTask<Void> setURADistance = new FutureTask<>(() -> {
-                        generateURADetails.fillCPDistances(destinationSVY21);
+                        new GenerateCarparkStatic.generateURA().fillCPDistances(destinationSVY21);
                         return null;
                     });
 
@@ -216,12 +216,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     executor.execute(setURADistance);
 
                     FutureTask<Void> setHDBDistance = new FutureTask<>(() -> {
-                        generateHDBDetails.fillCPDistances(destinationSVY21);
+                        new GenerateCarparkStatic.generateHDB().fillCPDistances(destinationSVY21);
                         return null;
                     });
 
                     FutureTask<Void> setLTADistance = new FutureTask<>(() -> {
-                        generateLTADetails.fillCPDistances(destinationSVY21);
+                        new GenerateCarparkStatic.generateLTA().fillCPDistances(destinationSVY21);
                         return null;
                     });
 
@@ -512,7 +512,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mapView.onResume();
         if (destinationSVY21 != null) {
             FutureTask<Void> setURADistance = new FutureTask<>(() -> {
-                generateURADetails.fillCPDistances(destinationSVY21);
+                new GenerateCarparkStatic.generateURA().fillCPDistances(destinationSVY21);
                 return null;
             });
 
@@ -520,12 +520,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             executor.execute(setURADistance);
 
             FutureTask<Void> setHDBDistance = new FutureTask<>(() -> {
-                generateHDBDetails.fillCPDistances(destinationSVY21);
+                new GenerateCarparkStatic.generateHDB().fillCPDistances(destinationSVY21);
                 return null;
             });
 
             FutureTask<Void> setLTADistance = new FutureTask<>(() -> {
-                generateLTADetails.fillCPDistances(destinationSVY21);
+                new GenerateCarparkStatic.generateLTA().fillCPDistances(destinationSVY21);
                 return null;
             });
 

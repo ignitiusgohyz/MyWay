@@ -52,7 +52,8 @@ public class LoginActivity extends AppCompatActivity {
         // Does these task in the background of Login
         FutureTask<Void> setURA = new FutureTask<>(() -> {
             InputStream uraParking = getResources().openRawResource(R.raw.uraparking);
-            generateURADetails.setList(generateURADetails.getURACarparkDetails(uraParking));
+            GenerateCarparkStatic URA = new GenerateCarparkStatic.generateURA();
+            URA.setList(URA.readCSV(uraParking));
             Log.d("URA>>>>", "DONE");
             return null;
         });
@@ -61,17 +62,18 @@ public class LoginActivity extends AppCompatActivity {
         executor.execute(setURA);
 
         FutureTask<Void> setHDB = new FutureTask<>(() -> {
-            InputStream hdbparking = getResources().openRawResource(R.raw.hdbparking);
-            generateHDBDetails g = new generateHDBDetails();
-            generateHDBDetails.setHDBList(g.readHDBParkingData(hdbparking));
+            InputStream hdbParking = getResources().openRawResource(R.raw.hdbparking);
+            GenerateCarparkStatic HDB = new GenerateCarparkStatic.generateHDB();
+            HDB.setList(HDB.readCSV(hdbParking));
+
             Log.d("HDB>>>>", "DONE");
             return null;
         });
 
         FutureTask<Void> setLTA = new FutureTask<>(() -> {
-            InputStream ltaparking = getResources().openRawResource(R.raw.ltaparking);
-            generateLTADetails g = new generateLTADetails();
-            generateLTADetails.setLTAList(g.readLTAParkingData(ltaparking));
+            InputStream ltaParking = getResources().openRawResource(R.raw.ltaparking);
+            GenerateCarparkStatic LTA = new GenerateCarparkStatic.generateLTA();
+            LTA.setList(LTA.readCSV(ltaParking));
             Log.d("LTA>>>>", "DONE");
             return null;
         });

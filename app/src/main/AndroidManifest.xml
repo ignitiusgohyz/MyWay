@@ -19,7 +19,6 @@
         </activity>
         <activity android:name=".EmailRegistration" />
         <activity android:name=".UsernameRegistration" />
-        <activity android:name=".RegisterActivity" />
         <activity android:name=".Parking" />
         <activity android:name=".LoginActivity" >
             <intent-filter>

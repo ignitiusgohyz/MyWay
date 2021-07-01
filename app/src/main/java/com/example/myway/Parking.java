@@ -56,10 +56,9 @@ public class Parking extends AppCompatActivity {
     }
 
     private void resumption() {
-
-        ArrayList<Carpark> HDB = generateHDBDetails.getList();
-        ArrayList<Carpark> URA = generateURADetails.getURAList();
-        ArrayList<Carpark> LTA = generateLTADetails.getList();
+        ArrayList<Carpark> HDB = new GenerateCarparkStatic.generateHDB().getList();
+        ArrayList<Carpark> URA = new GenerateCarparkStatic.generateURA().getList();
+        ArrayList<Carpark> LTA = new GenerateCarparkStatic.generateLTA().getList();
         ArrayList<Carpark> tempMaster = new ArrayList<>();
 
 //        ArrayList<Carpark> tempMaster = new ArrayList<>();
@@ -183,19 +182,6 @@ public class Parking extends AppCompatActivity {
     private void fillPCVArrayList() {
         pcvArrayList.clear();
 
-        // Gets the HDB availability
-//        CompletableFuture<Void> cfHDB = CompletableFuture.runAsync(() -> {
-//            JSONObject JSONresponse = CarparkAvailabilityRetrieverHDB.fetchCarparkAvailability();
-//            HDBList = parseHDBAPI(JSONresponse);
-//        });
-//
-//        // Gets the HDB availability
-//        CompletableFuture<Void> cfURA = CompletableFuture.runAsync(() -> {
-//            String token = generateURAToken.getToken(accessKey);
-//            JSONObject URAresponse = CarparkAvailabilityRetrieverURA.fetchCarparkAvailability(accessKey, token);
-//            URAList = parseURAAPI(URAresponse);
-//        });
-
         JSONObject JSONresponse = CarparkAvailabilityRetrieverHDB.fetchCarparkAvailability();
         HDBList = parseHDBAPI(JSONresponse);
 
@@ -203,12 +189,9 @@ public class Parking extends AppCompatActivity {
         JSONObject URAresponse = CarparkAvailabilityRetrieverURA.fetchCarparkAvailability(accessKey, token);
         URAList = parseURAAPI(URAresponse);
 
-        InputStream ltaparking = getResources().openRawResource(R.raw.ltaparking);
-        generateLTADetails g = new generateLTADetails();
-        generateLTADetails.setLTAList(g.readLTAParkingData(ltaparking));
-
-//        cfURA.join();
-//        cfHDB.join();
+        InputStream ltaParking = getResources().openRawResource(R.raw.ltaparking);
+        GenerateCarparkStatic LTA = new GenerateCarparkStatic.generateLTA();
+        LTA.setList(LTA.readCSV(ltaParking));
 
         // Sets array list for HDB
         ArrayList<String> HDBCarparkNum = HDBList.get(0);

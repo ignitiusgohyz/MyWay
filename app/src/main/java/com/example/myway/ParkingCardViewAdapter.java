@@ -5,6 +5,7 @@ import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,8 +24,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardViewAdapter.ParkingCardViewHolder> {
 
@@ -41,6 +45,7 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
         private TextView latitude;
         private ImageButton arrowDropDown;
         private Dialog mDialog;
+        private TextView parkDuration;
 
         public ParkingCardViewHolder(@NonNull @NotNull View itemView) {
             super(itemView);
@@ -51,6 +56,7 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
             longitude = itemView.findViewById(R.id.longitude);
             latitude = itemView.findViewById(R.id.latitude);
             arrowDropDown = itemView.findViewById(R.id.fragment_carpark_timing_arrow_down);
+            parkDuration = itemView.findViewById(R.id.timeslot_1);
             mDialog = new Dialog(itemView.getContext());
 
             arrowDropDown.setOnClickListener(new View.OnClickListener() {
@@ -78,7 +84,36 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
                     confirmTime.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-
+                            String currentTime = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
+                            String[] timeArray = currentTime.split(":");
+                            int currentHour = Integer.parseInt(timeArray[0]);
+                            int currentMinute = Integer.parseInt(timeArray[1]);
+                            int numHours = hourPicker.getValue();
+                            int numMinutes = Integer.parseInt(minutePicker.getDisplayedValues()[minutePicker.getValue()-1]);
+                            int finalHour = currentHour + numHours;
+                            Log.d("HOURPICKER", "hour value: " + finalHour);
+                            int finalMinute = currentMinute + numMinutes;
+                            Log.d("HOURPICKER", "minute value: " + finalMinute);
+                            if(finalMinute >= 60) {
+                                finalMinute %= 60;
+                                finalHour++;
+                            }
+                            if(finalHour >= 24) {
+                                finalHour %= 24;
+                            }
+                            String finalHourString = String.valueOf(finalHour);
+                            String finalMinuteString = String.valueOf(finalMinute);
+                            if(finalMinute < 10) {
+                                finalMinuteString = "0" + finalMinuteString;
+                            }
+                            if(finalHour < 10) {
+                                finalHourString = "0" + finalHourString;
+                            }
+                            //pass in current time, parkingduration, carpark information
+                            //pricecalculator method
+                            parkDuration.setText(currentTime + " - " + finalHourString + ":" + finalMinuteString);
+                            price_calculator.setText("test price");
+                            mDialog.dismiss();
                         }
                     });
                 }

@@ -85,6 +85,9 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
                         @Override
                         public void onClick(View v) {
                             String currentTime = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
+                            String currentDay = new SimpleDateFormat("EEEE", Locale.getDefault()).format(new Date());
+                            String finalTime = "";
+                            Log.d("CheckDay", "Day" + currentDay);
                             String[] timeArray = currentTime.split(":");
                             int currentHour = Integer.parseInt(timeArray[0]);
                             int currentMinute = Integer.parseInt(timeArray[1]);
@@ -109,12 +112,13 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
                             if(finalHour < 10) {
                                 finalHourString = "0" + finalHourString;
                             }
+                            finalTime += finalHourString + ":" + finalMinuteString;
                             //pass in current time, parkingduration, carpark information
                             //pricecalculator method
-                            parkDuration.setText(currentTime + " - " + finalHourString + ":" + finalMinuteString);
+                            parkDuration.setText(currentTime + " - " + finalTime);
                             Log.d("PCV SIZE", "SIZE: " + parkingCardViewArrayList.size());
                             Log.d("PCV POSITION", "INDEX: " + itemView.getTag());
-                            price_calculator.setText(calculatePrice(parkingCardViewArrayList.get((int) itemView.getTag())));
+                            price_calculator.setText(calculatePrice(currentDay, ((currentHour*100) + currentMinute), numHours, numMinutes, ((finalHour*100) + finalMinute), parkingCardViewArrayList.get((int) itemView.getTag())));
                             mDialog.dismiss();
                         }
                     });
@@ -139,10 +143,10 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
         }
     }
 
-    public static String calculatePrice(ParkingCardView currentCardView) {
+    public static String calculatePrice(String currentDay, int currentTime, int numHours, int numMinutes, int finalTime, ParkingCardView currentCardView) {
         Carpark currentCP = currentCardView.getCurrentCP();
         if (currentCP instanceof Carpark.HDB) {
-            return "HDB WIP";
+            return ((Carpark.HDB) currentCP).calculateHDB(currentDay, currentTime, numHours, numMinutes, finalTime);
         } else if (currentCP instanceof Carpark.LTA) {
             return "LTA WIP";
         } else if (currentCP instanceof Carpark.URA) {

@@ -10,8 +10,10 @@ public class ParkingCardView {
     private double longitude;
     private double distanceFromCurrent;
     private boolean redColour;
+    private Carpark currentCP;
 
-    public ParkingCardView(String location, String carpark_availability, String price_calculator, double distanceFromCurrent, double longitude, double latitude) {
+    public ParkingCardView(Carpark currentCP, String location, String carpark_availability, String price_calculator, double distanceFromCurrent, double longitude, double latitude) {
+        this.currentCP = currentCP;
         this.location = location;
         this.carpark_availability = carpark_availability;
         this.price_calculator = price_calculator;
@@ -39,6 +41,10 @@ public class ParkingCardView {
                 redColour = false;
             }
         }
+    }
+
+    public Carpark getCurrentCP() {
+        return currentCP;
     }
 
     public String getCarpark_availability() {

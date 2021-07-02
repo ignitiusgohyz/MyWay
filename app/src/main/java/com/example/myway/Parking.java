@@ -237,14 +237,15 @@ public class Parking extends AppCompatActivity {
 
             Log.d("CP DETAILS>>>", currentCarparkNo + " " + currentAddress + " LONG" + currentCP.getxCoord() + " LAT: " + currentCP.getyCoord());
 
+            // thought: -> optimise code by passing carpark as a variable.
             if (index == -1) {
                 if (currentCP instanceof Carpark.LTA) {
-                    pcvArrayList.add(new ParkingCardView(currentAddress,
+                    pcvArrayList.add(new ParkingCardView(currentCP, currentAddress,
                             currentCP.getAvailableLots() + "/300" +  " lots available", "price is this",
                             distance, currentCP.getxCoord(), currentCP.getyCoord())); // Dont have total so I used 300 temporarily.
                 } else {
                     currentCP.setAvailableLots(-1);
-                    pcvArrayList.add(new ParkingCardView(currentAddress,
+                    pcvArrayList.add(new ParkingCardView(currentCP, currentAddress,
                             "info unavailable", "price is this",
                             distance, currentCP.getxCoord(), currentCP.getyCoord()));
                 }
@@ -252,7 +253,7 @@ public class Parking extends AppCompatActivity {
                 String available = CarparkAvailableFinder.get(index);
                 currentCP.setAvailableLots(Integer.parseInt(available));
                 String total = currentCP instanceof Carpark.URA ? ((Carpark.URA) currentCP).getParkCapacity(0) : CarparkTotalFinder.get(index);
-                pcvArrayList.add(new ParkingCardView(currentAddress,
+                pcvArrayList.add(new ParkingCardView(currentCP, currentAddress,
                         available + "/" + total + " lots available"
                         , "price is this", distance, currentCP.getxCoord(), currentCP.getyCoord()));
             }

@@ -32,7 +32,7 @@ import java.util.Locale;
 
 public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardViewAdapter.ParkingCardViewHolder> {
 
-    private ArrayList<ParkingCardView> parkingCardViewArrayList;
+    private static ArrayList<ParkingCardView> parkingCardViewArrayList;
     private static String username;
 
 
@@ -112,7 +112,9 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
                             //pass in current time, parkingduration, carpark information
                             //pricecalculator method
                             parkDuration.setText(currentTime + " - " + finalHourString + ":" + finalMinuteString);
-                            price_calculator.setText("test price");
+                            Log.d("PCV SIZE", "SIZE: " + parkingCardViewArrayList.size());
+                            Log.d("PCV POSITION", "INDEX: " + itemView.getTag());
+                            price_calculator.setText(calculatePrice(parkingCardViewArrayList.get((int) itemView.getTag())));
                             mDialog.dismiss();
                         }
                     });
@@ -137,6 +139,18 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
         }
     }
 
+    public static String calculatePrice(ParkingCardView currentCardView) {
+        Carpark currentCP = currentCardView.getCurrentCP();
+        if (currentCP instanceof Carpark.HDB) {
+            return "HDB WIP";
+        } else if (currentCP instanceof Carpark.LTA) {
+            return "LTA WIP";
+        } else if (currentCP instanceof Carpark.URA) {
+            return "URA WIP";
+        } else {
+            return "info unavailable";
+        }
+    }
     public ParkingCardViewAdapter(ArrayList<ParkingCardView> parkingCardViewArrayList, String username) {
         this.parkingCardViewArrayList = parkingCardViewArrayList;
         this.username = username;
@@ -153,6 +167,7 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
 
     @Override
     public void onBindViewHolder(@NonNull @NotNull ParkingCardViewAdapter.ParkingCardViewHolder holder, int position) {
+        holder.cardView.setTag(position);
         ParkingCardView currentItem = parkingCardViewArrayList.get(position);
         if (currentItem.isRedColour()) {
             //make red colour

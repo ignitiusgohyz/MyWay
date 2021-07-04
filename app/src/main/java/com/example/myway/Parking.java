@@ -241,12 +241,12 @@ public class Parking extends AppCompatActivity {
             if (index == -1) {
                 if (currentCP instanceof Carpark.LTA) {
                     pcvArrayList.add(new ParkingCardView(currentCP, currentAddress,
-                            currentCP.getAvailableLots() + "/300" +  " lots available", "price is this",
+                            currentCP.getAvailableLots() + "/300" +  " lots available", "no est.",
                             distance, currentCP.getxCoord(), currentCP.getyCoord())); // Dont have total so I used 300 temporarily.
                 } else {
                     currentCP.setAvailableLots(-1);
                     pcvArrayList.add(new ParkingCardView(currentCP, currentAddress,
-                            "info unavailable", "price is this",
+                            "info unavailable", "no est.",
                             distance, currentCP.getxCoord(), currentCP.getyCoord()));
                 }
             } else {
@@ -255,7 +255,7 @@ public class Parking extends AppCompatActivity {
                 String total = currentCP instanceof Carpark.URA ? ((Carpark.URA) currentCP).getParkCapacity(0) : CarparkTotalFinder.get(index);
                 pcvArrayList.add(new ParkingCardView(currentCP, currentAddress,
                         available + "/" + total + " lots available"
-                        , "price is this", distance, currentCP.getxCoord(), currentCP.getyCoord()));
+                        , "no est.", distance, currentCP.getxCoord(), currentCP.getyCoord()));
             }
         }
     }

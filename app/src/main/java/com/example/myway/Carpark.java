@@ -147,6 +147,10 @@ public class Carpark {
                 return false;
             }
         }
+
+        public String calculateURA(String currentDay, int currentTime, int numHours, int numMinutes, int finalTime) {
+            return "";
+        }
     }
 
     public static class HDB extends Carpark {
@@ -232,38 +236,66 @@ public class Carpark {
         // assumption here is $0.60/30mins and electronic parking
         // PH is not checked as well -> i think got api
         public String calculateHDB(String currentDay, int currentTime, int numHours, int numMinutes, int finalTime) {
-            double cost = 0.0;
+            double cost = (numHours * 1.2) + ((numMinutes / 30.0) * 0.6);
             if (shortTermParking.equals("7AM-10.30PM")) {
                 if (freeParking.equals("NO")) {
-                    cost = (numHours * 1.2) + ((numMinutes / 30.0) * 0.6);
                     return String.format("est. $%.2f", cost);
-                } else { // sun and ph 7am-10.30pm
-                    return shortTermParking + " " + freeParking + " " + nightParking;
+                } else {
+                    if (currentDay.equals("Sunday") && (currentTime >= 700 && finalTime <= 2230)) {
+                        cost = 0.0;
+                    }
+                    return String.format("est. $%.2f", cost);
                 }
             } else if (shortTermParking.equals("7AM-7PM")) {
                 if (freeParking.equals("NO")) {
-                    cost = (numHours * 1.2) + ((numMinutes / 30.0) * 0.6);
                     return String.format("est. $%.2f", cost);
-                } else {// sun and ph 7am-10.30pm
-                    return shortTermParking + " " + freeParking + " " + nightParking;
+                } else {
+                    if (currentDay.equals("Sunday") && (currentTime >= 700 && finalTime <= 2230)) {
+                        cost = 0.0;
+                    }
+                    return String.format("est. $%.2f", cost);
                 }
             } else if (shortTermParking.equals("NO")) {
                 if (freeParking.equals("NO") && nightParking.equals("YES")) {
-                    return shortTermParking + " " + freeParking + " " + nightParking;
+                    if ((currentTime >= 2230 || currentTime <= 700) && finalTime <= 700 && cost > 5.0) {
+                        cost = 5.0;
+                    }
+                    return String.format("est. $%.2f", cost);
                 } else if (freeParking.equals("NO") && nightParking.equals("NO")) {
-                    return shortTermParking + " " + freeParking + " " + nightParking;
+                    return String.format("est. $%.2f", cost);
                 } else if (freeParking.equals("SUN & PH 7AM-10.30PM") && nightParking.equals("YES")) {
-                    return shortTermParking + " " + freeParking + " " + nightParking;
-                } else { // free parking sun and ph 7am-10.30pm && no night parking
-                    return shortTermParking + " " + freeParking + " " + nightParking;
+                    if (currentDay.equals("Sunday") && (currentTime >= 700 && finalTime <= 2230)) {
+                        cost = 0.0;
+                    } else if ((currentTime >= 2230 || currentTime <= 700) && finalTime <= 700 && cost > 5.0) {
+                        cost = 5.0;
+                    }
+                    return String.format("est. $%.2f", cost);
+                } else {
+                    if (currentDay.equals("Sunday") && (currentTime >= 700 && finalTime <= 2230)) {
+                        cost = 0.0;
+                    }
+                    return String.format("est. $%.2f", cost);
                 }
-            } else { // whole day short term parking
+            } else {
                 if (freeParking.equals("NO")) {
-                    return shortTermParking + " " + freeParking + " " + nightParking;
+                    if ((currentTime >= 2230 || currentTime <= 700) && finalTime <= 700 && cost > 5.0) {
+                        cost = 5.0;
+                    }
+                    return String.format("est. $%.2f", cost);
                 } else if (freeParking.equals("SUN & PH 1PM-10.30PM")) {
-                    return shortTermParking + " " + freeParking + " " + nightParking;
-                } else { // free parking sun and ph 7am-10.30pm
-                    return shortTermParking + " " + freeParking + " " + nightParking;
+                    if (currentDay.equals("Sunday") && (currentTime >= 1300 && finalTime <= 2230)) {
+                        cost = 0.0;
+                    } else if ((currentTime >= 2230 || currentTime <= 700) && finalTime <= 700 && cost > 5.0) {
+                        cost = 5.0;
+                    }
+                    return String.format("est. $%.2f", cost);
+                } else {
+                    if (currentDay.equals("Sunday") && (currentTime >= 700 && finalTime <= 2230)) {
+                        cost = 0.0;
+                    } else if ((currentTime >= 2230 || currentTime <= 700) && finalTime <= 700 && cost > 5.0) {
+                        cost = 5.0;
+                    }
+                    return String.format("est. $%.2f", cost);
                 }
             }
         }
@@ -283,6 +315,10 @@ public class Carpark {
             } else {
                 return false;
             }
+        }
+
+        public String calculateLTA(String currentDay, int currentTime, int numHours, int numMinutes, int finalTime) {
+            return "";
         }
     }
 

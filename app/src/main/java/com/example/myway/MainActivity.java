@@ -259,13 +259,44 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     Intent intent = getIntent();
                     double longitude = intent.getDoubleExtra("longitude", 0.0);
                     double latitude = intent.getDoubleExtra("latitude", 0.0);
+                    String loc = intent.getStringExtra("location");
+                    if (loc != null) {
+                        searchText.setText(loc);
+                        searchText_string = loc;
+                    }
+                    if (longitude != 0.0)  destinationLng = longitude;
+                    if (latitude != 0.0) destinationLat = latitude;
 
                     if (latitude != 0.0 && longitude != 0.0) {
                         LatLng latLng = new LatLng(latitude, longitude);
+
+                        destinationSVY21 = new LatLonCoordinate(latLng.getLatitude(), latLng.getLongitude()).asSVY21();
+
+                        FutureTask<Void> setURADistance = new FutureTask<>(() -> {
+                            new GenerateCarparkStatic.generateURA().fillCPDistances(destinationSVY21);
+                            return null;
+                        });
+
+                        Executor executor = Executors.newFixedThreadPool(1);
+                        executor.execute(setURADistance);
+
+                        FutureTask<Void> setHDBDistance = new FutureTask<>(() -> {
+                            new GenerateCarparkStatic.generateHDB().fillCPDistances(destinationSVY21);
+                            return null;
+                        });
+
+                        FutureTask<Void> setLTADistance = new FutureTask<>(() -> {
+                            new GenerateCarparkStatic.generateLTA().fillCPDistances(destinationSVY21);
+                            return null;
+                        });
+
+                        executor.execute(setHDBDistance);
+                        executor.execute(setLTADistance);
+
                         onMapClick(latLng);
                     }
-
                 });
+
         startButton = findViewById(R.id.startNavigation);
         startButton.setOnClickListener((v -> {
             NavigationLauncherOptions options = NavigationLauncherOptions.builder()

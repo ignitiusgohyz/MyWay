@@ -93,7 +93,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintLeft_toLeftOf="@id/carpark_availability_1"
-            android:text="13:00 - 16:00"
+            android:text="choose your duration"
             android:textSize="16sp"
             android:textColor="@color/black"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -139,7 +139,7 @@
             app:layout_constraintBottom_toBottomOf="@id/timeslot_1"
             app:layout_constraintLeft_toLeftOf="@id/view_rates_1"
             app:layout_constraintRight_toRightOf="@id/view_rates_1"
-            android:text="est. $4.20 for 3 hrs"
+            android:text="estimated price"
             android:textColor="@color/black"
             android:textSize="16sp"/>
 

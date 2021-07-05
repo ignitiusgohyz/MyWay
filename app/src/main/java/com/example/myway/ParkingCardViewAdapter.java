@@ -139,7 +139,8 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
                     intent.putExtra("latitude", lat);
                     intent.putExtra("longitude", lon);
                     intent.putExtra("username", username);
-                    Toast.makeText(v.getContext(), "CLICKED" + location.getText() + " long: " + longitude.getText() + " lat :" + latitude.getText(), Toast.LENGTH_SHORT).show();
+                    intent.putExtra("location", location.getText());
+                    Toast.makeText(v.getContext(), username, Toast.LENGTH_SHORT).show();
                     v.getContext().startActivity(intent);
                 }
             });

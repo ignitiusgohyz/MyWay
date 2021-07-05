@@ -70,11 +70,10 @@ public class Parking extends AppCompatActivity {
         tempMaster.addAll(HDB);
         tempMaster.addAll(LTA);
 
-        Log.d("MASTERLIST SIZE>>>>", masterList.size() +"");
-        Log.d("LTA SIZE>>>>", LTA.size() +"");
-        Log.d("URA SIZE>>>>", URA.size() + "");
-        Log.d("HDB SIZE>>>>", HDB.size() + "");
-
+//        Log.d("MASTERLIST SIZE>>>>", masterList.size() +"");
+//        Log.d("LTA SIZE>>>>", LTA.size() +"");
+//        Log.d("URA SIZE>>>>", URA.size() + "");
+//        Log.d("HDB SIZE>>>>", HDB.size() + "");
 
         // masterList contains all HDB and URA carparks
         masterList = tempMaster;
@@ -145,6 +144,7 @@ public class Parking extends AppCompatActivity {
         return null;
     }
 
+    // Retrieves LTA Carpark Availability
     private ArrayList<ArrayList<String>> parseLTAApi(JSONObject JSONresponse) {
         ArrayList<ArrayList<String>> masterArrayList = new ArrayList<>();
         ArrayList<String> availableLots = new ArrayList<>();

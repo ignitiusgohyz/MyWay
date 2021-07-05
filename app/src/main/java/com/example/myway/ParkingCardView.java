@@ -24,20 +24,24 @@ public class ParkingCardView {
         if (carpark_availability.equals("info unavailable")) {
             redColour = true;
         } else {
-            String[] temp = carpark_availability.split("/");
-            String availableString = temp[0];
-            Log.d("Checking percentage", "Available: " + availableString);
-            String[] temp2 = temp[1].split(" lots available");
-            String totalString = temp2[0];
-            Log.d("Checking percentage", "Total: " + totalString);
-            double availableInt = Double.parseDouble(availableString);
-            double totalInt = Double.parseDouble(totalString);
-            Log.d("Checking percentage", "Percentage: " + availableInt / totalInt);
-            if (availableInt / totalInt <= 0.1) {
-                Log.d("Checking percentage", "IF -> red: " + availableInt / totalInt);
-                redColour = true;
+            if (carpark_availability.length() == 5) {
+                String[] temp = carpark_availability.split("/");
+                String availableString = temp[0];
+                Log.d("Checking percentage", "Available: " + availableString);
+                String[] temp2 = temp[1].split(" lots available");
+                String totalString = temp2[0];
+                Log.d("Checking percentage", "Total: " + totalString);
+                double availableInt = Double.parseDouble(availableString);
+                double totalInt = Double.parseDouble(totalString);
+                Log.d("Checking percentage", "Percentage: " + availableInt / totalInt);
+                if (availableInt / totalInt <= 0.1) {
+                    Log.d("Checking percentage", "IF -> red: " + availableInt / totalInt);
+                    redColour = true;
+                } else {
+                    Log.d("Checking percentage", "ELSE -> not red: " + availableInt / totalInt);
+                    redColour = false;
+                }
             } else {
-                Log.d("Checking percentage", "ELSE -> not red: " + availableInt / totalInt);
                 redColour = false;
             }
         }

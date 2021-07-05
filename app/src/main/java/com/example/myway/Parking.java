@@ -11,9 +11,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.InputStream;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +27,7 @@ public class Parking extends AppCompatActivity {
     ArrayList<Carpark> masterList = new ArrayList<>(); // Contains both URA and HDB carparks
     ArrayList<ArrayList<String>> URAList;
     ArrayList<ArrayList<String>> HDBList;
+    ArrayList<ArrayList<String>> LTAList;
     String username;
 
     private static final String accessKey = "dc82311d-b99a-412e-9f12-6f607b758479"; // URA access key, to be changed yearly
@@ -142,6 +145,37 @@ public class Parking extends AppCompatActivity {
         return null;
     }
 
+    private ArrayList<ArrayList<String>> parseLTAApi(JSONObject JSONresponse) {
+        ArrayList<ArrayList<String>> masterArrayList = new ArrayList<>();
+        ArrayList<String> availableLots = new ArrayList<>();
+        ArrayList<String> carparkNum = new ArrayList<>();
+        ArrayList<String> carparkType = new ArrayList<>();
+        try {
+            if (JSONresponse.has("value")) {
+                JSONArray jsonArray = JSONresponse.getJSONArray("value");
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    JSONObject obj = jsonArray.getJSONObject(i);
+                    if (obj.getString("Agency").equals("LTA")) {
+                        Integer available = obj.getInt("AvailableLots");
+                        String CarparkID = obj.getString("CarParkID");
+                        carparkNum.add(CarparkID);
+                        availableLots.add(available.toString());
+                        carparkType.add(obj.getString("LotType"));
+                    } else {
+                        break;
+                    }
+                }
+            }
+            masterArrayList.add(carparkNum);
+            masterArrayList.add(availableLots);
+            masterArrayList.add(carparkType);
+            return masterArrayList;
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     // Retrieves URA Carpark Availability
     private ArrayList<ArrayList<String>> parseURAAPI(JSONObject JSONresponse) {
         ArrayList<ArrayList<String>> masterArrayList = new ArrayList<>(); // Contains all of the below array lists
@@ -182,16 +216,15 @@ public class Parking extends AppCompatActivity {
     private void fillPCVArrayList() {
         pcvArrayList.clear();
 
-        JSONObject JSONresponse = CarparkAvailabilityRetrieverHDB.fetchCarparkAvailability();
-        HDBList = parseHDBAPI(JSONresponse);
+        JSONObject HDBresponse = CarparkAvailabilityRetriever.fetchCarparkAvailability(null, null, null, "https://api.data.gov.sg/v1/transport/carpark-availability");
+        HDBList = parseHDBAPI(HDBresponse);
 
         String token = generateURAToken.getToken(accessKey);
-        JSONObject URAresponse = CarparkAvailabilityRetrieverURA.fetchCarparkAvailability(accessKey, token);
+        JSONObject URAresponse = CarparkAvailabilityRetriever.fetchCarparkAvailability(null, accessKey, token, "https://www.ura.gov.sg/uraDataService/invokeUraDS?service=Car_Park_Availability");
         URAList = parseURAAPI(URAresponse);
 
-        InputStream ltaParking = getResources().openRawResource(R.raw.ltaparking);
-        GenerateCarparkStatic LTA = new GenerateCarparkStatic.generateLTA();
-        LTA.setList(LTA.readCSV(ltaParking));
+        JSONObject LTAreponse = CarparkAvailabilityRetriever.fetchCarparkAvailability("/REKmS31QtqYR2ux49l1OQ==", null, null, "http://datamall2.mytransport.sg/ltaodataservice/CarParkAvailabilityv2");
+        LTAList = parseLTAApi(LTAreponse);
 
         // Sets array list for HDB
         ArrayList<String> HDBCarparkNum = HDBList.get(0);
@@ -209,10 +242,27 @@ public class Parking extends AppCompatActivity {
             URATotal.add("dud capacity"); // Fills up to match original array size
         }
 
+        // Sets array list for LTA
+        ArrayList<String> LTACarparkNum = LTAList.get(0);
+        ArrayList<String> LTAAvailable = LTAList.get(1);
+        ArrayList<String> LTATotal = new ArrayList<>();
+        ArrayList<String> LTAType = LTAList.get(2);
+
+        for (int i = 0; i < LTACarparkNum.size(); i++) {
+            LTATotal.add("dud");
+        }
+
         URACarparkNum.addAll(HDBCarparkNum);
+        URACarparkNum.addAll(LTACarparkNum);
+
         URATotal.addAll(HDBTotal);
+        URATotal.addAll(LTATotal);
+
         URAAvailable.addAll(HDBAvailable);
+        URAAvailable.addAll(LTAAvailable);
+
         URAType.addAll(HDBType);
+        URATotal.addAll(LTAType);
 
         ArrayList<String> CarparkNumberFinder = new ArrayList<>(URACarparkNum);
         ArrayList<String> CarparkTotalFinder = new ArrayList<>(URATotal);
@@ -221,12 +271,16 @@ public class Parking extends AppCompatActivity {
 
         URACarparkNum.clear();
         HDBCarparkNum.clear();
+        LTACarparkNum.clear();;
         URAAvailable.clear();
         HDBAvailable.clear();
+        LTAAvailable.clear();
         URATotal.clear();
         HDBTotal.clear();
+        LTATotal.clear();
         URAType.clear();
         HDBType.clear();
+        LTAType.clear();
 
         for (int i = 0; i < 16; i++) {
             Carpark currentCP = topSixteenParkings.get(i);
@@ -239,22 +293,20 @@ public class Parking extends AppCompatActivity {
 
             // thought: -> optimise code by passing carpark as a variable.
             if (index == -1) {
-                if (currentCP instanceof Carpark.LTA) {
-                    pcvArrayList.add(new ParkingCardView(currentCP, currentAddress,
-                            currentCP.getAvailableLots() + "/300" +  " lots available", "no est.",
-                            distance, currentCP.getxCoord(), currentCP.getyCoord())); // Dont have total so I used 300 temporarily.
-                } else {
-                    currentCP.setAvailableLots(-1);
-                    pcvArrayList.add(new ParkingCardView(currentCP, currentAddress,
-                            "info unavailable", "no est.",
-                            distance, currentCP.getxCoord(), currentCP.getyCoord()));
-                }
+                currentCP.setAvailableLots(-1);
+                pcvArrayList.add(new ParkingCardView(currentCP, currentAddress,
+                        "info unavailable", "no est.",
+                        distance, currentCP.getxCoord(), currentCP.getyCoord()));
             } else {
                 String available = CarparkAvailableFinder.get(index);
                 currentCP.setAvailableLots(Integer.parseInt(available));
-                String total = currentCP instanceof Carpark.URA ? ((Carpark.URA) currentCP).getParkCapacity(0) : CarparkTotalFinder.get(index);
+                String total = currentCP instanceof Carpark.URA ? ((Carpark.URA) currentCP).getParkCapacity(0)
+                                                                : currentCP instanceof Carpark.HDB
+                                                                ? CarparkTotalFinder.get(index)
+                                                                : "LTA";
                 pcvArrayList.add(new ParkingCardView(currentCP, currentAddress,
-                        available + "/" + total + " lots available"
+                        total.equals("LTA") ? available + " lots available"
+                                            : available + "/" + total + " lots available"
                         , "no est.", distance, currentCP.getxCoord(), currentCP.getyCoord()));
             }
         }

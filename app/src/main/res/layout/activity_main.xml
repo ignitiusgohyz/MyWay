@@ -1,85 +1,91 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<androidx.constraintlayout.widget.ConstraintLayout
+
+<androidx.drawerlayout.widget.DrawerLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:mapbox="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
+    tools:context=".MainActivity"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    android:layout_width="match_parent">
 
-    <com.mapbox.mapboxsdk.maps.MapView
-        android:id="@+id/mapView"
-        android:layout_width="match_parent"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_height="match_parent"
-        mapbox:mapbox_cameraZoom="12"
-        tools:layout_editor_absoluteX="-91dp"
-        tools:layout_editor_absoluteY="35dp">
+        android:layout_width="match_parent">
 
-    </com.mapbox.mapboxsdk.maps.MapView>
-
-    <Button
-        android:id="@+id/startNavigation"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginEnd="24dp"
-        android:layout_marginBottom="24dp"
-        android:enabled="false"
-        android:text="@string/start_navigating"
-        mapbox:layout_constraintBottom_toBottomOf="parent"
-        mapbox:layout_constraintEnd_toEndOf="parent"
-        mapbox:layout_constraintStart_toStartOf="parent" />
-
-    <Button
-        android:id="@+id/checkParking"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginEnd="24dp"
-        android:layout_marginBottom="24dp"
-        android:enabled="false"
-        android:text="Parking nearby"
-        mapbox:layout_constraintBottom_toTopOf="@+id/startNavigation"
-        mapbox:layout_constraintEnd_toEndOf="parent"
-        mapbox:layout_constraintStart_toStartOf="parent" />
-
-    <com.google.android.material.card.MaterialCardView
-        style="@style/CustomCardViewStyle"
-        android:layout_width="match_parent"
-        android:layout_height="110dp"
-        android:id="@+id/cardview_main_top_fragment"
-        mapbox:cardElevation="12dp"
-        android:backgroundTint="@color/myway_blue"
-        mapbox:layout_constraintEnd_toEndOf="parent"
-        mapbox:layout_constraintStart_toStartOf="parent"
-        mapbox:layout_constraintTop_toTopOf="parent">
-        <fragment
-            android:id="@+id/main_top_fragment"
-            android:name="com.example.myway.NavigationTextFragment"
+        <com.mapbox.mapboxsdk.maps.MapView
+            android:id="@+id/mapView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            mapbox:layout_constraintTop_toTopOf="parent"
-            mapbox:layout_constraintRight_toRightOf="parent"
-            mapbox:layout_constraintLeft_toLeftOf="parent"
-            tools:ignore="FragmentTagUsage" />
-    </com.google.android.material.card.MaterialCardView>
+            mapbox:mapbox_cameraZoom="12"
+            tools:layout_editor_absoluteX="-91dp"
+            tools:layout_editor_absoluteY="35dp">
 
-    <androidx.cardview.widget.CardView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        mapbox:cardCornerRadius="12dp"
-        mapbox:cardElevation="12dp"
-        mapbox:layout_constraintBottom_toBottomOf="@id/cardview_main_top_fragment"
-        mapbox:layout_constraintTop_toBottomOf="@id/cardview_main_top_fragment"
-        mapbox:layout_constraintStart_toStartOf="parent"
-        mapbox:layout_constraintEnd_toEndOf="parent">
-        <fragment
+        </com.mapbox.mapboxsdk.maps.MapView>
+
+        <Button
+            android:id="@+id/startNavigation"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="24dp"
+            android:enabled="false"
+            android:text="@string/start_navigating"
+            mapbox:layout_constraintBottom_toBottomOf="parent"
+            mapbox:layout_constraintEnd_toEndOf="parent"
+            mapbox:layout_constraintStart_toStartOf="parent" />
+
+        <Button
+            android:id="@+id/checkParking"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="24dp"
+            android:enabled="false"
+            android:text="Parking nearby"
+            mapbox:layout_constraintBottom_toTopOf="@+id/startNavigation"
+            mapbox:layout_constraintEnd_toEndOf="parent"
+            mapbox:layout_constraintStart_toStartOf="parent" />
+
+        <com.google.android.material.card.MaterialCardView
+            style="@style/CustomCardViewStyle"
             android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:id="@+id/main_search_fragment"
-            android:name="com.example.myway.MainSearchFragment"
-            tools:ignore="FragmentTagUsage" />
-    </androidx.cardview.widget.CardView>
+            android:layout_height="110dp"
+            android:id="@+id/cardview_main_top_fragment"
+            mapbox:cardElevation="12dp"
+            android:backgroundTint="@color/myway_blue"
+            mapbox:layout_constraintEnd_toEndOf="parent"
+            mapbox:layout_constraintStart_toStartOf="parent"
+            mapbox:layout_constraintTop_toTopOf="parent">
+            <fragment
+                android:id="@+id/main_top_fragment"
+                android:name="com.example.myway.NavigationTextFragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                mapbox:layout_constraintTop_toTopOf="parent"
+                mapbox:layout_constraintRight_toRightOf="parent"
+                mapbox:layout_constraintLeft_toLeftOf="parent"
+                tools:ignore="FragmentTagUsage" />
+        </com.google.android.material.card.MaterialCardView>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <androidx.cardview.widget.CardView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            mapbox:cardCornerRadius="12dp"
+            mapbox:cardElevation="12dp"
+            mapbox:layout_constraintBottom_toBottomOf="@id/cardview_main_top_fragment"
+            mapbox:layout_constraintTop_toBottomOf="@id/cardview_main_top_fragment"
+            mapbox:layout_constraintStart_toStartOf="parent"
+            mapbox:layout_constraintEnd_toEndOf="parent">
+            <fragment
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:id="@+id/main_search_fragment"
+                android:name="com.example.myway.MainSearchFragment"
+                tools:ignore="FragmentTagUsage" />
+        </androidx.cardview.widget.CardView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.drawerlayout.widget.DrawerLayout>

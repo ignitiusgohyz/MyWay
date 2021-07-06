@@ -86,6 +86,8 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
                         public void onClick(View v) {
                             String currentTime = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
                             String currentDay = new SimpleDateFormat("EEEE", Locale.getDefault()).format(new Date());
+                            String date = new SimpleDateFormat("ddMMyyyy", Locale.getDefault()).format(new Date());
+                            Log.d("CheckDate", "Date" + date);
                             String finalTime = "";
 //                            Log.d("CheckDay", "Day" + currentDay);
                             String[] timeArray = currentTime.split(":");
@@ -121,7 +123,7 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
                             Log.d("Calculator", "Day" + currentDay);
                             Log.d("Calculator", "currentTime" + ((currentHour*100) + currentMinute));
                             Log.d("Calculator", "finalTime" + ((finalHour*100) + finalMinute));
-                            price_calculator.setText(calculatePrice(currentDay, ((currentHour*100) + currentMinute), numHours, numMinutes, ((finalHour*100) + finalMinute), parkingCardViewArrayList.get((int) itemView.getTag())));
+                            price_calculator.setText(calculatePrice(date, currentDay, ((currentHour*100) + currentMinute), numHours, numMinutes, ((finalHour*100) + finalMinute), parkingCardViewArrayList.get((int) itemView.getTag())));
                             mDialog.dismiss();
                         }
                     });
@@ -147,14 +149,14 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
         }
     }
 
-    public static String calculatePrice(String currentDay, int currentTime, int numHours, int numMinutes, int finalTime, ParkingCardView currentCardView) {
+    public static String calculatePrice(String date, String currentDay, int currentTime, int numHours, int numMinutes, int finalTime, ParkingCardView currentCardView) {
         Carpark currentCP = currentCardView.getCurrentCP();
         if (currentCP instanceof Carpark.HDB) {
-            return ((Carpark.HDB) currentCP).calculateHDB(currentDay, currentTime, numHours, numMinutes, finalTime);
+            return ((Carpark.HDB) currentCP).calculateHDB(date, currentDay, currentTime, numHours, numMinutes, finalTime);
         } else if (currentCP instanceof Carpark.LTA) {
-            return ((Carpark.LTA) currentCP).calculateLTA(currentDay, currentTime, numHours, numMinutes, finalTime);
+            return ((Carpark.LTA) currentCP).calculateLTA(date, currentDay, currentTime, numHours, numMinutes, finalTime);
         } else if (currentCP instanceof Carpark.URA) {
-            return ((Carpark.URA) currentCP).calculateURA(currentDay, currentTime, numHours, numMinutes, finalTime);
+            return ((Carpark.URA) currentCP).calculateURA(date, currentDay, currentTime, numHours, numMinutes, finalTime);
         } else {
             return "info unavailable";
         }

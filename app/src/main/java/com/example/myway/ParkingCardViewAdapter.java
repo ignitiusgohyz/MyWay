@@ -152,11 +152,11 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
     public static String calculatePrice(String date, String currentDay, int currentTime, int numHours, int numMinutes, int finalTime, ParkingCardView currentCardView) {
         Carpark currentCP = currentCardView.getCurrentCP();
         if (currentCP instanceof Carpark.HDB) {
-            return ((Carpark.HDB) currentCP).calculateHDB(date, currentDay, currentTime, numHours, numMinutes, finalTime);
+            return ((Carpark.HDB) currentCP).calculate(date, currentDay, currentTime, numHours, numMinutes, finalTime);
         } else if (currentCP instanceof Carpark.LTA) {
-            return ((Carpark.LTA) currentCP).calculateLTA(date, currentDay, currentTime, numHours, numMinutes, finalTime);
+            return ((Carpark.LTA) currentCP).calculate(date, currentDay, currentTime, numHours, numMinutes, finalTime);
         } else if (currentCP instanceof Carpark.URA) {
-            return ((Carpark.URA) currentCP).calculateURA(date, currentDay, currentTime, numHours, numMinutes, finalTime);
+            return ((Carpark.URA) currentCP).calculate(date, currentDay, currentTime, numHours, numMinutes, finalTime);
         } else {
             return "info unavailable";
         }

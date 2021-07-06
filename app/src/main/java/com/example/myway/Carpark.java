@@ -18,10 +18,11 @@ public class Carpark {
     private double SVY21yCoord; // Northing
     private LatLonCoordinate parkingLatLon;
     private SVY21Coordinate parkingSVY21;
-    private String parkingSystem; // B for electronic, C for coupon
+    private String parkingSystem;
     private double distanceApart; // Distance from current location
     private Integer availableLots;
     private boolean centralCarpark;
+    private static final String[] dayArray = new String[] { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
 
     public Carpark(String carParkNo, String address, double SVY21xCoord, double SVY21yCoord, String parkingSystem) {
         this.carParkNo = carParkNo.replace("\"", "");
@@ -38,8 +39,8 @@ public class Carpark {
 
     private boolean centralCheck(String carParkNo) {
         String[] HDBCentral = new String[] {"ACB", "BBB", "BRB1", "CY", "DUXM", "HLM", "KAB", "KAM", "KAS", "PRM", "SLS", "SR1", "SR2", "TPM", "UCS", "WCB"};
-        if(this instanceof Carpark.HDB) {
-            for(int i=0; i<HDBCentral.length; i++) {
+        if (this instanceof Carpark.HDB) {
+            for (int i=0; i<HDBCentral.length; i++) {
                 if(carParkNo.equals(HDBCentral[i])) {
                     return true;
                 }
@@ -69,6 +70,12 @@ public class Carpark {
 
         public URA(String cPN, String a, double svyX, double svyY, String pS) {
             super(cPN, a, svyX, svyY, pS);
+        }
+
+        @Override
+        public String calculate(String date, String currentDay, int currentTime, int numHours, int numMinutes, int finalTime) {
+            Log.d("Error >>>>", "Carpark type not specified");
+            return "";
         }
 
         public String getWeekdayMin(int index) {
@@ -182,6 +189,7 @@ public class Carpark {
         private String carParkDecks; // Number of decks
         private String gantryHeight; // Height of gantry
         private String carParkBasement; // Y / N
+        private static final String[] nonGracePeriodCarParks = new String[] { "HG55", "HG97", "HG47"};
 
         public HDB(String cPN, String a, double svyX, double svyY, String pS) {
             super(cPN, a, svyX, svyY, pS);
@@ -254,79 +262,140 @@ public class Carpark {
             }
         }
 
+        @Override
+        public String calculate(String date, String currentDay, int currentTime, int numHours, int numMinutes, int finalTime) {
+            PublicHolidays ph = new PublicHolidays();
+            String nextDay = null;
+            if (finalTime <= currentTime) {
+                int index = 0;
+                for (int i = 0; i < dayArray.length; i++) {
+                    if (dayArray[i].equals(currentDay)) {
+                        index = i;
+                    }
+                }
+                nextDay = dayArray[(index + 1) % 7];
+            }
+
+            if (currentDay.equals("Sunday") || ph.isItPH(date)) {
+                if (nextDay != null) {
+
+                } else {
+                    if (currentTime >= 700 && finalTime <= 2230) {
+                        return "free parking";
+                    } else {
+                        int before0700 = 0;
+                        int after2230 = 0; // This will be spillover timing to next day night parking (e.g. 2230 - 0000 has 1h 30 mins of night parking fee included in next day 0000 - xxxx hour)
+                        if (currentTime <= 700) before0700 = calculateTimeDifference(String.valueOf(700), String.valueOf(currentTime));
+                        if (finalTime >= 2230) after2230 = calculateTimeDifference(String.valueOf(2230), String.valueOf(finalTime));
+
+                        // The timing we charge for before 0700 if we base on coupon 30 mins charge
+                        double before0700coupon = (before0700 % 30 != 0) ? (before0700 / 30.0) + 1.0 : before0700 / 30.0;
+
+                        // The price we charge for before 0700 if we base on coupon 30 mins charge
+                        before0700coupon = this.getNightParking().equals("YES") ? (before0700coupon * 0.60 > 5 ? 5.0 : before0700coupon * 0.60) : before0700coupon * 0.60;
+
+                        double minuteRate = 0.60 / 30;
+                        double totalCharged = this.getParkingSystem().equals("ELECTRONIC PARKING") ? (!checkNonGrace(this.getCarParkNo())
+                                                                                                        ? (this.getNightParking().equals("YES")
+                                                                                                        // Grace period + Electronic + Night parking
+                                                                                                            ? (((before0700 * minuteRate) > 5 ? 5.0 : before0700 * minuteRate) + after2230 * minuteRate)
+                                                                                                            : (((before0700 - 10) * minuteRate) > 5 ? 5.0 : ((before0700 - 10) * minuteRate) + after2230 * minuteRate))
+                                                                                                        // No grace period + Electronic + no night parking
+                                                                                                        : (before0700 + after2230) * minuteRate)
+                                                                                                   : ((before0700 + after2230) % 30) != 0
+                                                                                                        ? (((after2230 / 30.0) + 1.0) * 0.60) + before0700coupon
+                                                                                                        : ((after2230 / 30.0) * 0.60) + before0700coupon;
+
+//                         0100 to 2300 0100 to 0700 -> $5. 2230 - 2300 --> $5 + $0.60 = $5.60
+                        return String.format("%.2f", totalCharged);
+                    }
+                }
+            }
+            return null;
+        }
+
+        private boolean checkNonGrace(String cpNo) {
+            for (int i = 0; i < nonGracePeriodCarParks.length; i++) {
+                if (nonGracePeriodCarParks[i].equals(cpNo)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         // maybe need to check for electronic or coupon parking as well as special rates such as 0.6/1.2
         // assumption here is $0.60/30mins and electronic parking
 
-        public String calculateHDB(String date, String currentDay, int currentTime, int numHours, int numMinutes, int finalTime) {
-            double cost = (numHours * 1.2) + ((numMinutes / 30.0) * 0.6);
-            PublicHolidays phChecker = new PublicHolidays();
-            Log.d("Check park system", "Electronic or coupon " + this.getParkingSystem());
-            if (this.getParkingSystem().equals("ELECTRONIC PARKING")) {
-                if (shortTermParking.equals("7AM-10.30PM")) {
-                    if (freeParking.equals("NO")) {
-                        return String.format("est. $%.2f", cost);
-                    } else {
-                        if ((currentDay.equals("Sunday") || phChecker.isItPH(date)) && (currentTime >= 700 && finalTime <= 2230)) {
-                            cost = 0.0;
-                        }
-                        return String.format("est. $%.2f", cost);
-                    }
-                } else if (shortTermParking.equals("7AM-7PM")) {
-                    if (freeParking.equals("NO")) {
-                        return String.format("est. $%.2f", cost);
-                    } else {
-                        if ((currentDay.equals("Sunday") || phChecker.isItPH(date)) && (currentTime >= 700 && finalTime <= 2230)) {
-                            cost = 0.0;
-                        }
-                        return String.format("est. $%.2f", cost);
-                    }
-                } else if (shortTermParking.equals("NO")) {
-                    if (freeParking.equals("NO") && nightParking.equals("YES")) {
-                        if ((currentTime >= 2230 || currentTime <= 700) && finalTime <= 700 && cost > 5.0) {
-                            cost = 5.0;
-                        }
-                        return String.format("est. $%.2f", cost);
-                    } else if (freeParking.equals("NO") && nightParking.equals("NO")) {
-                        return String.format("est. $%.2f", cost);
-                    } else if (freeParking.equals("SUN & PH 7AM-10.30PM") && nightParking.equals("YES")) {
-                        if ((currentDay.equals("Sunday") || phChecker.isItPH(date)) && (currentTime >= 700 && finalTime <= 2230)) {
-                            cost = 0.0;
-                        } else if ((currentTime >= 2230 || currentTime <= 700) && finalTime <= 700 && cost > 5.0) {
-                            cost = 5.0;
-                        }
-                        return String.format("est. $%.2f", cost);
-                    } else {
-                        if ((currentDay.equals("Sunday") || phChecker.isItPH(date)) && (currentTime >= 700 && finalTime <= 2230)) {
-                            cost = 0.0;
-                        }
-                        return String.format("est. $%.2f", cost);
-                    }
-                } else {
-                    if (freeParking.equals("NO")) {
-                        if ((currentTime >= 2230 || currentTime <= 700) && finalTime <= 700 && cost > 5.0) {
-                            cost = 5.0;
-                        }
-                        return String.format("est. $%.2f", cost);
-                    } else if (freeParking.equals("SUN & PH 1PM-10.30PM")) {
-                        if ((currentDay.equals("Sunday") || phChecker.isItPH(date)) && (currentTime >= 1300 && finalTime <= 2230)) {
-                            cost = 0.0;
-                        } else if ((currentTime >= 2230 || currentTime <= 700) && finalTime <= 700 && cost > 5.0) {
-                            cost = 5.0;
-                        }
-                        return String.format("est. $%.2f", cost);
-                    } else {
-                        if ((currentDay.equals("Sunday") || phChecker.isItPH(date)) && (currentTime >= 700 && finalTime <= 2230)) {
-                            cost = 0.0;
-                        } else if ((currentTime >= 2230 || currentTime <= 700) && finalTime <= 700 && cost > 5.0) {
-                            cost = 5.0;
-                        }
-                        return String.format("est. $%.2f", cost);
-                    }
-                }
-            } else {
-                return "COUPON PARKING"; // need to round off.
-            }
-        }
+//        public String calculateHDB(String date, String currentDay, int currentTime, int numHours, int numMinutes, int finalTime) {
+//            double cost = (numHours * 1.2) + ((numMinutes / 30.0) * 0.6);
+//            PublicHolidays phChecker = new PublicHolidays();
+//            Log.d("Check park system", "Electronic or coupon " + this.getParkingSystem());
+//            if (this.getParkingSystem().equals("ELECTRONIC PARKING")) {
+//                if (shortTermParking.equals("7AM-10.30PM")) {
+//                    if (freeParking.equals("NO")) {
+//                        return String.format("est. $%.2f", cost);
+//                    } else {
+//                        if ((currentDay.equals("Sunday") || phChecker.isItPH(date)) && (currentTime >= 700 && finalTime <= 2230)) {
+//                            cost = 0.0;
+//                        }
+//                        return String.format("est. $%.2f", cost);
+//                    }
+//                } else if (shortTermParking.equals("7AM-7PM")) {
+//                    if (freeParking.equals("NO")) {
+//                        return String.format("est. $%.2f", cost);
+//                    } else {
+//                        if ((currentDay.equals("Sunday") || phChecker.isItPH(date)) && (currentTime >= 700 && finalTime <= 2230)) {
+//                            cost = 0.0;
+//                        }
+//                        return String.format("est. $%.2f", cost);
+//                    }
+//                } else if (shortTermParking.equals("NO")) {
+//                    if (freeParking.equals("NO") && nightParking.equals("YES")) {
+//                        if ((currentTime >= 2230 || currentTime <= 700) && finalTime <= 700 && cost > 5.0) {
+//                            cost = 5.0;
+//                        }
+//                        return String.format("est. $%.2f", cost);
+//                    } else if (freeParking.equals("NO") && nightParking.equals("NO")) {
+//                        return String.format("est. $%.2f", cost);
+//                    } else if (freeParking.equals("SUN & PH 7AM-10.30PM") && nightParking.equals("YES")) {
+//                        if ((currentDay.equals("Sunday") || phChecker.isItPH(date)) && (currentTime >= 700 && finalTime <= 2230)) {
+//                            cost = 0.0;
+//                        } else if ((currentTime >= 2230 || currentTime <= 700) && finalTime <= 700 && cost > 5.0) {
+//                            cost = 5.0;
+//                        }
+//                        return String.format("est. $%.2f", cost);
+//                    } else {
+//                        if ((currentDay.equals("Sunday") || phChecker.isItPH(date)) && (currentTime >= 700 && finalTime <= 2230)) {
+//                            cost = 0.0;
+//                        }
+//                        return String.format("est. $%.2f", cost);
+//                    }
+//                } else {
+//                    if (freeParking.equals("NO")) {
+//                        if ((currentTime >= 2230 || currentTime <= 700) && finalTime <= 700 && cost > 5.0) {
+//                            cost = 5.0;
+//                        }
+//                        return String.format("est. $%.2f", cost);
+//                    } else if (freeParking.equals("SUN & PH 1PM-10.30PM")) {
+//                        if ((currentDay.equals("Sunday") || phChecker.isItPH(date)) && (currentTime >= 1300 && finalTime <= 2230)) {
+//                            cost = 0.0;
+//                        } else if ((currentTime >= 2230 || currentTime <= 700) && finalTime <= 700 && cost > 5.0) {
+//                            cost = 5.0;
+//                        }
+//                        return String.format("est. $%.2f", cost);
+//                    } else {
+//                        if ((currentDay.equals("Sunday") || phChecker.isItPH(date)) && (currentTime >= 700 && finalTime <= 2230)) {
+//                            cost = 0.0;
+//                        } else if ((currentTime >= 2230 || currentTime <= 700) && finalTime <= 700 && cost > 5.0) {
+//                            cost = 5.0;
+//                        }
+//                        return String.format("est. $%.2f", cost);
+//                    }
+//                }
+//            } else {
+//                return "COUPON PARKING"; // need to round off.
+//            }
+//        }
     }
 
     public static class LTA extends Carpark {
@@ -345,7 +414,9 @@ public class Carpark {
             }
         }
 
-        public String calculateLTA(String date, String currentDay, int currentTime, int numHours, int numMinutes, int finalTime) {
+        @Override
+        public String calculate(String date, String currentDay, int currentTime, int numHours, int numMinutes, int finalTime) {
+            Log.d("Error >>>>", "Carpark type not specified");
             return "";
         }
     }
@@ -401,6 +472,30 @@ public class Carpark {
         return "" + carParkNo;
     }
 
+    protected static int calculateTimeDifference(String startTime, String endTime) {
+        // 0530 - 0700 (END > START)
+        if (startTime.length() <= 3) startTime = "0" + startTime;
+        if (endTime.length() <= 3) endTime = "0" + endTime;
+
+        // 05 AND 30
+        Integer startHour = Integer.parseInt(startTime.substring(0, 1));
+        Integer startMin = Integer.parseInt(startTime.substring(2));
+
+        // 07 AND 00
+        Integer endHour = Integer.parseInt(endTime.substring(0, 1));
+        Integer endMin = Integer.parseInt(endTime.substring(2));
+
+        Integer differenceInTime = 0;
+
+        if (endMin < startMin) {
+            differenceInTime = (endHour - startHour - 1) * 60 + (startMin - endMin);
+        }  else {
+            differenceInTime = (endHour - startHour) * 60 + (endMin - startMin);
+        }
+
+        return differenceInTime;
+    }
+
     @Override
     public boolean equals(@Nullable @org.jetbrains.annotations.Nullable Object obj) {
         if (obj instanceof Carpark) {
@@ -409,5 +504,10 @@ public class Carpark {
         } else {
             return false;
         }
+    }
+
+    public String calculate(String date, String currentDay, int currentTime, int numHours, int numMinutes, int finalTime) {
+        Log.d("Error >>>>", "Carpark type not specified");
+        return "";
     }
 }

@@ -295,11 +295,13 @@ public class Carpark {
                         before0700coupon = this.getNightParking().equals("YES") ? (before0700coupon * 0.60 > 5 ? 5.0 : before0700coupon * 0.60) : before0700coupon * 0.60;
 
                         double minuteRate = 0.60 / 30;
+                        final double flatRateGracePeriod = ((before0700 - 10) * minuteRate) + after2230 * minuteRate;
                         double totalCharged = this.getParkingSystem().equals("ELECTRONIC PARKING") ? (!checkNonGrace(this.getCarParkNo())
                                                                                                         ? (this.getNightParking().equals("YES")
                                                                                                         // Grace period + Electronic + Night parking
-                                                                                                            ? (((before0700 * minuteRate) > 5 ? 5.0 : before0700 * minuteRate) + after2230 * minuteRate)
-                                                                                                            : (((before0700 - 10) * minuteRate) > 5 ? 5.0 : ((before0700 - 10) * minuteRate) + after2230 * minuteRate))
+                                                                                                            ? (((before0700 - 10) * minuteRate) > 5 ? 5.0 : flatRateGracePeriod)
+                                                                                                        // Grace period + Electronic + No Night Parking
+                                                                                                            : flatRateGracePeriod)
                                                                                                         // No grace period + Electronic + no night parking
                                                                                                         : (before0700 + after2230) * minuteRate)
                                                                                                    : ((before0700 + after2230) % 30) != 0

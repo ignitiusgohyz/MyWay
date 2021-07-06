@@ -302,8 +302,11 @@ public class Carpark {
                                                                                                             ? (((before0700 - 10) * minuteRate) > 5 ? 5.0 : flatRateGracePeriod)
                                                                                                         // Grace period + Electronic + No Night Parking
                                                                                                             : flatRateGracePeriod)
+                                                                                                        : this.getNightParking().equals("YES")
+                                                                                                        // No grace period + Electronic + night parking
+                                                                                                            ? ((before0700 * minuteRate) > 5 ? 5.0 : before0700 * minuteRate + after2230 * minuteRate)
                                                                                                         // No grace period + Electronic + no night parking
-                                                                                                        : (before0700 + after2230) * minuteRate)
+                                                                                                            : (before0700 + after2230) * minuteRate)
                                                                                                    : ((before0700 + after2230) % 30) != 0
                                                                                                         ? (((after2230 / 30.0) + 1.0) * 0.60) + before0700coupon
                                                                                                         : ((after2230 / 30.0) * 0.60) + before0700coupon;

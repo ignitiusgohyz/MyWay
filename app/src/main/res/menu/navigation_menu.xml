@@ -4,6 +4,7 @@
     tools:ignore="HardcodedText">
 
     <item
+
         android:id="@+id/nav_account"
         android:title="My Account" />
 

@@ -21,6 +21,11 @@ public class Carpark {
     private String parkingSystem;
     private double distanceApart; // Distance from current location
     private Integer availableLots;
+
+    public boolean isCentralCarpark() {
+        return centralCarpark;
+    }
+
     private boolean centralCarpark;
     private static final String[] dayArray = new String[] { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
 
@@ -72,11 +77,11 @@ public class Carpark {
             super(cPN, a, svyX, svyY, pS);
         }
 
-        @Override
-        public String calculate(String date, String currentDay, int currentTime, int numHours, int numMinutes, int finalTime) {
-            Log.d("Error >>>>", "Carpark type not specified");
-            return "";
-        }
+//        @Override
+//        public String calculate(String date, String currentDay, int currentTime, int numHours, int numMinutes, int finalTime) {
+//            Log.d("Error >>>>", "Carpark type not specified");
+//            return "";
+//        }
 
         public String getWeekdayMin(int index) {
             return this.weekdayMin.get(index);
@@ -176,7 +181,8 @@ public class Carpark {
             }
         }
 
-        public String calculateURA(String date, String currentDay, int currentTime, int numHours, int numMinutes, int finalTime) {
+        @Override
+        public String newCalc(String date, String currentDay, int currentTime, int finalTime) {
             return "";
         }
     }
@@ -263,61 +269,160 @@ public class Carpark {
         }
 
         @Override
-        public String calculate(String date, String currentDay, int currentTime, int numHours, int numMinutes, int finalTime) {
-            PublicHolidays ph = new PublicHolidays();
+        public String newCalc(String date, String currentDay, int currentTime, int finalTime) {
+            PublicHolidays phChecker = new PublicHolidays();
             String nextDay = null;
-            if (finalTime <= currentTime) {
+            if(finalTime <= currentTime) {
                 int index = 0;
-                for (int i = 0; i < dayArray.length; i++) {
+                for (int i=0; i<dayArray.length; i++) {
                     if (dayArray[i].equals(currentDay)) {
-                        index = i;
+                        index = i+1;
                     }
                 }
-                nextDay = dayArray[(index + 1) % 7];
+                nextDay = dayArray[index % 7];
             }
-
-            if (currentDay.equals("Sunday") || ph.isItPH(date)) {
+            double cost = 0.0;
+            if (currentDay.equals("Sunday") || phChecker.isItPH(date)) {
+                // day of entry is sunday or ph
                 if (nextDay != null) {
-
+                    // in and out on different days
+                    // 1. newCalc(currentTime till 2230)
+                    // 2. newCalc(0700 till finalTime)
+                    // 1 && 2 positive -> enter before 2230 and leave after 0700 next day +$5
+                    // 1 positive 2 negative -> enter before 2230 and leave before 0700 next day -> if num hours btwn 2230 and finalTime > 4.5 +$5 else normal
+                    // 1 negative 2 positive -> enter after 2230 and leave after 0700 next day -> if num hours btwn 2230 and finalTime > 4.5 + $5 else normal
+                    // 1 && 2 negative -> enter after 2230 and leave before 0700 the next day -> if num hours btwn 2230 and finalTime > 4.5 + $5 else normal
+                    // need get nextDay's date by calculation
                 } else {
+                    // in and out on same day
                     if (currentTime >= 700 && finalTime <= 2230) {
+                        // in and out within free parking range
                         return "free parking";
                     } else {
-                        int before0700 = 0;
-                        int after2230 = 0; // This will be spillover timing to next day night parking (e.g. 2230 - 0000 has 1h 30 mins of night parking fee included in next day 0000 - xxxx hour)
-                        if (currentTime <= 700) before0700 = calculateTimeDifference(String.valueOf(700), String.valueOf(currentTime));
-                        if (finalTime >= 2230) after2230 = calculateTimeDifference(String.valueOf(2230), String.valueOf(finalTime));
+                        // 1. in before 0700 (x), out before 2230
+                        // 2. in before 0700 (x), out after 2230 (x)
+                        // 3. in after 0700, out after 2230 (x)
+                        // above 3 conditions only affect cp with night parking
+                        if (this.getNightParking().equals("YES")) {
+                            // there is night parking
+                            if (currentTime < 0700) {
+                                if (finalTime < 2230) {
+                                    // 1. in before 0700 (x), out before 2230
+                                    int minutesBefore0700 = calculateTimeDifference(String.valueOf(currentTime), String.valueOf(0700));
+                                } else {
+                                    // 2. in before 0700 (x), out after 2230 (x)
+                                    int minutesBefore0700 = calculateTimeDifference(String.valueOf(currentTime), String.valueOf(0700));
+                                    int minutesAfter2230 = calculateTimeDifference(String.valueOf(2230), String.valueOf(finalTime));
+                                }
+                            } else {
+                                // 3. in after 0700, out after 2230 (x)
+                                int minutesAfter2230 = calculateTimeDifference(String.valueOf(2230), String.valueOf(finalTime));
 
-                        // The timing we charge for before 0700 if we base on coupon 30 mins charge
-                        double before0700coupon = (before0700 % 30 != 0) ? (before0700 / 30.0) + 1.0 : before0700 / 30.0;
-
-                        // The price we charge for before 0700 if we base on coupon 30 mins charge
-                        before0700coupon = this.getNightParking().equals("YES") ? (before0700coupon * 0.60 > 5 ? 5.0 : before0700coupon * 0.60) : before0700coupon * 0.60;
-
-                        double minuteRate = 0.60 / 30;
-                        final double flatRateGracePeriod = ((before0700 - 10) * minuteRate) + after2230 * minuteRate;
-                        double totalCharged = this.getParkingSystem().equals("ELECTRONIC PARKING") ? (!checkNonGrace(this.getCarParkNo())
-                                                                                                        ? (this.getNightParking().equals("YES")
-                                                                                                        // Grace period + Electronic + Night parking
-                                                                                                            ? (((before0700 - 10) * minuteRate) > 5 ? 5.0 + after2230 * minuteRate : flatRateGracePeriod)
-                                                                                                        // Grace period + Electronic + No Night Parking
-                                                                                                            : flatRateGracePeriod)
-                                                                                                        : this.getNightParking().equals("YES")
-                                                                                                        // No grace period + Electronic + night parking
-                                                                                                            ? ((before0700 * minuteRate) > 5 ? 5.0 + after2230 * minuteRate : (before0700 + after2230) * minuteRate)
-                                                                                                        // No grace period + Electronic + no night parking
-                                                                                                            : (before0700 + after2230) * minuteRate)
-                                                                                                   : (after2230 % 30) != 0
-                                                                                                        ? (((after2230 / 30.0) + 1.0) * 0.60) + before0700coupon
-                                                                                                        : ((after2230 / 30.0) * 0.60) + before0700coupon;
-
-//                         0100 to 2300 0100 to 0700 -> $5. 2230 - 2300 --> $5 + $0.60 = $5.60
-                        return String.format("%.2f", totalCharged);
+                            }
+                        } else {
+                            // there is no night parking
+                            int minutesApart = calculateTimeDifference(String.valueOf(currentTime), String.valueOf(finalTime));
+                            if (this.getParkingSystem().equals("ELECTRONIC PARKING")) {
+                               if (checkNonGrace(this.getCarParkNo())) {
+                                   // NO NIGHT + ELECTRONIC + NO GRACE
+                                   cost = minutesApart * (0.60 / 30);
+                               } else {
+                                   // NO NIGHT + ELECTRONIC + GRACE
+                                   cost = (minutesApart - 10) * (0.60 / 30);
+                               }
+                            } else {
+                                // no need check grace here as intervals are in 15mins and with grace also 5min -> 30min
+                                // NO NIGHT + COUPON
+                                int remainder = minutesApart % 30;
+                                if (remainder == 0) {
+                                    // duration is divisible by 30mins
+                                    cost = (minutesApart / 30) * 0.60;
+                                } else {
+                                    // duration is non divisible by 30mins
+                                    cost = ((minutesApart / 30) + 1) * 0.60;
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {
+                // day of entry is non sunday or ph
+                if (nextDay != null) {
+                    // in and out on different days
+                    // 1. newCalc(currentTime till 2230)
+                    // 2. newCalc(0700 till finalTime)
+                    // 1 && 2 positive -> enter before 2230 and leave after 0700 next day +$5
+                    // 1 positive 2 negative -> enter before 2230 and leave before 0700 next day -> if num hours btwn 2230 and finalTime > 4.5 +$5 else normal
+                    // 1 negative 2 positive -> enter after 2230 and leave after 0700 next day -> if num hours btwn 2230 and finalTime > 4.5 + $5 else normal
+                    // 1 && 2 negative -> enter after 2230 and leave before 0700 the next day -> if num hours btwn 2230 and finalTime > 4.5 + $5 else normal
+                    // need get nextDay's date by calculation
+                } else {
+                    // in and out on same day
+                    if (this.isCentralCarpark()  ) {
+                        // it is a central carpark
                     }
                 }
             }
-            return null;
+
+            return "";
         }
+
+//        @Override
+//        public String calculate(String date, String currentDay, int currentTime, int numHours, int numMinutes, int finalTime) {
+//            PublicHolidays ph = new PublicHolidays();
+//            String nextDay = null;
+//            if (finalTime <= currentTime) {
+//                int index = 0;
+//                for (int i = 0; i < dayArray.length; i++) {
+//                    if (dayArray[i].equals(currentDay)) {
+//                        index = i;
+//                    }
+//                }
+//                nextDay = dayArray[(index + 1) % 7];
+//            }
+//
+//            if (currentDay.equals("Sunday") || ph.isItPH(date)) {
+//                if (nextDay != null) {
+//
+//                } else {
+//                    if (currentTime >= 700 && finalTime <= 2230) {
+//                        return "free parking";
+//                    } else {
+//                        int before0700 = 0;
+//                        int after2230 = 0; // This will be spillover timing to next day night parking (e.g. 2230 - 0000 has 1h 30 mins of night parking fee included in next day 0000 - xxxx hour)
+//                        if (currentTime <= 700) before0700 = calculateTimeDifference(String.valueOf(700), String.valueOf(currentTime));
+//                        if (finalTime >= 2230) after2230 = calculateTimeDifference(String.valueOf(2230), String.valueOf(finalTime));
+//
+//                        // The timing we charge for before 0700 if we base on coupon 30 mins charge
+//                        double before0700coupon = (before0700 % 30 != 0) ? (before0700 / 30.0) + 1.0 : before0700 / 30.0;
+//
+//                        // The price we charge for before 0700 if we base on coupon 30 mins charge
+//                        before0700coupon = this.getNightParking().equals("YES") ? (before0700coupon * 0.60 > 5 ? 5.0 : before0700coupon * 0.60) : before0700coupon * 0.60;
+//
+//                        double minuteRate = 0.60 / 30;
+//                        final double flatRateGracePeriod = ((before0700 - 10) * minuteRate) + after2230 * minuteRate;
+//                        double totalCharged = this.getParkingSystem().equals("ELECTRONIC PARKING") ? (!checkNonGrace(this.getCarParkNo())
+//                                                                                                        ? (this.getNightParking().equals("YES")
+//                                                                                                        // Grace period + Electronic + Night parking
+//                                                                                                            ? (((before0700 - 10) * minuteRate) > 5 ? 5.0 + after2230 * minuteRate : flatRateGracePeriod)
+//                                                                                                        // Grace period + Electronic + No Night Parking
+//                                                                                                            : flatRateGracePeriod)
+//                                                                                                        : this.getNightParking().equals("YES")
+//                                                                                                        // No grace period + Electronic + night parking
+//                                                                                                            ? ((before0700 * minuteRate) > 5 ? 5.0 + after2230 * minuteRate : (before0700 + after2230) * minuteRate)
+//                                                                                                        // No grace period + Electronic + no night parking
+//                                                                                                            : (before0700 + after2230) * minuteRate)
+//                                                                                                   : (after2230 % 30) != 0
+//                                                                                                        ? (((after2230 / 30.0) + 1.0) * 0.60) + before0700coupon
+//                                                                                                        : ((after2230 / 30.0) * 0.60) + before0700coupon;
+//
+////                         0100 to 2300 0100 to 0700 -> $5. 2230 - 2300 --> $5 + $0.60 = $5.60
+//                        return String.format("%.2f", totalCharged);
+//                    }
+//                }
+//            }
+//            return null;
+//        }
 
         private boolean checkNonGrace(String cpNo) {
             for (int i = 0; i < nonGracePeriodCarParks.length; i++) {
@@ -419,9 +524,14 @@ public class Carpark {
             }
         }
 
+//        @Override
+//        public String calculate(String date, String currentDay, int currentTime, int numHours, int numMinutes, int finalTime) {
+//            Log.d("Error >>>>", "Carpark type not specified");
+//            return "";
+//        }
+
         @Override
-        public String calculate(String date, String currentDay, int currentTime, int numHours, int numMinutes, int finalTime) {
-            Log.d("Error >>>>", "Carpark type not specified");
+        public String newCalc(String date, String currentDay, int currentTime, int finalTime) {
             return "";
         }
     }
@@ -477,6 +587,7 @@ public class Carpark {
         return "" + carParkNo;
     }
 
+    // given startTime and endTime in HHMM, returns minutes apart.
     protected static int calculateTimeDifference(String startTime, String endTime) {
         // 0530 - 0700 (END > START)
         if (startTime.length() <= 3) startTime = "0" + startTime;
@@ -511,8 +622,12 @@ public class Carpark {
         }
     }
 
-    public String calculate(String date, String currentDay, int currentTime, int numHours, int numMinutes, int finalTime) {
-        Log.d("Error >>>>", "Carpark type not specified");
+//    public String calculate(String date, String currentDay, int currentTime, int numHours, int numMinutes, int finalTime) {
+//        Log.d("Error >>>>", "Carpark type not specified");
+//        return "";
+//    }
+
+    public String newCalc(String date, String currentDay, int currentTime, int finalTime) {
         return "";
     }
 }

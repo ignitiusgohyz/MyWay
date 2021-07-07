@@ -4,6 +4,7 @@
 
     import android.Manifest;
     import android.annotation.SuppressLint;
+    import android.app.ActionBar;
     import android.app.Activity;
     import android.content.Intent;
     import android.content.pm.PackageManager;
@@ -14,18 +15,25 @@
     import android.net.Uri;
     import android.os.Bundle;
     import android.provider.Settings;
+    import android.view.Gravity;
+    import android.view.MenuItem;
     import android.view.View;
     import android.widget.Button;
+    import android.widget.ImageButton;
     import android.widget.TextView;
     import android.widget.Toast;
 
     import androidx.annotation.NonNull;
+    import androidx.appcompat.app.ActionBarDrawerToggle;
     import androidx.appcompat.app.AlertDialog;
     import androidx.appcompat.app.AppCompatActivity;
     import androidx.appcompat.content.res.AppCompatResources;
+    import androidx.appcompat.widget.Toolbar;
     import androidx.core.app.ActivityCompat;
     import androidx.core.content.ContextCompat;
     import androidx.core.graphics.drawable.DrawableCompat;
+    import androidx.core.view.GravityCompat;
+    import androidx.drawerlayout.widget.DrawerLayout;
 
     import com.google.android.material.snackbar.Snackbar;
     import com.google.gson.JsonObject;
@@ -113,10 +121,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
     private TextView searchText;
     private String searchText_string;
+    private ImageButton hamburgerMenu;
 
     private final String ak = "dc82311d-b99a-412e-9f12-6f607b758479";
 
     private SVY21Coordinate destinationSVY21 = null;
+
+    private DrawerLayout drawerLayout;
+    private ActionBarDrawerToggle actionBarDrawerToggle;
+    private Toolbar mToolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -135,7 +148,37 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         greetingText.setText(greet);
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
+        hamburgerMenu = findViewById(R.id.fragment_main_hamburger_menu);
+//        drawerLayout = findViewById(R.id.my_drawer_layout);
+//        actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.nav_open, R.string.nav_close);
+//        drawerLayout.addDrawerListener(actionBarDrawerToggle);
+//        actionBarDrawerToggle.syncState();
+//        mToolbar = findViewById(R.id.toolbar);
+//        setSupportActionBar(mToolbar);
+//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        hamburgerMenu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DrawerLayout navDrawer = findViewById(R.id.my_drawer_layout);
+                // If the navigation drawer is not open then open it, if its already open then close it.
+                if (!navDrawer.isDrawerOpen(GravityCompat.START)) {
+                    navDrawer.openDrawer(GravityCompat.START);
+                } else {
+                    navDrawer.closeDrawer(GravityCompat.END);
+                }
+            }
+        });
     }
+
+//    @Override
+//    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+//
+//        if (actionBarDrawerToggle.onOptionsItemSelected(item)) {
+//            return true;
+//        }
+//        return super.onOptionsItemSelected(item);
+//    }
 
     private void initSearchFab() {
         searchText.setOnClickListener(v -> findViewById(R.id.fab_location_search).performClick());

@@ -185,7 +185,7 @@ public class Carpark {
         }
 
         @Override
-        public String newCalc(String date, String currentDay, int currentTime, int finalTime) {
+        public String newCalc(String date, String currentDay, int currentTime, int finalTime, boolean second) {
             return "";
         }
     }
@@ -272,10 +272,10 @@ public class Carpark {
         }
 
         @Override
-        public String newCalc(String date, String currentDay, int currentTime, int finalTime) {
+        public String newCalc(String date, String currentDay, int currentTime, int finalTime, boolean second) {
             PublicHolidays phChecker = new PublicHolidays();
             String nextDay = null;
-            if(finalTime <= currentTime) {
+            if(finalTime <= currentTime && !second) {
                 int index = 0;
                 for (int i=0; i<dayArray.length; i++) {
                     if (dayArray[i].equals(currentDay)) {
@@ -285,7 +285,8 @@ public class Carpark {
                 nextDay = dayArray[index % 7];
             }
             double cost = 0.0;
-            if (currentDay.equals("Sunday") || phChecker.isItPH(date)) {
+            if (true) {
+//            if (currentDay.equals("Sunday") || phChecker.isItPH(date)) {
                 // day of entry is sunday or ph
                 if (nextDay != null) {
                     // in and out on different days
@@ -298,15 +299,18 @@ public class Carpark {
                     // need get nextDay's date by calculation
                     // get time difference to figure out how long they park
                     int firstDayTimeDifference = calculateTimeDifference(String.valueOf(currentTime), String.valueOf(2230));
-                    int secondDayTimeDifference = calculateTimeDifference(String.valueOf(0700), String.valueOf(finalTime));
-                    double firstDayCost = Double.parseDouble(newCalc(date, currentDay, currentTime, 2230));
-                    double secondDayCost = Double.parseDouble(newCalc(findNextDate(), nextDay, 0700, finalTime));
+                    int secondDayTimeDifference = calculateTimeDifference("0700", String.valueOf(finalTime));
+                    Log.d("FIRSTDAYTIMEDIFF>>>>>>", Integer.toString(firstDayTimeDifference));
+                    Log.d("SECONDDAYTIMEDIFF>>>>>>", Integer.toString(secondDayTimeDifference));
+                    double firstDayCost = Double.parseDouble(newCalc(date, currentDay, currentTime, 2230, true));
+                    double secondDayCost = Double.parseDouble(newCalc(findNextDate(), nextDay, 0700, finalTime, true)); // !!!!!!!!!!!!!!!!!!!!!!!!!
                     if (firstDayTimeDifference >= 0 && secondDayTimeDifference >= 0) {
                         // enter before 2230 and leave after 0700 next day
                         cost = firstDayCost + 5 + secondDayCost;
                     } else if (firstDayTimeDifference >= 0 && secondDayTimeDifference < 0) {
                         // enter before 2230 and leave before 0700 next day
-                        int timeDifference = calculateTimeDifference(String.valueOf(2230), String.valueOf(finalTime));
+                        int timeDifference = calculateTimeDifference(String.valueOf(2230), finalTime > 2230 ? String.valueOf(finalTime) : String.valueOf(finalTime + 2400)); // Final time here 0400 -> timeDiff < 0
+                        Log.d("TIME DIFF>>>>>>>>>>", Integer.toString(timeDifference ));
                         if (timeDifference >= 255) {
                             cost = firstDayCost + 5;
                         } else {
@@ -315,15 +319,15 @@ public class Carpark {
                             } else {
                                 int remainder = timeDifference % 30;
                                 if (remainder == 0) {
-                                    cost = (timeDifference / 30) * 0.60;
+                                    cost = (timeDifference / 30.0) * 0.60;
                                 } else {
-                                    cost = ((timeDifference / 30) + 1) * 0.60;
+                                    cost = ((timeDifference / 30.0) + 1) * 0.60;
                                 }
                             }
                         }
                     } else if (firstDayTimeDifference < 0 && secondDayTimeDifference >= 0) {
                         // enter after 2230 and leave after 0700 next day
-                        int timeDifference = calculateTimeDifference(String.valueOf(currentTime), String.valueOf(0700));
+                        int timeDifference = calculateTimeDifference(String.valueOf(currentTime), String.valueOf(700 + 2400));
                         if (timeDifference >= 255) {
                             cost = secondDayCost + 5;
                         } else {
@@ -340,7 +344,7 @@ public class Carpark {
                         }
                     } else if (firstDayTimeDifference < 0 && secondDayTimeDifference < 0) {
                         // enter after 2230 and leave before 0700 next day
-                        int timeDifference = calculateTimeDifference(String.valueOf(currentTime), String.valueOf(finalTime));
+                        int timeDifference = calculateTimeDifference(String.valueOf(currentTime), finalTime > 2230 ? String.valueOf(finalTime) : String.valueOf(finalTime + 2400));
                         if (timeDifference >= 255) {
                             cost = 5;
                         } else {
@@ -367,7 +371,7 @@ public class Carpark {
                     // in and out on same day
                     if (currentTime >= 700 && finalTime <= 2230) {
                         // in and out within free parking range
-                        return "free parking";
+                        return "0.00";
                     } else {
                         // 1. in before 0700 (x), out before 2230
                         // 2. in before 0700 (x), out after 2230 (x)
@@ -376,13 +380,16 @@ public class Carpark {
                         if (this.getNightParking().equals("YES")) {
                             // there is night parking
                             int minutes = 0;
-                            if (currentTime < 0700) {
+                            int minutesBefore = 0;
+                            if (currentTime < 700) {
                                 if (finalTime < 2230) {
                                     // 1. in before 0700 (x), out before 2230
-                                    minutes = calculateTimeDifference(String.valueOf(currentTime), String.valueOf(0700));
+                                    minutes = calculateTimeDifference(String.valueOf(currentTime), "0700");
+                                    minutesBefore = minutes;
                                 } else {
                                     // 2. in before 0700 (x), out after 2230 (x)
-                                    minutes = calculateTimeDifference(String.valueOf(currentTime), String.valueOf(0700)) + calculateTimeDifference(String.valueOf(2230), String.valueOf(finalTime));
+                                    minutes = calculateTimeDifference(String.valueOf(currentTime), "0700") + calculateTimeDifference(String.valueOf(2230), String.valueOf(finalTime));
+                                    minutesBefore = calculateTimeDifference(String.valueOf(currentTime), "0700");
                                 }
                             } else {
                                 // 3. in after 0700, out after 2230 (x)
@@ -390,16 +397,33 @@ public class Carpark {
                             }
                             if (this.getParkingSystem().equals("ELECTRONIC PARKING")) {
                                 if (checkNonGrace(this.getCarParkNo())) {
-                                    cost = minutes * (0.60 / 30);
+                                    if (minutesBefore * 0.60 / 30 > 5) {
+                                        cost = 5.0 + ((minutes - minutesBefore) * 0.60 / 30);
+                                    } else {
+                                        cost = minutes * (0.60 / 30);
+                                    }
                                 } else {
-                                    cost = (minutes - 10) * (0.60 / 30);
+                                    if ((minutesBefore - 10) * 0.60 / 30 > 5) {
+                                        cost = 5.0 + ((minutes - minutesBefore) * 0.60 / 30);
+                                    } else {
+                                        cost = (Math.max((minutes - 10), 0)) * (0.60 / 30);
+                                    }
                                 }
                             } else {
-                                int remainder = minutes % 30;
-                                if (remainder == 0) {
-                                    cost = (minutes / 30) * 0.60;
+                                int remainderBefore = minutesBefore % 30;
+                                int remainder = (minutes - minutesBefore) % 30;
+                                boolean limit = false;
+                                if (remainderBefore == 0) {
+                                    limit = (minutesBefore / 30.0 * 0.60) > 5;
                                 } else {
-                                    cost = ((minutes / 30) + 1) * 0.60;
+                                    limit = ((minutesBefore / 30.0) + 1) * 0.60 > 5;
+                                }
+                                if (remainder == 0) {
+                                    cost = ((minutes - minutesBefore) / 30.0) * 0.60 + (limit ? 5.0
+                                            : remainderBefore == 0 ? minutesBefore / 30.0 * 0.60 : ((minutesBefore / 30.0) + 1) * 0.60);
+                                } else {
+                                    cost = (((minutes - minutesBefore) / 30.0) + 1) * 0.60 + (limit ? 5.0
+                                            : remainderBefore == 0 ? minutesBefore / 30.0 * 0.60 : ((minutesBefore / 30.0) + 1) * 0.60 );
                                 }
                             }
                         } else {
@@ -419,10 +443,10 @@ public class Carpark {
                                 int remainder = minutes % 30;
                                 if (remainder == 0) {
                                     // duration is divisible by 30mins
-                                    cost = (minutes / 30) * 0.60;
+                                    cost = (minutes / 30.0) * 0.60;
                                 } else {
                                     // duration is non divisible by 30mins
-                                    cost = ((minutes / 30) + 1) * 0.60;
+                                    cost = ((minutes / 30.0) + 1) * 0.60;
                                 }
                             }
                         }
@@ -441,7 +465,7 @@ public class Carpark {
                     // need get nextDay's date by calculation
                 } else {
                     // in and out on same day
-                    if (this.isCentralCarpark()  ) {
+                    if (this.isCentralCarpark()) {
                         // it is a central carpark
                     } else {
                         // it is a non central carpark
@@ -643,7 +667,7 @@ public class Carpark {
 //        }
 
         @Override
-        public String newCalc(String date, String currentDay, int currentTime, int finalTime) {
+        public String newCalc(String date, String currentDay, int currentTime, int finalTime, boolean second) {
             return "";
         }
     }
@@ -706,23 +730,28 @@ public class Carpark {
         if (startTime.length() <= 3) startTime = "0" + startTime;
         if (endTime.length() <= 3) endTime = "0" + endTime;
 
+        Log.d("STARTTIME>>>>>>>>>>>>>>>>", startTime);
+
         // 05 AND 30
         // 23 AND 00
-        Integer startHour = Integer.parseInt(startTime.substring(0, 1));
-        Integer startMin = Integer.parseInt(startTime.substring(2));
+        Integer startHour = Integer.parseInt(startTime.substring(0, 2)); // 2230    2230    2258
+        Integer startMin = Integer.parseInt(startTime.substring(2)); //     2313    2429    2401
 
         // 07 AND 00
         // 22 AND 30
-        Integer endHour = Integer.parseInt(endTime.substring(0, 1));
-        Integer endMin = Integer.parseInt(endTime.substring(2));
+        Integer endHour = Integer.parseInt(endTime.substring(0, 2)); //
+        Integer endMin = Integer.parseInt(endTime.substring(2)); //
+
+        Log.d("TIMING CHECK>>>>>>>>>>", startHour.toString() + startMin.toString() + " " + endHour.toString() + endMin.toString());
 
         Integer differenceInTime = 0;
 
         if (endMin < startMin) {
-            differenceInTime = (endHour - startHour - 1) * 60 + (startMin - endMin);
+            differenceInTime = (endHour - startHour - 1) * 60 + (60 - startMin + endMin);
         }  else {
             differenceInTime = (endHour - startHour) * 60 + (endMin - startMin);
         }
+        Log.d("DIFFERENCE IN TIME IN METHOD >>>>", differenceInTime.toString());
 
         return differenceInTime;
     }
@@ -742,7 +771,7 @@ public class Carpark {
 //        return "";
 //    }
 
-    public String newCalc(String date, String currentDay, int currentTime, int finalTime) {
+    public String newCalc(String date, String currentDay, int currentTime, int finalTime, boolean second) {
         return "";
     }
 

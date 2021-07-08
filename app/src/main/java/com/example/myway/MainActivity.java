@@ -127,9 +127,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private SVY21Coordinate destinationSVY21 = null;
 
-    private DrawerLayout drawerLayout;
-    private ActionBarDrawerToggle actionBarDrawerToggle;
-    private Toolbar mToolbar;
+    private DrawerLayout navDrawer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -149,18 +147,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
         hamburgerMenu = findViewById(R.id.fragment_main_hamburger_menu);
-//        drawerLayout = findViewById(R.id.my_drawer_layout);
-//        actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.nav_open, R.string.nav_close);
-//        drawerLayout.addDrawerListener(actionBarDrawerToggle);
-//        actionBarDrawerToggle.syncState();
-//        mToolbar = findViewById(R.id.toolbar);
-//        setSupportActionBar(mToolbar);
-//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        navDrawer = findViewById(R.id.my_drawer_layout);
 
         hamburgerMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DrawerLayout navDrawer = findViewById(R.id.my_drawer_layout);
                 // If the navigation drawer is not open then open it, if its already open then close it.
                 if (!navDrawer.isDrawerOpen(GravityCompat.START)) {
                     navDrawer.openDrawer(GravityCompat.START);
@@ -171,14 +162,16 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         });
     }
 
-//    @Override
-//    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-//
-//        if (actionBarDrawerToggle.onOptionsItemSelected(item)) {
-//            return true;
-//        }
-//        return super.onOptionsItemSelected(item);
-//    }
+    @Override
+    public void onBackPressed() {
+        if (this.navDrawer.isDrawerOpen(GravityCompat.START)) {
+            this.navDrawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+
 
     private void initSearchFab() {
         searchText.setOnClickListener(v -> findViewById(R.id.fab_location_search).performClick());

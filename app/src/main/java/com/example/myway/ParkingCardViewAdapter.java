@@ -1,21 +1,17 @@
 package com.example.myway;
 
 import android.app.Dialog;
-import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.NumberPicker;
 import android.widget.PopupMenu;
 import android.widget.TextView;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -26,7 +22,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
@@ -37,16 +32,16 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
 
 
     public static class ParkingCardViewHolder extends RecyclerView.ViewHolder {
-        private TextView location;
-        private TextView carpark_availability;
-        private TextView price_calculator;
-        private CardView cardView;
-        private TextView longitude;
-        private TextView latitude;
-        private ImageButton arrowDropDown;
-        private Dialog mDialog;
-        private TextView parkDuration;
-        private ImageButton threeDots;
+        private final TextView location;
+        private final TextView carpark_availability;
+        private final TextView price_calculator;
+        private final CardView cardView;
+        private final TextView longitude;
+        private final TextView latitude;
+        private final ImageButton arrowDropDown;
+        private final Dialog mDialog;
+        private final TextView parkDuration;
+        private final ImageButton threeDots;
 
         public ParkingCardViewHolder(@NonNull @NotNull View itemView) {
             super(itemView);
@@ -61,75 +56,69 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
             mDialog = new Dialog(itemView.getContext());
             threeDots = itemView.findViewById(R.id.ic_ellipsis);
 
-            arrowDropDown.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
+            arrowDropDown.setOnClickListener(v -> {
 
-                    mDialog.setContentView(R.layout.number_picker_dialog);
-                    NumberPicker hourPicker = (NumberPicker) mDialog.findViewById(R.id.hourPicker);
-                    NumberPicker minutePicker = (NumberPicker) mDialog.findViewById(R.id.minutePicker);
-                    hourPicker.setMaxValue(23);
+                mDialog.setContentView(R.layout.number_picker_dialog);
+                NumberPicker hourPicker = mDialog.findViewById(R.id.hourPicker);
+                NumberPicker minutePicker = mDialog.findViewById(R.id.minutePicker);
+                hourPicker.setMaxValue(23);
 //                    minutePicker.setMaxValue(45);
-                    minutePicker.setMinValue(1);
-                    minutePicker.setMaxValue(4);
-                    minutePicker.setDisplayedValues(new String[] {"0", "15", "30", "45"});
+                minutePicker.setMinValue(1);
+                minutePicker.setMaxValue(4);
+                minutePicker.setDisplayedValues(new String[] {"0", "15", "30", "45"});
 //                    minutePicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
 //                        @Override
 //                        public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
 //                            picker.setValue((newVal < oldVal)? oldVal-15 : oldVal+15);
 //                        }
 //                    });
-                    hourPicker.setWrapSelectorWheel(false);
-                    minutePicker.setWrapSelectorWheel(false);
-                    mDialog.show();
-                    Button confirmTime = mDialog.findViewById(R.id.confirm_button);
-                    confirmTime.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            String currentTime = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
-                            String currentDay = new SimpleDateFormat("EEEE", Locale.getDefault()).format(new Date());
-                            String date = new SimpleDateFormat("ddMMyyyy", Locale.getDefault()).format(new Date());
-                            Log.d("CheckDate", "Date" + date);
-                            String finalTime = "";
+                hourPicker.setWrapSelectorWheel(false);
+                minutePicker.setWrapSelectorWheel(false);
+                mDialog.show();
+                Button confirmTime = mDialog.findViewById(R.id.confirm_button);
+                confirmTime.setOnClickListener(v1 -> {
+                    String currentTime = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
+                    String currentDay = new SimpleDateFormat("EEEE", Locale.getDefault()).format(new Date());
+                    String date = new SimpleDateFormat("ddMMyyyy", Locale.getDefault()).format(new Date());
+                    Log.d("CheckDate", "Date" + date);
+                    String finalTime = "";
 //                            Log.d("CheckDay", "Day" + currentDay);
-                            String[] timeArray = currentTime.split(":");
-                            int currentHour = Integer.parseInt(timeArray[0]);
-                            int currentMinute = Integer.parseInt(timeArray[1]);
-                            int numHours = hourPicker.getValue();
-                            int numMinutes = Integer.parseInt(minutePicker.getDisplayedValues()[minutePicker.getValue()-1]);
-                            int finalHour = currentHour + numHours;
+                    String[] timeArray = currentTime.split(":");
+                    int currentHour = Integer.parseInt(timeArray[0]);
+                    int currentMinute = Integer.parseInt(timeArray[1]);
+                    int numHours = hourPicker.getValue();
+                    int numMinutes = Integer.parseInt(minutePicker.getDisplayedValues()[minutePicker.getValue()-1]);
+                    int finalHour = currentHour + numHours;
 //                            Log.d("HOURPICKER", "hour value: " + finalHour);
-                            int finalMinute = currentMinute + numMinutes;
+                    int finalMinute = currentMinute + numMinutes;
 //                            Log.d("HOURPICKER", "minute value: " + finalMinute);
-                            if(finalMinute >= 60) {
-                                finalMinute %= 60;
-                                finalHour++;
-                            }
-                            if(finalHour >= 24) {
-                                finalHour %= 24;
-                            }
-                            String finalHourString = String.valueOf(finalHour);
-                            String finalMinuteString = String.valueOf(finalMinute);
-                            if(finalMinute < 10) {
-                                finalMinuteString = "0" + finalMinuteString;
-                            }
-                            if(finalHour < 10) {
-                                finalHourString = "0" + finalHourString;
-                            }
-                            finalTime += finalHourString + ":" + finalMinuteString;
-                            //pass in current time, parkingduration, carpark information
-                            //pricecalculator method
-                            parkDuration.setText(currentTime + " - " + finalTime);
+                    if(finalMinute >= 60) {
+                        finalMinute %= 60;
+                        finalHour++;
+                    }
+                    if(finalHour >= 24) {
+                        finalHour %= 24;
+                    }
+                    String finalHourString = String.valueOf(finalHour);
+                    String finalMinuteString = String.valueOf(finalMinute);
+                    if(finalMinute < 10) {
+                        finalMinuteString = "0" + finalMinuteString;
+                    }
+                    if(finalHour < 10) {
+                        finalHourString = "0" + finalHourString;
+                    }
+                    finalTime += finalHourString + ":" + finalMinuteString;
+                    //pass in current time, parkingduration, carpark information
+                    //pricecalculator method
+                    parkDuration.setText(currentTime + " - " + finalTime);
 //                            Log.d("PCV SIZE", "SIZE: " + parkingCardViewArrayList.size());
 //                            Log.d("PCV POSITION", "INDEX: " + itemView.getTag());
-                            Log.d("Calculator", "Day" + currentDay);
-                            Log.d("Calculator", "currentTime" + ((currentHour*100) + currentMinute));
-                            Log.d("Calculator", "finalTime" + ((finalHour*100) + finalMinute));
-                            price_calculator.setText(calculatePrice(date, currentDay, ((currentHour*100) + currentMinute), numHours, numMinutes, ((finalHour*100) + finalMinute), parkingCardViewArrayList.get((int) itemView.getTag())));
-                            mDialog.dismiss();
-                        }
-                    });
-                }
+//                            Log.d("Calculator", "Day" + currentDay);
+//                            Log.d("Calculator", "currentTime" + ((currentHour*100) + currentMinute));
+//                            Log.d("Calculator", "finalTime" + ((finalHour*100) + finalMinute));
+                    price_calculator.setText(" est. $" + calculatePrice(date, currentDay, ((currentHour*100) + currentMinute), numHours, numMinutes, ((finalHour*100) + finalMinute), parkingCardViewArrayList.get((int) itemView.getTag())));
+                    mDialog.dismiss();
+                });
             });
 
             threeDots.setOnClickListener(v -> {
@@ -143,19 +132,16 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
             });
 
 
-            cardView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(v.getContext(), MainActivity.class);
-                    double lat =  Double.parseDouble((String) latitude.getText());
-                    double lon = Double.parseDouble((String) longitude.getText());
-                    intent.putExtra("latitude", lat);
-                    intent.putExtra("longitude", lon);
-                    intent.putExtra("username", username);
-                    intent.putExtra("location", location.getText());
-                    Toast.makeText(v.getContext(), username, Toast.LENGTH_SHORT).show();
-                    v.getContext().startActivity(intent);
-                }
+            cardView.setOnClickListener(v -> {
+                Intent intent = new Intent(v.getContext(), MainActivity.class);
+                double lat =  Double.parseDouble((String) latitude.getText());
+                double lon = Double.parseDouble((String) longitude.getText());
+                intent.putExtra("latitude", lat);
+                intent.putExtra("longitude", lon);
+                intent.putExtra("username", username);
+                intent.putExtra("location", location.getText());
+                Toast.makeText(v.getContext(), username, Toast.LENGTH_SHORT).show();
+                v.getContext().startActivity(intent);
             });
         }
     }
@@ -164,20 +150,20 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
         Carpark currentCP = currentCardView.getCurrentCP();
         if (currentCP instanceof Carpark.HDB) {
             //return ((Carpark.HDB) currentCP).calculate(date, currentDay, currentTime, numHours, numMinutes, finalTime);
-            return ((Carpark.HDB) currentCP).newCalc(date, currentDay, currentTime, finalTime, false);
+            return currentCP.calculateRates(date, currentDay, currentTime, finalTime, false);
         } else if (currentCP instanceof Carpark.LTA) {
             //return ((Carpark.LTA) currentCP).calculate(date, currentDay, currentTime, numHours, numMinutes, finalTime);
-            return ((Carpark.HDB) currentCP).newCalc(date, currentDay, currentTime, finalTime, false);
+            return currentCP.calculateRates(date, currentDay, currentTime, finalTime, false);
         } else if (currentCP instanceof Carpark.URA) {
             //return ((Carpark.URA) currentCP).calculate(date, currentDay, currentTime, numHours, numMinutes, finalTime);
-            return ((Carpark.HDB) currentCP).newCalc(date, currentDay, currentTime, finalTime, false);
+            return currentCP.calculateRates(date, currentDay, currentTime, finalTime, false);
         } else {
             return "info unavailable";
         }
     }
     public ParkingCardViewAdapter(ArrayList<ParkingCardView> parkingCardViewArrayList, String username) {
-        this.parkingCardViewArrayList = parkingCardViewArrayList;
-        this.username = username;
+        ParkingCardViewAdapter.parkingCardViewArrayList = parkingCardViewArrayList;
+        ParkingCardViewAdapter.username = username;
     }
 
     @NonNull

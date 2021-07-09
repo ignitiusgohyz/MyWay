@@ -7,6 +7,7 @@
     import android.app.ActionBar;
     import android.app.Activity;
     import android.content.Intent;
+    import android.content.SharedPreferences;
     import android.content.pm.PackageManager;
     import android.graphics.BitmapFactory;
     import android.graphics.Color;
@@ -16,6 +17,7 @@
     import android.os.Bundle;
     import android.provider.Settings;
     import android.view.Gravity;
+    import android.view.Menu;
     import android.view.MenuItem;
     import android.view.View;
     import android.widget.Button;
@@ -35,6 +37,7 @@
     import androidx.core.view.GravityCompat;
     import androidx.drawerlayout.widget.DrawerLayout;
 
+    import com.google.android.material.navigation.NavigationView;
     import com.google.android.material.snackbar.Snackbar;
     import com.google.gson.JsonObject;
     import com.mapbox.android.core.location.LocationEngine;
@@ -93,7 +96,7 @@
 // TODO
 // 1. Set current user location after clicking compass
 
-public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, PermissionsListener, MapboxMap.OnMapClickListener {
+public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, PermissionsListener, MapboxMap.OnMapClickListener, NavigationView.OnNavigationItemSelectedListener {
 
     // Map Variables
     private MapView mapView;
@@ -128,6 +131,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private SVY21Coordinate destinationSVY21 = null;
 
     private DrawerLayout navDrawer;
+    private Toolbar toolbar;
+    private NavigationView navigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -142,12 +147,20 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         checkParking = findViewById(R.id.checkParking);
         searchText = findViewById(R.id.location_text);
         TextView greetingText = findViewById(R.id.fragment_main_greeting_text);
-        String greet = "Hello, " + getIntent().getStringExtra("username");
+        SharedPreferences preferences = getSharedPreferences("checkbox", MODE_PRIVATE);
+        String greet = "Hello, " + preferences.getString("username", "null");
         greetingText.setText(greet);
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
         hamburgerMenu = findViewById(R.id.fragment_main_hamburger_menu);
         navDrawer = findViewById(R.id.my_drawer_layout);
+        navigationView = findViewById(R.id.navigation_view);
+        navigationView.setNavigationItemSelectedListener(this);
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, navDrawer, toolbar, R.string.nav_open, R.string.nav_close);
+        navDrawer.addDrawerListener(toggle);
+        toggle.syncState();
 
         hamburgerMenu.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -171,7 +184,21 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
-
+    @Override
+    public boolean onNavigationItemSelected(@NonNull @NotNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.nav_logout:
+                SharedPreferences preferences = getSharedPreferences("checkbox", MODE_PRIVATE);
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.putString("remember","false");
+                editor.apply();
+                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                startActivity(intent);
+                return true;
+        }
+        navDrawer.closeDrawer(GravityCompat.START);
+        return true;
+    }
 
     private void initSearchFab() {
         searchText.setOnClickListener(v -> findViewById(R.id.fab_location_search).performClick());
@@ -530,6 +557,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             finish();
         }
     }
+
 
     private static class MainActivityLocationCallback implements LocationEngineCallback<LocationEngineResult> {
 

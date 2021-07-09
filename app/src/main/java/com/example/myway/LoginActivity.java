@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.renderscript.ScriptGroup;
 import android.text.Layout;
 import android.text.method.HideReturnsTransformationMethod;
@@ -38,7 +39,6 @@ public class LoginActivity extends AppCompatActivity {
     private String createdPassword_string;
     private float v = 0;
     private final String key = "dc82311d-b99a-412e-9f12-6f607b758479";
-    private String rememberedUsername;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,7 +91,6 @@ public class LoginActivity extends AppCompatActivity {
 
         loginButton.setOnClickListener(v -> {
             createdUsername_string = createdUsername.getText().toString().toLowerCase().trim();
-            rememberedUsername = createdUsername_string;
             createdPassword_string = createdPassword.getText().toString().trim();
 
             if (createdUsername_string.length() == 0 || createdPassword_string.length() == 0) {
@@ -105,7 +104,6 @@ public class LoginActivity extends AppCompatActivity {
                         loadingDialog.dismissDialog();
                         Toast.makeText(LoginActivity.this, "Logging In...", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                        intent.putExtra("username", createdUsername_string);
                         startActivity(intent);
                     }, 1000);
 
@@ -122,11 +120,13 @@ public class LoginActivity extends AppCompatActivity {
                 SharedPreferences preferences = getSharedPreferences("checkbox", MODE_PRIVATE);
                 SharedPreferences.Editor editor = preferences.edit();
                 editor.putString("remember","true");
+                editor.putString("username", createdUsername.getText().toString().toLowerCase().trim());
                 editor.apply();
             } else if(!buttonView.isChecked()) {
                 SharedPreferences preferences = getSharedPreferences("checkbox", MODE_PRIVATE);
                 SharedPreferences.Editor editor = preferences.edit();
                 editor.putString("remember","false");
+                editor.putString("username", "null");
                 editor.apply();
             }
         });
@@ -136,15 +136,13 @@ public class LoginActivity extends AppCompatActivity {
 
         if (checkbox.equals("true")) {
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-            Log.d("LoginActivity", "rememberedUsername: " + rememberedUsername);
-            intent.putExtra("username", rememberedUsername);
             startActivity(intent);
         }
 
         tempClearDatabaseButton.setOnClickListener(v -> {
-                databaseHelper.clearDatabase();
-                Toast.makeText(LoginActivity.this, "All records deleted", Toast.LENGTH_SHORT).show();
-                });
+            databaseHelper.clearDatabase();
+            Toast.makeText(LoginActivity.this, "All records deleted", Toast.LENGTH_SHORT).show();
+        });
 
         registerButton.setOnClickListener(v -> {
             Intent intent = new Intent(LoginActivity.this, UsernameRegistration.class);

@@ -1,97 +1,97 @@
-    package com.example.myway;
+package com.example.myway;
 
 // Misc Classes
 
-    import android.Manifest;
-    import android.annotation.SuppressLint;
-    import android.app.ActionBar;
-    import android.app.Activity;
-    import android.content.Intent;
-    import android.content.SharedPreferences;
-    import android.content.pm.PackageManager;
-    import android.graphics.BitmapFactory;
-    import android.graphics.Color;
-    import android.graphics.drawable.Drawable;
-    import android.location.Location;
-    import android.net.Uri;
-    import android.os.Bundle;
-    import android.provider.Settings;
-    import android.view.Gravity;
-    import android.view.Menu;
-    import android.view.MenuItem;
-    import android.view.View;
-    import android.widget.Button;
-    import android.widget.ImageButton;
-    import android.widget.TextView;
-    import android.widget.Toast;
+import android.Manifest;
+import android.annotation.SuppressLint;
+import android.app.ActionBar;
+import android.app.Activity;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.location.Location;
+import android.net.Uri;
+import android.os.Bundle;
+import android.provider.Settings;
+import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.TextView;
+import android.widget.Toast;
 
-    import androidx.annotation.NonNull;
-    import androidx.appcompat.app.ActionBarDrawerToggle;
-    import androidx.appcompat.app.AlertDialog;
-    import androidx.appcompat.app.AppCompatActivity;
-    import androidx.appcompat.content.res.AppCompatResources;
-    import androidx.appcompat.widget.Toolbar;
-    import androidx.core.app.ActivityCompat;
-    import androidx.core.content.ContextCompat;
-    import androidx.core.graphics.drawable.DrawableCompat;
-    import androidx.core.view.GravityCompat;
-    import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
-    import com.google.android.material.navigation.NavigationView;
-    import com.google.android.material.snackbar.Snackbar;
-    import com.google.gson.JsonObject;
-    import com.mapbox.android.core.location.LocationEngine;
-    import com.mapbox.android.core.location.LocationEngineCallback;
-    import com.mapbox.android.core.location.LocationEngineProvider;
-    import com.mapbox.android.core.location.LocationEngineRequest;
-    import com.mapbox.android.core.location.LocationEngineResult;
-    import com.mapbox.android.core.permissions.PermissionsListener;
-    import com.mapbox.api.directions.v5.models.DirectionsResponse;
-    import com.mapbox.api.directions.v5.models.DirectionsRoute;
-    import com.mapbox.api.geocoding.v5.models.CarmenFeature;
-    import com.mapbox.geojson.Feature;
-    import com.mapbox.geojson.FeatureCollection;
-    import com.mapbox.geojson.Point;
-    import com.mapbox.mapboxsdk.Mapbox;
-    import com.mapbox.mapboxsdk.camera.CameraPosition;
-    import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
-    import com.mapbox.mapboxsdk.geometry.LatLng;
-    import com.mapbox.mapboxsdk.location.LocationComponent;
-    import com.mapbox.mapboxsdk.location.LocationComponentActivationOptions;
-    import com.mapbox.mapboxsdk.location.LocationUpdate;
-    import com.mapbox.mapboxsdk.location.modes.CameraMode;
-    import com.mapbox.mapboxsdk.location.modes.RenderMode;
-    import com.mapbox.mapboxsdk.maps.MapView;
-    import com.mapbox.mapboxsdk.maps.MapboxMap;
-    import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
-    import com.mapbox.mapboxsdk.maps.Style;
-    import com.mapbox.mapboxsdk.plugins.places.autocomplete.PlaceAutocomplete;
-    import com.mapbox.mapboxsdk.plugins.places.autocomplete.model.PlaceOptions;
-    import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
-    import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
-    import com.mapbox.services.android.navigation.ui.v5.NavigationLauncher;
-    import com.mapbox.services.android.navigation.ui.v5.NavigationLauncherOptions;
-    import com.mapbox.services.android.navigation.ui.v5.route.NavigationMapRoute;
-    import com.mapbox.services.android.navigation.v5.navigation.NavigationRoute;
+import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.gson.JsonObject;
+import com.mapbox.android.core.location.LocationEngine;
+import com.mapbox.android.core.location.LocationEngineCallback;
+import com.mapbox.android.core.location.LocationEngineProvider;
+import com.mapbox.android.core.location.LocationEngineRequest;
+import com.mapbox.android.core.location.LocationEngineResult;
+import com.mapbox.android.core.permissions.PermissionsListener;
+import com.mapbox.api.directions.v5.models.DirectionsResponse;
+import com.mapbox.api.directions.v5.models.DirectionsRoute;
+import com.mapbox.api.geocoding.v5.models.CarmenFeature;
+import com.mapbox.geojson.Feature;
+import com.mapbox.geojson.FeatureCollection;
+import com.mapbox.geojson.Point;
+import com.mapbox.mapboxsdk.Mapbox;
+import com.mapbox.mapboxsdk.camera.CameraPosition;
+import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
+import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.mapbox.mapboxsdk.location.LocationComponent;
+import com.mapbox.mapboxsdk.location.LocationComponentActivationOptions;
+import com.mapbox.mapboxsdk.location.LocationUpdate;
+import com.mapbox.mapboxsdk.location.modes.CameraMode;
+import com.mapbox.mapboxsdk.location.modes.RenderMode;
+import com.mapbox.mapboxsdk.maps.MapView;
+import com.mapbox.mapboxsdk.maps.MapboxMap;
+import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
+import com.mapbox.mapboxsdk.maps.Style;
+import com.mapbox.mapboxsdk.plugins.places.autocomplete.PlaceAutocomplete;
+import com.mapbox.mapboxsdk.plugins.places.autocomplete.model.PlaceOptions;
+import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
+import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
+import com.mapbox.services.android.navigation.ui.v5.NavigationLauncher;
+import com.mapbox.services.android.navigation.ui.v5.NavigationLauncherOptions;
+import com.mapbox.services.android.navigation.ui.v5.route.NavigationMapRoute;
+import com.mapbox.services.android.navigation.v5.navigation.NavigationRoute;
 
-    import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.NotNull;
 
-    import java.lang.ref.WeakReference;
-    import java.util.List;
-    import java.util.Objects;
-    import java.util.concurrent.Executor;
-    import java.util.concurrent.Executors;
-    import java.util.concurrent.FutureTask;
+import java.lang.ref.WeakReference;
+import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.FutureTask;
 
-    import retrofit2.Call;
-    import retrofit2.Callback;
-    import retrofit2.Response;
-    import timber.log.Timber;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import timber.log.Timber;
 
-    import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconAllowOverlap;
-    import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconIgnorePlacement;
-    import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconImage;
-    import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconOffset;
+import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconAllowOverlap;
+import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconIgnorePlacement;
+import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconImage;
+import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconOffset;
 
 // TODO
 // 1. Set current user location after clicking compass
@@ -162,6 +162,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         navDrawer.addDrawerListener(toggle);
         toggle.syncState();
 
+//        if (savedInstanceState == null) {
+//            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new ParkingAlarmFragment()).commit();
+//            navigationView.setCheckedItem(R.id.nav_parking_alarm);
+//        }
         hamburgerMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -187,6 +191,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public boolean onNavigationItemSelected(@NonNull @NotNull MenuItem item) {
         switch (item.getItemId()) {
+//            case R.id.nav_parking_alarm:
+//                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new ParkingAlarmFragment()).commit();
+//                break;
             case R.id.nav_logout:
                 SharedPreferences preferences = getSharedPreferences("checkbox", MODE_PRIVATE);
                 SharedPreferences.Editor editor = preferences.edit();
@@ -194,7 +201,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 editor.apply();
                 Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                 startActivity(intent);
-                return true;
+                break;
         }
         navDrawer.closeDrawer(GravityCompat.START);
         return true;
@@ -437,7 +444,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         Point originPoint = destinationPoint; // anyhow put first
         if (locationComponent.getLastKnownLocation() != null) {
             originPoint = Point.fromLngLat(locationComponent.getLastKnownLocation().getLongitude(),
-                        locationComponent.getLastKnownLocation().getLatitude());
+                    locationComponent.getLastKnownLocation().getLatitude());
         }
         GeoJsonSource source = Objects.requireNonNull(mapboxMap.getStyle()).getSourceAs("destination-source-id");
         if (source != null) {
@@ -452,9 +459,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         destinationLng = point.getLongitude();
         mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(
                 new CameraPosition.Builder()
-                .target(point)
-                .zoom(14)
-                .build()), 4000);
+                        .target(point)
+                        .zoom(14)
+                        .build()), 4000);
         return true;
     }
 

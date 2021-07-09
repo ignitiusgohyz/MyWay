@@ -46,6 +46,7 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
         private ImageButton arrowDropDown;
         private Dialog mDialog;
         private TextView parkDuration;
+        private ImageButton threeDots;
 
         public ParkingCardViewHolder(@NonNull @NotNull View itemView) {
             super(itemView);
@@ -58,6 +59,7 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
             arrowDropDown = itemView.findViewById(R.id.fragment_carpark_timing_arrow_down);
             parkDuration = itemView.findViewById(R.id.timeslot_1);
             mDialog = new Dialog(itemView.getContext());
+            threeDots = itemView.findViewById(R.id.ic_ellipsis);
 
             arrowDropDown.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -130,6 +132,15 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
                 }
             });
 
+            threeDots.setOnClickListener(v -> {
+                PopupMenu popupMenu = new PopupMenu(v.getContext(), threeDots);
+                popupMenu.getMenuInflater().inflate(R.menu.three_dots_cardview, popupMenu.getMenu());
+                popupMenu.setOnMenuItemClickListener(item -> {
+                    popupMenu.dismiss();
+                    return true;
+                });
+                popupMenu.show();
+            });
 
 
             cardView.setOnClickListener(new View.OnClickListener() {

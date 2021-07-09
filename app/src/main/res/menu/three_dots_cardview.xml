@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/alarmToggle"
+        android:title="should have a switch-ish" />
+
+    <item
+        android:id="@+id/carpark_information"
+        android:title="Carpark Information">
+    </item>
+</menu>

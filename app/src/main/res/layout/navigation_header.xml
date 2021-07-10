@@ -10,21 +10,22 @@
     android:orientation="vertical"
     >
 
-
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
+        android:scaleX="1.5"
+        android:scaleY="1.5"
         android:src="@mipmap/ic_myway_logo_foreground"
-        />
+        tools:ignore="ContentDescription" />
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:padding="8dp"
-        android:textSize="16dp"
+        android:textSize="16sp"
         android:text="MyWay"
-        android:textAppearance="@font/titillium_web_semibold">
+        android:fontFamily="@font/titillium_web_semibold">
     </TextView>
 
 </LinearLayout>

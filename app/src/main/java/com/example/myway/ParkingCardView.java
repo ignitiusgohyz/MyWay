@@ -1,6 +1,7 @@
 package com.example.myway;
 
 import android.util.Log;
+import android.widget.TextView;
 
 public class ParkingCardView {
     private String location;
@@ -9,6 +10,7 @@ public class ParkingCardView {
     private double latitude;
     private double longitude;
     private double distanceFromCurrent;
+    private String duration;
     private boolean redColour;
     private Carpark currentCP;
 
@@ -27,18 +29,18 @@ public class ParkingCardView {
             if (carpark_availability.length() == 5) {
                 String[] temp = carpark_availability.split("/");
                 String availableString = temp[0];
-                Log.d("Checking percentage", "Available: " + availableString);
+//                Log.d("Checking percentage", "Available: " + availableString);
                 String[] temp2 = temp[1].split(" lots available");
                 String totalString = temp2[0];
-                Log.d("Checking percentage", "Total: " + totalString);
+//                Log.d("Checking percentage", "Total: " + totalString);
                 double availableInt = Double.parseDouble(availableString);
                 double totalInt = Double.parseDouble(totalString);
-                Log.d("Checking percentage", "Percentage: " + availableInt / totalInt);
+//                Log.d("Checking percentage", "Percentage: " + availableInt / totalInt);
                 if (availableInt / totalInt <= 0.1) {
-                    Log.d("Checking percentage", "IF -> red: " + availableInt / totalInt);
+//                    Log.d("Checking percentage", "IF -> red: " + availableInt / totalInt);
                     redColour = true;
                 } else {
-                    Log.d("Checking percentage", "ELSE -> not red: " + availableInt / totalInt);
+//                    Log.d("Checking percentage", "ELSE -> not red: " + availableInt / totalInt);
                     redColour = false;
                 }
             } else {
@@ -46,6 +48,8 @@ public class ParkingCardView {
             }
         }
     }
+
+
 
     public Carpark getCurrentCP() {
         return currentCP;
@@ -63,6 +67,10 @@ public class ParkingCardView {
         return location;
     }
 
+    public void setPrice_calculator(String price_calculator) {
+        this.price_calculator = price_calculator;
+    }
+
     public boolean isRedColour() {
         return redColour;
     }
@@ -72,4 +80,12 @@ public class ParkingCardView {
     public double getLatitude() { return latitude; }
 
     public double getLongitude() { return longitude; }
+
+    public String getDuration() {
+        return duration;
+    }
+
+    public void setDuration(String duration) {
+        this.duration = duration;
+    }
 }

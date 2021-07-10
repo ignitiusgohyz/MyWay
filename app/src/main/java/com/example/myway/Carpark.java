@@ -28,8 +28,9 @@ public class Carpark {
     private String parkingSystem;
     private double distanceApart; // Distance from current location
     private Integer availableLots;
+    private double price;
     protected static final String freeParkingCost = "0.00";
-    protected final DecimalFormat decimalFormat = new DecimalFormat("#.00");
+    protected final DecimalFormat decimalFormat = new DecimalFormat("#0.00");
 
     public boolean isCentralCarpark() {
         return centralCarpark;
@@ -67,6 +68,14 @@ public class Carpark {
         }
     }
 
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
 
     public static class URA extends Carpark {
 
@@ -85,12 +94,6 @@ public class Carpark {
         public URA(String cPN, String a, double svyX, double svyY, String pS) {
             super(cPN, a, svyX, svyY, pS);
         }
-
-//        @Override
-//        public String calculate(String date, String currentDay, int currentTime, int numHours, int numMinutes, int finalTime) {
-//            Log.d("Error >>>>", "Carpark type not specified");
-//            return "";
-//        }
 
         public String getWeekdayMin(int index) {
             return this.weekdayMin.get(index);

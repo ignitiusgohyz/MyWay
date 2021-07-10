@@ -18,8 +18,10 @@
             android:id="@+id/destination_1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Location"
             android:layout_margin="4dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="4dp"
+            android:text="Location"
             android:textColor="@color/black"
             android:textSize="16sp"
             android:textStyle="bold"
@@ -67,11 +69,11 @@
             android:id="@+id/view_rate_img"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="5dp"
             android:src="@drawable/ic_carpark_rate"
-            app:layout_constraintTop_toTopOf="@id/view_rates_1"
             app:layout_constraintBottom_toBottomOf="@id/view_rates_1"
             app:layout_constraintRight_toLeftOf="@id/view_rates_1"
-            android:layout_marginEnd="5dp"
+            app:layout_constraintTop_toTopOf="@id/view_rates_1"
             tools:ignore="ContentDescription" />
 
         <ImageButton
@@ -134,14 +136,14 @@
             android:id="@+id/est_price_1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="5dp"
-            app:layout_constraintTop_toTopOf="@id/timeslot_1"
+            android:text="no est."
+            android:textColor="@color/black"
+            android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="@id/timeslot_1"
             app:layout_constraintLeft_toLeftOf="@id/view_rates_1"
             app:layout_constraintRight_toRightOf="@id/view_rates_1"
-            android:text="estimated price"
-            android:textColor="@color/black"
-            android:textSize="16sp"/>
+            app:layout_constraintStart_toEndOf="@+id/est_price_img"
+            app:layout_constraintTop_toTopOf="@id/timeslot_1" />
 
         <ImageButton
             android:layout_width="wrap_content"
@@ -162,13 +164,13 @@
             android:id="@+id/est_price_img"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="@id/est_price_1"
-            app:layout_constraintBottom_toBottomOf="@id/est_price_1"
-            app:layout_constraintRight_toLeftOf="@id/est_price_1"
-            android:src="@drawable/ic_carpark_symbol"
-            android:layout_marginEnd="5dp"
             android:scaleX="0.8"
             android:scaleY="0.8"
+            android:src="@drawable/ic_carpark_symbol"
+            app:layout_constraintBottom_toBottomOf="@id/est_price_1"
+            app:layout_constraintEnd_toEndOf="@+id/view_rate_img"
+            app:layout_constraintStart_toStartOf="@+id/view_rate_img"
+            app:layout_constraintTop_toTopOf="@id/est_price_1"
             tools:ignore="ContentDescription" />
 
 

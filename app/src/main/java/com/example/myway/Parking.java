@@ -5,6 +5,7 @@ import android.util.Log;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -91,7 +92,13 @@ public class Parking extends AppCompatActivity {
             fillPCVArrayList();
         } else if (type.equals("Price")) {
             // Sorts the car parks by price
-            fillPCVArrayList();
+//            TextView estimate = findViewById(R.id.est_price_1);
+//            if (estimate.getText().equals("no est.")) {
+//                Toast.makeText(Parking.this, "Please select a timing!", Toast.LENGTH_SHORT).show();
+//            } else {
+//                topSixteenParkings.sort((o1, o2) -> Double.compare(o1.getPrice(), o2.getPrice()));
+//                fillPCVArrayList();
+//            }
         } else {
             // Sorts the car parks by availability of lots
             topSixteenParkings.sort((o2, o1) -> Integer.compare(o1.getAvailableLots(), o2.getAvailableLots()));

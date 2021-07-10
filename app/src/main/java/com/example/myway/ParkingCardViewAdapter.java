@@ -1,5 +1,6 @@
 package com.example.myway;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Color;
@@ -28,8 +29,8 @@ import java.util.Locale;
 public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardViewAdapter.ParkingCardViewHolder> {
 
     private static ArrayList<ParkingCardView> parkingCardViewArrayList;
+    private static ArrayList<ParkingCardViewHolder> viewHolders = new ArrayList<>();
     private static String username;
-
 
     public static class ParkingCardViewHolder extends RecyclerView.ViewHolder {
         private final TextView location;
@@ -43,6 +44,7 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
         private final TextView parkDuration;
         private final ImageButton threeDots;
 
+        @SuppressLint("SetTextI18n")
         public ParkingCardViewHolder(@NonNull @NotNull View itemView) {
             super(itemView);
             location = itemView.findViewById(R.id.destination_1);
@@ -56,8 +58,11 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
             mDialog = new Dialog(itemView.getContext());
             threeDots = itemView.findViewById(R.id.ic_ellipsis);
 
-            arrowDropDown.setOnClickListener(v -> {
+            viewHolders.add(this);
 
+            parkDuration.setOnClickListener(v -> arrowDropDown.callOnClick());
+
+            arrowDropDown.setOnClickListener(v -> {
                 mDialog.setContentView(R.layout.number_picker_dialog);
                 NumberPicker hourPicker = mDialog.findViewById(R.id.hourPicker);
                 NumberPicker minutePicker = mDialog.findViewById(R.id.minutePicker);
@@ -108,15 +113,28 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
                         finalHourString = "0" + finalHourString;
                     }
                     finalTime += finalHourString + ":" + finalMinuteString;
+
+                    Log.d("ARRAYLIST SIZE>>>>>>>>>>>>>>>>",parkingCardViewArrayList.size() + "");
                     //pass in current time, parkingduration, carpark information
                     //pricecalculator method
-                    parkDuration.setText(currentTime + " - " + finalTime);
 //                            Log.d("PCV SIZE", "SIZE: " + parkingCardViewArrayList.size());
 //                            Log.d("PCV POSITION", "INDEX: " + itemView.getTag());
 //                            Log.d("Calculator", "Day" + currentDay);
 //                            Log.d("Calculator", "currentTime" + ((currentHour*100) + currentMinute));
 //                            Log.d("Calculator", "finalTime" + ((finalHour*100) + finalMinute));
-                    price_calculator.setText(" est. $" + calculatePrice(date, currentDay, ((currentHour*100) + currentMinute), numHours, numMinutes, ((finalHour*100) + finalMinute), parkingCardViewArrayList.get((int) itemView.getTag())));
+                    String duration = currentTime + " - " + finalTime;
+                    for (int i = 0; i < 16; i++) {
+                        ParkingCardView parkingCardView = parkingCardViewArrayList.get(i);
+                        String price = calculatePrice(date, currentDay, ((currentHour*100) + currentMinute), numHours, numMinutes, ((finalHour*100) + finalMinute), parkingCardView);
+                        parkingCardView.getCurrentCP().setPrice(price.equals(" no est.") ? Double.MAX_VALUE : Double.parseDouble(price.substring(1)));
+                        parkingCardView.setPrice_calculator(price);
+                        parkingCardView.setDuration(duration);
+                        if (i < viewHolders.size()) {
+                            ParkingCardViewHolder parkingCardViewHolder = viewHolders.get(i);
+                            parkingCardViewHolder.setPrice(currentTime, finalTime, price, duration);
+                        }
+                    }
+
                     mDialog.dismiss();
                 });
             });
@@ -144,22 +162,34 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
                 v.getContext().startActivity(intent);
             });
         }
+
+        private void setPrice(String currentTime, String finalTime, String price, String duration) {
+            parkDuration.setText(currentTime + " - " + finalTime);
+            price_calculator.setText(price.equals( " no est.") ? price : " est. $" + price);
+            parkDuration.setText(duration);
+        }
+
     }
 
     public static String calculatePrice(String date, String currentDay, int currentTime, int numHours, int numMinutes, int finalTime, ParkingCardView currentCardView) {
         Carpark currentCP = currentCardView.getCurrentCP();
         if (currentCP instanceof Carpark.HDB) {
-            //return ((Carpark.HDB) currentCP).calculate(date, currentDay, currentTime, numHours, numMinutes, finalTime);
-            return currentCP.calculateRates(date, currentDay, currentTime, finalTime, false);
-        } else if (currentCP instanceof Carpark.LTA) {
-            //return ((Carpark.LTA) currentCP).calculate(date, currentDay, currentTime, numHours, numMinutes, finalTime);
-            return currentCP.calculateRates(date, currentDay, currentTime, finalTime, false);
-        } else if (currentCP instanceof Carpark.URA) {
-            //return ((Carpark.URA) currentCP).calculate(date, currentDay, currentTime, numHours, numMinutes, finalTime);
             return currentCP.calculateRates(date, currentDay, currentTime, finalTime, false);
         } else {
-            return "info unavailable";
+            return " no est.";
         }
+//        if (currentCP instanceof Carpark.HDB) {
+//            //return ((Carpark.HDB) currentCP).calculate(date, currentDay, currentTime, numHours, numMinutes, finalTime);
+//            return currentCP.calculateRates(date, currentDay, currentTime, finalTime, false);
+//        } else if (currentCP instanceof Carpark.LTA) {
+//            //return ((Carpark.LTA) currentCP).calculate(date, currentDay, currentTime, numHours, numMinutes, finalTime);
+//            return currentCP.calculateRates(date, currentDay, currentTime, finalTime, false);
+//        } else if (currentCP instanceof Carpark.URA) {
+//            //return ((Carpark.URA) currentCP).calculate(date, currentDay, currentTime, numHours, numMinutes, finalTime);
+//            return currentCP.calculateRates(date, currentDay, currentTime, finalTime, false);
+//        } else {
+//            return "info unavailable";
+//        }
     }
     public ParkingCardViewAdapter(ArrayList<ParkingCardView> parkingCardViewArrayList, String username) {
         ParkingCardViewAdapter.parkingCardViewArrayList = parkingCardViewArrayList;
@@ -171,7 +201,6 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
     @Override
     public ParkingCardViewHolder onCreateViewHolder(@NonNull @NotNull ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.fragment_parking_scrollview_cardview, parent, false);
-
         return new ParkingCardViewHolder(v);
     }
 
@@ -189,6 +218,9 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
         }
         holder.location.setText(currentItem.getLocation());
         holder.price_calculator.setText(currentItem.getPrice_calculator());
+//        String price = currentItem.getPrice_calculator();
+//        holder.price_calculator.setText(price.equals( " no est.") ? price : " est. $" + price);
+
         double lon = currentItem.getLongitude();
         double lat = currentItem.getLatitude();
         holder.longitude.setText("" + lon);
@@ -199,6 +231,4 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
     public int getItemCount() {
         return parkingCardViewArrayList.size();
     }
-
-
 }

@@ -166,15 +166,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 //            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new ParkingAlarmFragment()).commit();
 //            navigationView.setCheckedItem(R.id.nav_parking_alarm);
 //        }
-        hamburgerMenu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // If the navigation drawer is not open then open it, if its already open then close it.
-                if (!navDrawer.isDrawerOpen(GravityCompat.START)) {
-                    navDrawer.openDrawer(GravityCompat.START);
-                } else {
-                    navDrawer.closeDrawer(GravityCompat.END);
-                }
+        hamburgerMenu.setOnClickListener(v -> {
+            // If the navigation drawer is not open then open it, if its already open then close it.
+            if (!navDrawer.isDrawerOpen(GravityCompat.START)) {
+                navDrawer.openDrawer(GravityCompat.START);
+            } else {
+                navDrawer.closeDrawer(GravityCompat.END);
             }
         });
     }
@@ -188,6 +185,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onNavigationItemSelected(@NonNull @NotNull MenuItem item) {
         switch (item.getItemId()) {
@@ -223,6 +221,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         });
     }
 
+    // Could potentially allow users to add their own location
     private void addUserLocations() {
         home = CarmenFeature.builder().text("Mapbox SF Office")
                 .geometry(Point.fromLngLat(-122.3964485, 37.7912561))

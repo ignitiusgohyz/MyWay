@@ -116,17 +116,13 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
 
                     Log.d("ARRAYLIST SIZE>>>>>>>>>>>>>>>>",parkingCardViewArrayList.size() + "");
                     //pass in current time, parkingduration, carpark information
-                    //pricecalculator method
-//                            Log.d("PCV SIZE", "SIZE: " + parkingCardViewArrayList.size());
-//                            Log.d("PCV POSITION", "INDEX: " + itemView.getTag());
-//                            Log.d("Calculator", "Day" + currentDay);
-//                            Log.d("Calculator", "currentTime" + ((currentHour*100) + currentMinute));
-//                            Log.d("Calculator", "finalTime" + ((finalHour*100) + finalMinute));
                     String duration = currentTime + " - " + finalTime;
                     for (int i = 0; i < 16; i++) {
                         ParkingCardView parkingCardView = parkingCardViewArrayList.get(i);
                         String price = calculatePrice(date, currentDay, ((currentHour*100) + currentMinute), numHours, numMinutes, ((finalHour*100) + finalMinute), parkingCardView);
-                        parkingCardView.getCurrentCP().setPrice(price.equals(" no est.") ? Double.MAX_VALUE : Double.parseDouble(price.substring(1)));
+                        Log.d("PRICE PRICE PRICE INTO CP>>>>>>>>>>>>>", "" + price);
+                        parkingCardView.getCurrentCP().setPrice(price.equals(" no est.") ? 99999 : Double.parseDouble(price));
+                        parkingCardView.getCurrentCP().setDuration(duration);
                         parkingCardView.setPrice_calculator(price);
                         parkingCardView.setDuration(duration);
                         if (i < viewHolders.size()) {
@@ -217,10 +213,10 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
             holder.carpark_availability.setText(currentItem.getCarpark_availability());
         }
         holder.location.setText(currentItem.getLocation());
-        holder.price_calculator.setText(currentItem.getPrice_calculator());
-//        String price = currentItem.getPrice_calculator();
-//        holder.price_calculator.setText(price.equals( " no est.") ? price : " est. $" + price);
-
+        String price = currentItem.getPrice_calculator();
+        if (price != null) holder.price_calculator.setText(price.equals(" no est.") ? price : " est. $" + price);
+        String duration = currentItem.getDuration();
+        holder.parkDuration.setText(duration);
         double lon = currentItem.getLongitude();
         double lat = currentItem.getLatitude();
         holder.longitude.setText("" + lon);

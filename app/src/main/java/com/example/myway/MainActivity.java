@@ -16,6 +16,7 @@ import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.text.Layout;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -31,6 +32,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.Toolbar;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
@@ -77,6 +79,7 @@ import com.mapbox.services.android.navigation.v5.navigation.NavigationRoute;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.ref.WeakReference;
+import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Executor;
@@ -133,6 +136,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private DrawerLayout navDrawer;
     private Toolbar toolbar;
     private NavigationView navigationView;
+    private ConstraintLayout searchBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -156,6 +160,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         navDrawer = findViewById(R.id.my_drawer_layout);
         navigationView = findViewById(R.id.navigation_view);
         navigationView.setNavigationItemSelectedListener(this);
+        searchBar = findViewById(R.id.searchBar);
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, navDrawer, toolbar, R.string.nav_open, R.string.nav_close);

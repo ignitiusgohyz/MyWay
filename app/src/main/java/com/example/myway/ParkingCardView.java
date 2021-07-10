@@ -14,7 +14,7 @@ public class ParkingCardView {
     private boolean redColour;
     private Carpark currentCP;
 
-    public ParkingCardView(Carpark currentCP, String location, String carpark_availability, String price_calculator, double distanceFromCurrent, double longitude, double latitude) {
+    public ParkingCardView(Carpark currentCP, String location, String carpark_availability, String price_calculator, double distanceFromCurrent, double longitude, double latitude, String duration) {
         this.currentCP = currentCP;
         this.location = location;
         this.carpark_availability = carpark_availability;
@@ -22,6 +22,7 @@ public class ParkingCardView {
         this.distanceFromCurrent = distanceFromCurrent;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.duration = duration;
 
         if (carpark_availability.equals("info unavailable")) {
             redColour = true;

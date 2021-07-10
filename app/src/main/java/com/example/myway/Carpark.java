@@ -29,6 +29,7 @@ public class Carpark {
     private double distanceApart; // Distance from current location
     private Integer availableLots;
     private double price;
+    private String duration;
     protected static final String freeParkingCost = "0.00";
     protected final DecimalFormat decimalFormat = new DecimalFormat("#0.00");
 
@@ -74,6 +75,14 @@ public class Carpark {
 
     public void setPrice(double price) {
         this.price = price;
+    }
+
+    public String getDuration() {
+        return duration;
+    }
+
+    public void setDuration(String duration) {
+        this.duration = duration;
     }
 
 

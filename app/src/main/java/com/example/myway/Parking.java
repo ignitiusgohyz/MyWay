@@ -17,6 +17,7 @@ import org.json.JSONObject;
 
 import java.io.InputStream;
 import java.lang.reflect.Array;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +33,7 @@ public class Parking extends AppCompatActivity {
     String username;
 
     private static final String accessKey = "dc82311d-b99a-412e-9f12-6f607b758479"; // URA access key, to be changed yearly
+    protected final DecimalFormat decimalFormat = new DecimalFormat("#0.00");
 
     @Override
     protected void onCreate (Bundle savedInstanceState) {
@@ -92,13 +94,16 @@ public class Parking extends AppCompatActivity {
             fillPCVArrayList();
         } else if (type.equals("Price")) {
             // Sorts the car parks by price
-//            TextView estimate = findViewById(R.id.est_price_1);
-//            if (estimate.getText().equals("no est.")) {
-//                Toast.makeText(Parking.this, "Please select a timing!", Toast.LENGTH_SHORT).show();
-//            } else {
-//                topSixteenParkings.sort((o1, o2) -> Double.compare(o1.getPrice(), o2.getPrice()));
-//                fillPCVArrayList();
-//            }
+            TextView estimate = findViewById(R.id.est_price_1);
+            if (estimate.getText().equals(" no est.")) {
+                Toast.makeText(Parking.this, "Please select a timing!", Toast.LENGTH_SHORT).show();
+            } else {
+                topSixteenParkings.sort((o1, o2) -> Double.compare(o1.getPrice(), o2.getPrice()));
+                for (Carpark cp : topSixteenParkings) {
+                    Log.d("PRICE>>>", cp.getCarParkNo() + " " + cp.getPrice() + "");
+                }
+                fillPCVArrayList();
+            }
         } else {
             // Sorts the car parks by availability of lots
             topSixteenParkings.sort((o2, o1) -> Integer.compare(o1.getAvailableLots(), o2.getAvailableLots()));
@@ -302,8 +307,10 @@ public class Parking extends AppCompatActivity {
             if (index == -1) {
                 currentCP.setAvailableLots(-1);
                 pcvArrayList.add(new ParkingCardView(currentCP, currentAddress,
-                        "info unavailable", "no est.",
-                        distance, currentCP.getxCoord(), currentCP.getyCoord()));
+                        "info unavailable"
+                        , currentCP.getPrice() > 999 || currentCP.getPrice() == 0.0 ? " no est." : decimalFormat.format(currentCP.getPrice()),
+                        distance, currentCP.getxCoord(), currentCP.getyCoord(),
+                        currentCP.getDuration() == null ? "choose your duration" : currentCP.getDuration()));
             } else {
                 String available = CarparkAvailableFinder.get(index);
                 currentCP.setAvailableLots(Integer.parseInt(available));
@@ -314,7 +321,9 @@ public class Parking extends AppCompatActivity {
                 pcvArrayList.add(new ParkingCardView(currentCP, currentAddress,
                         total.equals("LTA") ? available + " lots available"
                                             : available + "/" + total + " lots available"
-                        , "no est.", distance, currentCP.getxCoord(), currentCP.getyCoord()));
+                        , currentCP.getPrice() > 999 || currentCP.getPrice() == 0.0 ? " no est." : decimalFormat.format(currentCP.getPrice())
+                        , distance, currentCP.getxCoord(), currentCP.getyCoord(),
+                        currentCP.getDuration() == null ? "choose your duration" : currentCP.getDuration()));
             }
         }
     }

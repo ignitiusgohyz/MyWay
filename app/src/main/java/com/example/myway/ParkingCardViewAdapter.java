@@ -3,13 +3,16 @@ package com.example.myway;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.NumberPicker;
 import android.widget.PopupMenu;
 import android.widget.TextView;
@@ -17,6 +20,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.jetbrains.annotations.NotNull;
@@ -40,7 +45,8 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
         private final TextView longitude;
         private final TextView latitude;
         private final ImageButton arrowDropDown;
-        private final Dialog mDialog;
+        private final Dialog clockDialog;
+        private final Dialog cpInfoDialog;
         private final TextView parkDuration;
         private final ImageButton threeDots;
 
@@ -55,7 +61,8 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
             latitude = itemView.findViewById(R.id.latitude);
             arrowDropDown = itemView.findViewById(R.id.fragment_carpark_timing_arrow_down);
             parkDuration = itemView.findViewById(R.id.timeslot_1);
-            mDialog = new Dialog(itemView.getContext());
+            clockDialog = new Dialog(itemView.getContext());
+            cpInfoDialog = new Dialog(itemView.getContext());
             threeDots = itemView.findViewById(R.id.ic_ellipsis);
 
             viewHolders.add(this);
@@ -63,9 +70,9 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
             parkDuration.setOnClickListener(v -> arrowDropDown.callOnClick());
 
             arrowDropDown.setOnClickListener(v -> {
-                mDialog.setContentView(R.layout.number_picker_dialog);
-                NumberPicker hourPicker = mDialog.findViewById(R.id.hourPicker);
-                NumberPicker minutePicker = mDialog.findViewById(R.id.minutePicker);
+                clockDialog.setContentView(R.layout.number_picker_dialog);
+                NumberPicker hourPicker = clockDialog.findViewById(R.id.hourPicker);
+                NumberPicker minutePicker = clockDialog.findViewById(R.id.minutePicker);
                 hourPicker.setMaxValue(23);
 //                    minutePicker.setMaxValue(45);
                 minutePicker.setMinValue(1);
@@ -79,8 +86,8 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
 //                    });
                 hourPicker.setWrapSelectorWheel(false);
                 minutePicker.setWrapSelectorWheel(false);
-                mDialog.show();
-                Button confirmTime = mDialog.findViewById(R.id.confirm_button);
+                clockDialog.show();
+                Button confirmTime = clockDialog.findViewById(R.id.confirm_button);
                 confirmTime.setOnClickListener(v1 -> {
                     String currentTime = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
                     String currentDay = new SimpleDateFormat("EEEE", Locale.getDefault()).format(new Date());
@@ -130,8 +137,7 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
                             parkingCardViewHolder.setPrice(currentTime, finalTime, price, duration);
                         }
                     }
-
-                    mDialog.dismiss();
+                    clockDialog.dismiss();
                 });
             });
 
@@ -140,11 +146,36 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
                 popupMenu.getMenuInflater().inflate(R.menu.three_dots_cardview, popupMenu.getMenu());
                 popupMenu.setOnMenuItemClickListener(item -> {
                     popupMenu.dismiss();
+                    switch (item.getItemId()) {
+                        case R.id.carpark_information:
+                            cpInfoDialog.setContentView(R.layout.carpark_information_dialog);
+                            Button closeButton = cpInfoDialog.findViewById(R.id.dialog_close);
+                            TextView info = cpInfoDialog.findViewById(R.id.cpinfo);
+                            int position = (int) itemView.getTag();
+                            Carpark currentCP = parkingCardViewArrayList.get(position).getCurrentCP();
+                            String cpNo = "Carpark Code: " + currentCP.getCarParkNo() + "\n";
+                            String cpAddress = currentCP.getAddress() + "\n";
+                            String cpParkingSystem = currentCP.getParkingSystem() + "\n";
+                            if (currentCP instanceof Carpark.HDB) {
+                                //maybe display entity icon
+                                String carParkType = ((Carpark.HDB) currentCP).getCarParkType() + "\n"; // Multi-Storey, Basement etc.
+                                String freeParking = "Free parking " + ((Carpark.HDB) currentCP).getFreeParking() + "\n"; // Yes, No, or Timeframe
+                                String nightParking = "Night parking " + ((Carpark.HDB) currentCP).getNightParking() + "\n"; // Yes / No
+                                String gantryHeight = "Gantry Height: " + ((Carpark.HDB) currentCP).getGantryHeight() + "m" + "\n"; // Height of gantry
+                                String carParkBasement = "Basement " + ((Carpark.HDB) currentCP).getCarParkBasement().charAt(0) + "\n"; // Y / N
+                                info.setText(cpNo +cpAddress +cpParkingSystem + carParkType + freeParking + nightParking + gantryHeight + carParkBasement);
+                            } else {
+                                info.setText(cpNo + cpAddress + cpParkingSystem);
+                            }
+                            cpInfoDialog.show();
+                            closeButton.setOnClickListener(v1 -> cpInfoDialog.dismiss());
+                            break;
+                    }
                     return true;
                 });
                 popupMenu.show();
-            });
 
+            });
 
             cardView.setOnClickListener(v -> {
                 Intent intent = new Intent(v.getContext(), MainActivity.class);

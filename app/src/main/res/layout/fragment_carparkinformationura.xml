@@ -31,8 +31,8 @@
         android:text="Address Unavailable"
         android:textColor="@color/black"
         android:textSize="16sp"
-        app:layout_constraintBottom_toBottomOf="@+id/ura_address_header"
-        app:layout_constraintStart_toEndOf="@+id/ura_address_header" />
+        app:layout_constraintStart_toEndOf="@+id/ura_address_header"
+        app:layout_constraintTop_toTopOf="@+id/ura_address_header" />
 
     <TextView
         android:id="@+id/carpark_type_ura_header"

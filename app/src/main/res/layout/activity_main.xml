@@ -87,13 +87,15 @@
             android:layout_height="wrap_content"
             mapbox:cardCornerRadius="12dp"
             mapbox:cardElevation="12dp"
+            android:maxWidth="200dp"
+            android:maxHeight="80dp"
             mapbox:layout_constraintBottom_toBottomOf="@id/cardview_main_top_fragment"
             mapbox:layout_constraintTop_toBottomOf="@id/cardview_main_top_fragment"
             mapbox:layout_constraintStart_toStartOf="parent"
             mapbox:layout_constraintEnd_toEndOf="parent">
             <fragment
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
+                android:layout_height="wrap_content"
                 android:id="@+id/main_search_fragment"
                 android:name="com.example.myway.MainSearchFragment"
                 tools:ignore="FragmentTagUsage" />

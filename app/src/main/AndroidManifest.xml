@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.example.myway" >
+    package="com.example.myway">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -14,13 +14,14 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MyWay"
         android:usesCleartextTraffic="true"
-        tools:ignore="AllowBackup" >
-        <activity android:name=".PasswordRegistration" >
-        </activity>
+        tools:ignore="AllowBackup">
+        <activity android:name=".CarparkInformationActivityURA"></activity>
+        <activity android:name=".CarparkInformationActivityHDB" />
+        <activity android:name=".PasswordRegistration" />
         <activity android:name=".EmailRegistration" />
         <activity android:name=".UsernameRegistration" />
         <activity android:name=".Parking" />
-        <activity android:name=".LoginActivity" >
+        <activity android:name=".LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

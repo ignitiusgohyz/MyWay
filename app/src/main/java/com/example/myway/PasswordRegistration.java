@@ -166,7 +166,7 @@ public class PasswordRegistration extends AppCompatActivity {
             int width = LinearLayout.LayoutParams.WRAP_CONTENT;
             int height = LinearLayout.LayoutParams.WRAP_CONTENT;
             final PopupWindow popupWindow = new PopupWindow(popupView, width, height, true);
-            popupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
+            popupWindow.showAtLocation(popupView, Gravity.CENTER_HORIZONTAL, 0, 0);
             popupView.setOnTouchListener((v1, event) -> {
                 popupWindow.dismiss();
                 return true;

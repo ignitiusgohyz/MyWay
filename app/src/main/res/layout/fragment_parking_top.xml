@@ -37,6 +37,7 @@
         app:layout_constraintEnd_toStartOf="@id/fragment_parking_go"
         app:layout_constraintStart_toEndOf="@id/fragment_parking_hamburger_menu"
         app:layout_constraintBottom_toBottomOf="parent"
+        android:maxWidth="270dp"
         app:layout_constraintTop_toTopOf="parent"
         android:text="DESTINATION:\n Destination"
         android:textColor="@color/white"

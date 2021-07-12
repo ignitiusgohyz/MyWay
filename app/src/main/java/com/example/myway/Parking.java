@@ -327,7 +327,7 @@ public class Parking extends AppCompatActivity {
         RecyclerView recyclerView = findViewById(R.id.fragment_parking_recyclerview);
         recyclerView.setHasFixedSize(true);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
-        RecyclerView.Adapter<ParkingCardViewAdapter.ParkingCardViewHolder> adapter = new ParkingCardViewAdapter((ArrayList<ParkingCardView>) pcvArrayList, username);
+        RecyclerView.Adapter<ParkingCardViewAdapter.ParkingCardViewHolder> adapter = new ParkingCardViewAdapter((ArrayList<ParkingCardView>) pcvArrayList, username, this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
     }

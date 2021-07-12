@@ -15,6 +15,7 @@ public class CarparkInformationActivityHDB extends AppCompatActivity {
     TextView gantry_height;
     TextView free_parking;
     TextView night_parking;
+    TextView rates;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,6 +28,7 @@ public class CarparkInformationActivityHDB extends AppCompatActivity {
         gantry_height = findViewById(R.id.gantry_height);
         free_parking = findViewById(R.id.free_parking);
         night_parking = findViewById(R.id.night_parking);
+        rates = findViewById(R.id.carpark_rates_for_hdb);
 
         Bundle receive = getIntent().getExtras();
         address.setText(receive.getString("address"));
@@ -34,7 +36,8 @@ public class CarparkInformationActivityHDB extends AppCompatActivity {
         parking_system.setText(receive.getString("parking_system"));
         gantry_height.setText(receive.getString("gantry_height"));
         free_parking.setText(receive.getString("free_parking"));
-        night_parking.setText(receive.getString("night_parking"));
+        night_parking.setText(receive.getString("night_parking").equals("YES") ? "YES, parking from 10.30pm - 7am capped at $5" : "NO");
+        rates.setText(receive.getString("rates"));
 
         back.setOnClickListener(v -> finish());
     }

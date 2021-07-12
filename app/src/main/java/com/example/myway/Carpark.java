@@ -104,6 +104,29 @@ public class Carpark {
             super(cPN, a, svyX, svyY, pS);
         }
 
+        public String getFormattedRates() {
+            StringBuilder ret = new StringBuilder();
+            int i = 0;
+            for (String vehicle : vehCat) {
+                if (vehicle.equals("Car")) {
+                    String weekdayMinimum = weekdayMin.get(i);
+                    String weekdayRates = weekdayRate.get(i);
+                    String saturdayMinimum = satdayMin.get(i);
+                    String saturdayRate = satdayRate.get(i);
+                    String sundayMinimum = sunPHMin.get(i);
+                    String sundayRate = sunPHRate.get(i);
+                    String effectiveStart = startTime.get(i);
+                    String effectiveEnd = endTime.get(i);
+                    ret.append("Weekday: ").append(weekdayRates).append(" / ").append(weekdayMinimum).append("\n");
+                    ret.append("Saturday: ").append(saturdayRate).append(" / ").append(saturdayMinimum).append("\n");
+                    ret.append("Sunday / PH: ").append(sundayRate).append(" / ").append(sundayMinimum).append("\n");
+                    ret.append("Time Period: ").append(effectiveStart).append(" - ").append(effectiveEnd).append("\n\n");
+                    i++;
+                }
+            }
+            return ret.toString();
+        }
+
         public String getWeekdayMin(int index) {
             return this.weekdayMin.get(index);
         }

@@ -14,7 +14,7 @@
         android:fontFamily="@font/titillium_web_semibold"
         android:text="Address: "
         android:textSize="16sp"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="20dp"
         android:layout_marginStart="20dp"
         android:textColor="@color/black"
         app:layout_constraintStart_toStartOf="parent"
@@ -42,7 +42,7 @@
         android:text="Carpark Type: "
         android:textColor="@color/black"
         android:textSize="16sp"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="20dp"
         app:layout_constraintStart_toStartOf="@+id/ura_address_header"
         app:layout_constraintTop_toBottomOf="@+id/ura_address_header" />
 
@@ -66,7 +66,7 @@
         android:text="Remarks: "
         android:textColor="@color/black"
         android:textSize="16sp"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="20dp"
         app:layout_constraintStart_toStartOf="@+id/carpark_type_ura_header"
         app:layout_constraintTop_toBottomOf="@+id/carpark_type_ura_header" />
 
@@ -81,5 +81,31 @@
         android:textSize="16sp"
         app:layout_constraintStart_toEndOf="@+id/carpark_remark_ura_header"
         app:layout_constraintTop_toTopOf="@+id/carpark_remark_ura_header" />
+
+    <TextView
+        android:id="@+id/carpark_ura_rates_header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/titillium_web_semibold"
+        android:text="Rates: "
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="@+id/carpark_remark_ura_header"
+        app:layout_constraintTop_toBottomOf="@+id/carpark_remark_ura_header"
+        android:layout_marginTop="40dp"/>
+
+    <TextView
+        android:id="@+id/carpark_ura_rates"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/titillium_web"
+        android:maxWidth="300dp"
+        android:text="Rates Unavailable"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        android:scrollbars="vertical"
+        app:layout_constraintStart_toEndOf="@+id/carpark_ura_rates_header"
+        app:layout_constraintTop_toTopOf="@+id/carpark_ura_rates_header" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

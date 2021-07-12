@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.jetbrains.annotations.NotNull;
@@ -36,6 +37,7 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
     private static ArrayList<ParkingCardView> parkingCardViewArrayList;
     private static ArrayList<ParkingCardViewHolder> viewHolders = new ArrayList<>();
     private static String username;
+    private static Context context;
 
     public static class ParkingCardViewHolder extends RecyclerView.ViewHolder {
         private final TextView location;
@@ -148,31 +150,7 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
 //                        v.getContext().startActivity(intent);
                         Toast.makeText(v.getContext(), "PARKING ALARM SELECTED", Toast.LENGTH_SHORT).show();
                     } else {
-                        ParkingCardView current = parkingCardViewArrayList.get((int) itemView.getTag());
-                        Carpark currentCP = current.getCurrentCP();
-                        if (currentCP instanceof Carpark.HDB) {
-                            Intent intent = new Intent(v.getContext(), CarparkInformationActivityHDB.class);
-                            Bundle bundle = new Bundle();
-                            bundle.putString("address", currentCP.getAddress());
-                            bundle.putString("carpark_type", ((Carpark.HDB) currentCP).getCarParkType());
-                            bundle.putString("parking_system", currentCP.getParkingSystem());
-                            bundle.putString("gantry_height", ((Carpark.HDB) currentCP).getGantryHeight());
-                            bundle.putString("free_parking", ((Carpark.HDB) currentCP).getFreeParking());
-                            bundle.putString("night_parking", ((Carpark.HDB) currentCP).getNightParking());
-                            intent.putExtras(bundle);
-                            v.getContext().startActivity(intent);
-                        } else if (currentCP instanceof Carpark.URA) {
-                            Intent intent = new Intent(v.getContext(), CarparkInformationActivityURA.class);
-                            Bundle bundle = new Bundle();
-                            bundle.putString("address", currentCP.getAddress());
-                            bundle.putString("parking_system", currentCP.getParkingSystem());
-                            String placeholder = ((Carpark.URA) currentCP).getRemarks();
-                            bundle.putString("remarks", placeholder == null || placeholder.equals("") ? "No Remarks" : placeholder);
-                            intent.putExtras(bundle);
-                            v.getContext().startActivity(intent);
-                        } else {
-                            Toast.makeText(v.getContext(), "Sorry, this carpark has no information available!", Toast.LENGTH_SHORT).show();
-                        }
+                        informationTransition(v);
                     }
                     popupMenu.dismiss();
                     return true;
@@ -182,37 +160,7 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
 
             viewRates.setOnClickListener(v -> arrowRight.performClick());
 
-            arrowRight.setOnClickListener(v -> {
-                ParkingCardView current = parkingCardViewArrayList.get((int) itemView.getTag());
-                Carpark currentCP = current.getCurrentCP();
-
-                Bundle bundle = new Bundle();
-                if (currentCP instanceof Carpark.HDB) {
-                    if (currentCP.isCentralCarpark()) {
-                        bundle.putString("rate", "$0.60 / 30 minutes non-peak\n$1.20 / 30 minutes peak (7am - 5pm, MON - SAT)");
-                    } else {
-                        bundle.putString("rate", "$0.60 / 30 minutes");
-                    }
-                    bundle.putString("night", ((Carpark.HDB) currentCP).getNightParking().equals("YES")
-                            ? "YES, parking from 10.30pm - 7am capped at $5" : "No Night Parking");
-                    bundle.putString("free", ((Carpark.HDB) currentCP).getFreeParking());
-                }
-
-                Log.d("Setting bundle for fragment>>>>", "SETTING UP...");
-                CarparkRatesFragment carparkRatesFragment = new CarparkRatesFragment();
-                carparkRatesFragment.setArguments(bundle);
-
-
-
-                LayoutInflater layoutInflater = (LayoutInflater) v.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                @SuppressLint("InflateParams")
-                View popupView = layoutInflater.inflate(R.layout.fragment_carpark_rates, null);
-
-                int width = LinearLayout.LayoutParams.WRAP_CONTENT;
-                int height = LinearLayout.LayoutParams.WRAP_CONTENT;
-                final PopupWindow popupWindow = new PopupWindow(popupView, width, height, true);
-                popupWindow.showAtLocation(popupView, Gravity.CENTER_HORIZONTAL, 0, 0);
-            });
+            arrowRight.setOnClickListener(this::informationTransition);
 
             cardView.setOnClickListener(v -> {
                 Intent intent = new Intent(v.getContext(), MainActivity.class);
@@ -231,6 +179,36 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
             parkDuration.setText(duration);
         }
 
+        private void informationTransition(View v) {
+            ParkingCardView current = parkingCardViewArrayList.get((int) itemView.getTag());
+            Carpark currentCP = current.getCurrentCP();
+            if (currentCP instanceof Carpark.HDB) {
+                Intent intent = new Intent(v.getContext(), CarparkInformationActivityHDB.class);
+                Bundle bundle = new Bundle();
+                bundle.putString("address", currentCP.getAddress());
+                bundle.putString("carpark_type", ((Carpark.HDB) currentCP).getCarParkType());
+                bundle.putString("parking_system", currentCP.getParkingSystem());
+                bundle.putString("gantry_height", ((Carpark.HDB) currentCP).getGantryHeight());
+                bundle.putString("free_parking", ((Carpark.HDB) currentCP).getFreeParking());
+                bundle.putString("night_parking", ((Carpark.HDB) currentCP).getNightParking());
+                bundle.putString("rates", currentCP.isCentralCarpark() ? "$0.60 / 30 minutes non-peak\n$1.20 / 30 minutes peak (7am - 5pm, MON - SAT)"
+                        : "$0.60 / 30 minutes");
+                intent.putExtras(bundle);
+                v.getContext().startActivity(intent);
+            } else if (currentCP instanceof Carpark.URA) {
+                Intent intent = new Intent(v.getContext(), CarparkInformationActivityURA.class);
+                Bundle bundle = new Bundle();
+                bundle.putString("address", currentCP.getAddress());
+                bundle.putString("parking_system", currentCP.getParkingSystem());
+                String placeholder = ((Carpark.URA) currentCP).getRemarks();
+                bundle.putString("remarks", placeholder == null || placeholder.equals("") ? "No Remarks" : placeholder);
+                bundle.putString("rates", ((Carpark.URA) currentCP).getFormattedRates());
+                intent.putExtras(bundle);
+                v.getContext().startActivity(intent);
+            } else {
+                Toast.makeText(v.getContext(), "Sorry, this carpark has no information available!", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     public static String calculatePrice(String date, String currentDay, int currentTime, int numHours, int numMinutes, int finalTime, ParkingCardView currentCardView) {
@@ -253,9 +231,10 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
 //            return "info unavailable";
 //        }
     }
-    public ParkingCardViewAdapter(ArrayList<ParkingCardView> parkingCardViewArrayList, String username) {
+    public ParkingCardViewAdapter(ArrayList<ParkingCardView> parkingCardViewArrayList, String username, Context context) {
         ParkingCardViewAdapter.parkingCardViewArrayList = parkingCardViewArrayList;
         ParkingCardViewAdapter.username = username;
+        this.context = context;
     }
 
     @NonNull

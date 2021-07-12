@@ -2,17 +2,21 @@ package com.example.myway;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.NumberPicker;
 import android.widget.PopupMenu;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -44,6 +48,8 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
         private final Dialog mDialog;
         private final TextView parkDuration;
         private final ImageButton threeDots;
+        private final ImageButton arrowRight;
+        private final TextView viewRates;
 
         @SuppressLint("SetTextI18n")
         public ParkingCardViewHolder(@NonNull @NotNull View itemView) {
@@ -58,6 +64,8 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
             parkDuration = itemView.findViewById(R.id.timeslot_1);
             mDialog = new Dialog(itemView.getContext());
             threeDots = itemView.findViewById(R.id.ic_ellipsis);
+            arrowRight = itemView.findViewById(R.id.fragment_carpark_rates_arrow_right);
+            viewRates = itemView.findViewById(R.id.view_rates_1);
 
             viewHolders.add(this);
 
@@ -68,16 +76,9 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
                 NumberPicker hourPicker = mDialog.findViewById(R.id.hourPicker);
                 NumberPicker minutePicker = mDialog.findViewById(R.id.minutePicker);
                 hourPicker.setMaxValue(23);
-//                    minutePicker.setMaxValue(45);
                 minutePicker.setMinValue(1);
                 minutePicker.setMaxValue(4);
                 minutePicker.setDisplayedValues(new String[] {"0", "15", "30", "45"});
-//                    minutePicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
-//                        @Override
-//                        public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-//                            picker.setValue((newVal < oldVal)? oldVal-15 : oldVal+15);
-//                        }
-//                    });
                 hourPicker.setWrapSelectorWheel(false);
                 minutePicker.setWrapSelectorWheel(false);
                 mDialog.show();
@@ -179,6 +180,39 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
                 popupMenu.show();
             });
 
+            viewRates.setOnClickListener(v -> arrowRight.performClick());
+
+            arrowRight.setOnClickListener(v -> {
+                ParkingCardView current = parkingCardViewArrayList.get((int) itemView.getTag());
+                Carpark currentCP = current.getCurrentCP();
+
+                Bundle bundle = new Bundle();
+                if (currentCP instanceof Carpark.HDB) {
+                    if (currentCP.isCentralCarpark()) {
+                        bundle.putString("rate", "$0.60 / 30 minutes non-peak\n$1.20 / 30 minutes peak (7am - 5pm, MON - SAT)");
+                    } else {
+                        bundle.putString("rate", "$0.60 / 30 minutes");
+                    }
+                    bundle.putString("night", ((Carpark.HDB) currentCP).getNightParking().equals("YES")
+                            ? "YES, parking from 10.30pm - 7am capped at $5" : "No Night Parking");
+                    bundle.putString("free", ((Carpark.HDB) currentCP).getFreeParking());
+                }
+
+                Log.d("Setting bundle for fragment>>>>", "SETTING UP...");
+                CarparkRatesFragment carparkRatesFragment = new CarparkRatesFragment();
+                carparkRatesFragment.setArguments(bundle);
+
+
+
+                LayoutInflater layoutInflater = (LayoutInflater) v.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                @SuppressLint("InflateParams")
+                View popupView = layoutInflater.inflate(R.layout.fragment_carpark_rates, null);
+
+                int width = LinearLayout.LayoutParams.WRAP_CONTENT;
+                int height = LinearLayout.LayoutParams.WRAP_CONTENT;
+                final PopupWindow popupWindow = new PopupWindow(popupView, width, height, true);
+                popupWindow.showAtLocation(popupView, Gravity.CENTER_HORIZONTAL, 0, 0);
+            });
 
             cardView.setOnClickListener(v -> {
                 Intent intent = new Intent(v.getContext(), MainActivity.class);
@@ -188,7 +222,6 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
                 intent.putExtra("longitude", lon);
                 intent.putExtra("username", username);
                 intent.putExtra("location", location.getText());
-//                Toast.makeText(v.getContext(), username, Toast.LENGTH_SHORT).show();
                 v.getContext().startActivity(intent);
             });
         }

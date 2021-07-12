@@ -129,7 +129,7 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
                         if (i < viewHolders.size()) {
                             Log.d("Updates view on selection", "This one");
                             ParkingCardViewHolder parkingCardViewHolder = viewHolders.get(i);
-                            parkingCardViewHolder.setPrice(currentTime, finalTime, price, duration);
+                            parkingCardViewHolder.setPrice(price, duration);
                         }
                     }
 
@@ -170,7 +170,7 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
                             intent.putExtras(bundle);
                             v.getContext().startActivity(intent);
                         } else {
-                            Toast.makeText(v.getContext(), "Sorry, this capark has no information available!", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(v.getContext(), "Sorry, this carpark has no information available!", Toast.LENGTH_SHORT).show();
                         }
                     }
                     popupMenu.dismiss();
@@ -193,7 +193,7 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
             });
         }
 
-        private void setPrice(String currentTime, String finalTime, String price, String duration) {
+        private void setPrice(String price, String duration) {
             price_calculator.setText(price.equals( " no est.") ? price : " est. $" + price);
             parkDuration.setText(duration);
         }
@@ -240,11 +240,10 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
         if (currentItem.isRedColour()) {
             //make red colour
             holder.carpark_availability.setTextColor(Color.RED);
-            holder.carpark_availability.setText(currentItem.getCarpark_availability());
         } else {
             holder.carpark_availability.setTextColor(Color.BLACK);
-            holder.carpark_availability.setText(currentItem.getCarpark_availability());
         }
+        holder.carpark_availability.setText(currentItem.getCarpark_availability());
         holder.location.setText(currentItem.getLocation());
         String price = currentItem.getPrice_calculator();
         if (price != null) holder.price_calculator.setText(price.equals(" no est.") ? price : " est. $" + price);

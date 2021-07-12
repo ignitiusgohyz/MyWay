@@ -2,34 +2,24 @@ package com.example.myway;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
-import android.preference.PreferenceManager;
-import android.renderscript.ScriptGroup;
-import android.text.Layout;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
-import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintSet;
 
 import java.io.InputStream;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 
-@SuppressWarnings("deprecation")
 public class LoginActivity extends AppCompatActivity {
 
     private ImageButton visibilityButton;
@@ -37,8 +27,6 @@ public class LoginActivity extends AppCompatActivity {
     private String createdUsername_string;
     private EditText createdPassword;
     private String createdPassword_string;
-    private float v = 0;
-    private final String key = "dc82311d-b99a-412e-9f12-6f607b758479";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +35,6 @@ public class LoginActivity extends AppCompatActivity {
         ImageButton loginButton = findViewById(R.id.login);
         createdUsername = findViewById(R.id.username);
         createdPassword = findViewById(R.id.password);
-        ImageView usernameAndPassword = findViewById(R.id.username_password);
         CheckBox rememberMe = findViewById(R.id.rememberMe);
         ImageButton registerButton = findViewById(R.id.register);
         Button tempClearDatabaseButton = findViewById(R.id.tempclearbutton);
@@ -59,7 +46,6 @@ public class LoginActivity extends AppCompatActivity {
             InputStream uraParking = getResources().openRawResource(R.raw.uraparking);
             GenerateCarparkStatic URA = new GenerateCarparkStatic.generateURA();
             URA.setList(URA.readCSV(uraParking));
-            Log.d("URA>>>>", "DONE");
             return null;
         });
 
@@ -70,8 +56,6 @@ public class LoginActivity extends AppCompatActivity {
             InputStream hdbParking = getResources().openRawResource(R.raw.hdbparking);
             GenerateCarparkStatic HDB = new GenerateCarparkStatic.generateHDB();
             HDB.setList(HDB.readCSV(hdbParking));
-
-            Log.d("HDB>>>>", "DONE");
             return null;
         });
 
@@ -79,7 +63,6 @@ public class LoginActivity extends AppCompatActivity {
             InputStream ltaParking = getResources().openRawResource(R.raw.ltaparking);
             GenerateCarparkStatic LTA = new GenerateCarparkStatic.generateLTA();
             LTA.setList(LTA.readCSV(ltaParking));
-            Log.d("LTA>>>>", "DONE");
             return null;
         });
 

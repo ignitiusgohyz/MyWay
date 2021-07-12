@@ -17,15 +17,15 @@ import java.util.Date;
 @SuppressLint("LogNotTimber")
 public class Carpark {
 
-    private String carParkNo; // URA and HDB different codes
-    private String address; // URA and HDB different addresses
-    private double xCoord; // Set to 0.0 if doesn't exist
-    private double yCoord; // Set to 0.0 if doesn't exist
-    private double SVY21xCoord; // Easting
-    private double SVY21yCoord; // Northing
-    private LatLonCoordinate parkingLatLon;
-    private SVY21Coordinate parkingSVY21;
-    private String parkingSystem;
+    private final String carParkNo; // URA and HDB different codes
+    private final String address; // URA and HDB different addresses
+    private final double xCoord; // Set to 0.0 if doesn't exist
+    private final double yCoord; // Set to 0.0 if doesn't exist
+    private final double SVY21xCoord; // Easting
+    private final double SVY21yCoord; // Northing
+    private final LatLonCoordinate parkingLatLon;
+    private final SVY21Coordinate parkingSVY21;
+    private final String parkingSystem;
     private double distanceApart; // Distance from current location
     private Integer availableLots;
     private double price;
@@ -37,7 +37,7 @@ public class Carpark {
         return centralCarpark;
     }
 
-    private boolean centralCarpark;
+    private final boolean centralCarpark;
     private static final String[] dayArray = new String[] { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
 
     public Carpark(String carParkNo, String address, double SVY21xCoord, double SVY21yCoord, String parkingSystem) {
@@ -88,16 +88,16 @@ public class Carpark {
 
     public static class URA extends Carpark {
 
-        private ArrayList<String> weekdayMin = new ArrayList<>();
-        private ArrayList<String> weekdayRate = new ArrayList<>();
-        private ArrayList<String> startTime = new ArrayList<>();
-        private ArrayList<String> endTime = new ArrayList<>();
-        private ArrayList<String> satdayMin = new ArrayList<>();
-        private ArrayList<String> satdayRate = new ArrayList<>();
-        private ArrayList<String> sunPHMin = new ArrayList<>();
-        private ArrayList<String> sunPHRate = new ArrayList<>();
-        private ArrayList<String> parkCapacity = new ArrayList<>();
-        private ArrayList<String> vehCat = new ArrayList<>();
+        private final ArrayList<String> weekdayMin = new ArrayList<>();
+        private final ArrayList<String> weekdayRate = new ArrayList<>();
+        private final ArrayList<String> startTime = new ArrayList<>();
+        private final ArrayList<String> endTime = new ArrayList<>();
+        private final ArrayList<String> satdayMin = new ArrayList<>();
+        private final ArrayList<String> satdayRate = new ArrayList<>();
+        private final ArrayList<String> sunPHMin = new ArrayList<>();
+        private final ArrayList<String> sunPHRate = new ArrayList<>();
+        private final ArrayList<String> parkCapacity = new ArrayList<>();
+        private final ArrayList<String> vehCat = new ArrayList<>();
         private String remarks;
 
         public URA(String cPN, String a, double svyX, double svyY, String pS) {

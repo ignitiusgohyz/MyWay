@@ -4,7 +4,6 @@ package com.example.myway;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -16,9 +15,6 @@ import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.text.Layout;
-import android.view.Gravity;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -79,7 +75,6 @@ import com.mapbox.services.android.navigation.v5.navigation.NavigationRoute;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.ref.WeakReference;
-import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Executor;
@@ -127,16 +122,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
     private TextView searchText;
     private String searchText_string;
-    private ImageButton hamburgerMenu;
 
     private final String ak = "dc82311d-b99a-412e-9f12-6f607b758479";
 
     private SVY21Coordinate destinationSVY21 = null;
 
     private DrawerLayout navDrawer;
-    private Toolbar toolbar;
-    private NavigationView navigationView;
-    private ConstraintLayout searchBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -156,12 +147,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         greetingText.setText(greet);
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
-        hamburgerMenu = findViewById(R.id.fragment_main_hamburger_menu);
+        ImageButton hamburgerMenu = findViewById(R.id.fragment_main_hamburger_menu);
         navDrawer = findViewById(R.id.my_drawer_layout);
-        navigationView = findViewById(R.id.navigation_view);
+        NavigationView navigationView = findViewById(R.id.navigation_view);
         navigationView.setNavigationItemSelectedListener(this);
-        searchBar = findViewById(R.id.searchBar);
-        toolbar = findViewById(R.id.toolbar);
+        ConstraintLayout searchBar = findViewById(R.id.searchBar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, navDrawer, toolbar, R.string.nav_open, R.string.nav_close);
         navDrawer.addDrawerListener(toggle);
@@ -193,18 +184,16 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onNavigationItemSelected(@NonNull @NotNull MenuItem item) {
-        switch (item.getItemId()) {
-//            case R.id.nav_parking_alarm:
-//                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new ParkingAlarmFragment()).commit();
-//                break;
-            case R.id.nav_logout:
-                SharedPreferences preferences = getSharedPreferences("checkbox", MODE_PRIVATE);
-                SharedPreferences.Editor editor = preferences.edit();
-                editor.putString("remember","false");
-                editor.apply();
-                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-                startActivity(intent);
-                break;
+        //            case R.id.nav_parking_alarm:
+        //                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new ParkingAlarmFragment()).commit();
+        //                break;
+        if (item.getItemId() == R.id.nav_logout) {
+            SharedPreferences preferences = getSharedPreferences("checkbox", MODE_PRIVATE);
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putString("remember", "false");
+            editor.apply();
+            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+            startActivity(intent);
         }
         navDrawer.closeDrawer(GravityCompat.START);
         return true;

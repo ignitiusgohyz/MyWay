@@ -1,13 +1,10 @@
 package com.example.myway;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
-import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import com.mapbox.mapboxsdk.style.layers.Property;
+import androidx.appcompat.app.AppCompatActivity;
 
 public class CarparkInformationActivityHDB extends AppCompatActivity {
 

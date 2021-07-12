@@ -1,8 +1,10 @@
 package com.example.myway;
 
+import org.jetbrains.annotations.NotNull;
+
 public class LatLonCoordinate {
-    private double latitude;
-    private double longitude;
+    private final double latitude;
+    private final double longitude;
 
     public LatLonCoordinate(double latitude, double longitude) {
         super();
@@ -26,10 +28,8 @@ public class LatLonCoordinate {
         if (Double.doubleToLongBits(latitude) != Double
                 .doubleToLongBits(other.latitude))
             return false;
-        if (Double.doubleToLongBits(longitude) != Double
-                .doubleToLongBits(other.longitude))
-            return false;
-        return true;
+        return Double.doubleToLongBits(longitude) == Double
+                .doubleToLongBits(other.longitude);
     }
 
     public double getLatitude() {
@@ -53,7 +53,7 @@ public class LatLonCoordinate {
     }
 
     @Override
-    public String toString() {
+    public @NotNull String toString() {
         return "LatLonCoordinate [latitude=" + latitude + ", longitude="
                 + longitude + "]";
     }

@@ -1,18 +1,15 @@
 package com.example.myway;
 
-import android.util.Log;
-import android.widget.TextView;
-
 public class ParkingCardView {
-    private String location;
-    private String carpark_availability;
+    private final String location;
+    private final String carpark_availability;
     private String price_calculator;
-    private double latitude;
-    private double longitude;
-    private double distanceFromCurrent;
+    private final double latitude;
+    private final double longitude;
+    private final double distanceFromCurrent;
     private String duration;
-    private boolean redColour;
-    private Carpark currentCP;
+    private final boolean redColour;
+    private final Carpark currentCP;
 
     public ParkingCardView(Carpark currentCP, String location, String carpark_availability, String price_calculator, double distanceFromCurrent, double longitude, double latitude, String duration) {
         this.currentCP = currentCP;
@@ -37,13 +34,9 @@ public class ParkingCardView {
                 double availableInt = Double.parseDouble(availableString);
                 double totalInt = Double.parseDouble(totalString);
 //                Log.d("Checking percentage", "Percentage: " + availableInt / totalInt);
-                if (availableInt / totalInt <= 0.1) {
-//                    Log.d("Checking percentage", "IF -> red: " + availableInt / totalInt);
-                    redColour = true;
-                } else {
-//                    Log.d("Checking percentage", "ELSE -> not red: " + availableInt / totalInt);
-                    redColour = false;
-                }
+                //                    Log.d("Checking percentage", "IF -> red: " + availableInt / totalInt);
+                //                    Log.d("Checking percentage", "ELSE -> not red: " + availableInt / totalInt);
+                redColour = availableInt / totalInt <= 0.1;
             } else {
                 redColour = false;
             }

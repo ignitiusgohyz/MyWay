@@ -11,13 +11,13 @@ public class PublicHolidays {
     }
 
     public boolean isItPH(String date) {
-        for(int i=0; i< twentyTwentyOne.length; i++) {
-            if(date.equals(twentyTwentyOne[i])) {
+        for (String s : twentyTwentyOne) {
+            if (date.equals(s)) {
                 return true;
             }
         }
-        for(int i=0; i< twentyTwentyTwo.length; i++) {
-            if(date.equals(twentyTwentyTwo[i])) {
+        for (String s : twentyTwentyTwo) {
+            if (date.equals(s)) {
                 return true;
             }
         }

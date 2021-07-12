@@ -15,11 +15,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.InputStream;
-import java.lang.reflect.Array;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Parking extends AppCompatActivity {
 
@@ -173,10 +172,10 @@ public class Parking extends AppCompatActivity {
                 for (int i = 0; i < jsonArray.length(); i++) {
                     JSONObject obj = jsonArray.getJSONObject(i);
                     if (obj.getString("Agency").equals("LTA")) {
-                        Integer available = obj.getInt("AvailableLots");
+                        int available = obj.getInt("AvailableLots");
                         String CarparkID = obj.getString("CarParkID");
                         carparkNum.add(CarparkID);
-                        availableLots.add(available.toString());
+                        availableLots.add(Integer.toString(available));
                         carparkType.add(obj.getString("LotType"));
                     } else {
                         break;
@@ -241,19 +240,17 @@ public class Parking extends AppCompatActivity {
         URAList = parseURAAPI(URAresponse);
 
         JSONObject LTAreponse = CarparkAvailabilityRetriever.fetchCarparkAvailability("/REKmS31QtqYR2ux49l1OQ==", null, null, "http://datamall2.mytransport.sg/ltaodataservice/CarParkAvailabilityv2");
-        LTAList = parseLTAApi(LTAreponse);
+        LTAList = parseLTAApi(Objects.requireNonNull(LTAreponse));
 
         // Sets array list for HDB
         ArrayList<String> HDBCarparkNum = HDBList.get(0);
         ArrayList<String> HDBTotal = HDBList.get(1);
         ArrayList<String> HDBAvailable = HDBList.get(2);
-        ArrayList<String> HDBType = HDBList.get(3);
 
         // Sets array list for URA
         ArrayList<String> URACarparkNum = URAList.get(0);
         ArrayList<String> URATotal = new ArrayList<>();
         ArrayList<String> URAAvailable = URAList.get(1);
-        ArrayList<String> URAType = URAList.get(2);
 
         for (int i = 0; i < URACarparkNum.size(); i++) {
             URATotal.add("dud capacity"); // Fills up to match original array size
@@ -263,7 +260,6 @@ public class Parking extends AppCompatActivity {
         ArrayList<String> LTACarparkNum = LTAList.get(0);
         ArrayList<String> LTAAvailable = LTAList.get(1);
         ArrayList<String> LTATotal = new ArrayList<>();
-        ArrayList<String> LTAType = LTAList.get(2);
 
         for (int i = 0; i < LTACarparkNum.size(); i++) {
             LTATotal.add("dud");
@@ -278,26 +274,19 @@ public class Parking extends AppCompatActivity {
         URAAvailable.addAll(HDBAvailable);
         URAAvailable.addAll(LTAAvailable);
 
-        URAType.addAll(HDBType);
-        URATotal.addAll(LTAType);
-
         ArrayList<String> CarparkNumberFinder = new ArrayList<>(URACarparkNum);
         ArrayList<String> CarparkTotalFinder = new ArrayList<>(URATotal);
         ArrayList<String> CarparkAvailableFinder = new ArrayList<>(URAAvailable);
-        ArrayList<String> CarparkTypeFinder = new ArrayList<>(URAType);
 
         URACarparkNum.clear();
         HDBCarparkNum.clear();
-        LTACarparkNum.clear();;
+        LTACarparkNum.clear();
         URAAvailable.clear();
         HDBAvailable.clear();
         LTAAvailable.clear();
         URATotal.clear();
         HDBTotal.clear();
         LTATotal.clear();
-        URAType.clear();
-        HDBType.clear();
-        LTAType.clear();
 
         for (int i = 0; i < 16; i++) {
             Carpark currentCP = topSixteenParkings.get(i);
@@ -338,7 +327,7 @@ public class Parking extends AppCompatActivity {
         RecyclerView recyclerView = findViewById(R.id.fragment_parking_recyclerview);
         recyclerView.setHasFixedSize(true);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
-        RecyclerView.Adapter adapter = new ParkingCardViewAdapter((ArrayList<ParkingCardView>) pcvArrayList, username);
+        RecyclerView.Adapter<ParkingCardViewAdapter.ParkingCardViewHolder> adapter = new ParkingCardViewAdapter((ArrayList<ParkingCardView>) pcvArrayList, username);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
     }

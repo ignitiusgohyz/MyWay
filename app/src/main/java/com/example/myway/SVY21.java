@@ -46,21 +46,18 @@ public class SVY21 {
 
     private static double calcM(double lat) {					// M: meridian distance.
         double latR = lat * radRatio;
-        double m = a * ((A0 * latR) - (A2 * Math.sin(2 * latR)) + (A4 * Math.sin(4 * latR)) - (A6 * Math.sin(6 * latR)));
-        return m;
+        return a * ((A0 * latR) - (A2 * Math.sin(2 * latR)) + (A4 * Math.sin(4 * latR)) - (A6 * Math.sin(6 * latR)));
     }
 
     private static double calcRho(double sin2Lat) {				// Rho: radius of curvature of meridian.
         double num = a * (1 - e2);
         double denom = Math.pow(1 - e2 * sin2Lat, 3. / 2.);
-        double rho = num / denom;
-        return rho;
+        return num / denom;
     }
 
     private static double calcV(double sin2Lat) {				// v: radius of curvature in the prime vertical.
         double poly = 1 - e2 * sin2Lat;
-        double v = a / Math.sqrt(poly);
-        return v;
+        return a / Math.sqrt(poly);
     }
 
     /**

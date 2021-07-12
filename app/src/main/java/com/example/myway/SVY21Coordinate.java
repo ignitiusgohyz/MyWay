@@ -3,8 +3,8 @@ package com.example.myway;
 import org.jetbrains.annotations.NotNull;
 
 public class SVY21Coordinate {
-    private double easting;
-    private double northing;
+    private final double easting;
+    private final double northing;
 
     public SVY21Coordinate(double easting, double northing) {
         super();

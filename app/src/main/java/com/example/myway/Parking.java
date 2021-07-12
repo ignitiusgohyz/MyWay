@@ -86,6 +86,9 @@ public class Parking extends AppCompatActivity {
         getTopSixteenParkings();
     }
 
+    private static boolean timingSelected = false;
+    protected static void selectedTiming() { timingSelected = true; }
+
     // Logic behind our filter button
     private void filter(String type) {
         if (type.equals("Distance")) {
@@ -95,10 +98,12 @@ public class Parking extends AppCompatActivity {
         } else if (type.equals("Price")) {
             // Sorts the car parks by price
             TextView estimate = findViewById(R.id.est_price_1);
-            if (estimate.getText().equals(" no est.")) {
+            Log.d("Filtering by price....", "Filtering....");
+            if (estimate.getText().equals(" no est.") && !timingSelected) {
                 Toast.makeText(Parking.this, "Please select a timing!", Toast.LENGTH_SHORT).show();
             } else {
                 topSixteenParkings.sort((o1, o2) -> Double.compare(o1.getPrice(), o2.getPrice()));
+                Log.d("Carparks sorting now", "Now");
                 for (Carpark cp : topSixteenParkings) {
                     Log.d("PRICE>>>", cp.getCarParkNo() + " " + cp.getPrice() + "");
                 }
@@ -301,7 +306,7 @@ public class Parking extends AppCompatActivity {
             String currentAddress = currentCP.getAddress();
             double distance = currentCP.getDistanceApart();
 
-            Log.d("CP DETAILS>>>", currentCarparkNo + " " + currentAddress + " LONG" + currentCP.getxCoord() + " LAT: " + currentCP.getyCoord());
+//            Log.d("CP DETAILS>>>", currentCarparkNo + " " + currentAddress + " LONG" + currentCP.getxCoord() + " LAT: " + currentCP.getyCoord());
 
             // thought: -> optimise code by passing carpark as a variable.
             if (index == -1) {

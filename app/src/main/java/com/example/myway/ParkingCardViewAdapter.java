@@ -127,11 +127,13 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
                         parkingCardView.setPrice_calculator(price);
                         parkingCardView.setDuration(duration);
                         if (i < viewHolders.size()) {
+                            Log.d("Updates view on selection", "This one");
                             ParkingCardViewHolder parkingCardViewHolder = viewHolders.get(i);
                             parkingCardViewHolder.setPrice(currentTime, finalTime, price, duration);
                         }
                     }
 
+                    Parking.selectedTiming();
                     mDialog.dismiss();
                 });
             });
@@ -192,7 +194,6 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
         }
 
         private void setPrice(String currentTime, String finalTime, String price, String duration) {
-            parkDuration.setText(currentTime + " - " + finalTime);
             price_calculator.setText(price.equals( " no est.") ? price : " est. $" + price);
             parkDuration.setText(duration);
         }

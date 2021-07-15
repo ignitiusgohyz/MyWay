@@ -147,11 +147,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         greetingText.setText(greet);
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
+
         ImageButton hamburgerMenu = findViewById(R.id.fragment_main_hamburger_menu);
         navDrawer = findViewById(R.id.my_drawer_layout);
         NavigationView navigationView = findViewById(R.id.navigation_view);
         navigationView.setNavigationItemSelectedListener(this);
+
         ConstraintLayout searchBar = findViewById(R.id.searchBar);
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, navDrawer, toolbar, R.string.nav_open, R.string.nav_close);

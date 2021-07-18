@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -46,6 +47,7 @@ public class LoginActivity extends AppCompatActivity {
             InputStream uraParking = getResources().openRawResource(R.raw.uraparking);
             GenerateCarparkStatic URA = new GenerateCarparkStatic.generateURA();
             URA.setList(URA.readCSV(uraParking));
+            Log.d("URA>>>", "DONE");
             return null;
         });
 
@@ -56,6 +58,7 @@ public class LoginActivity extends AppCompatActivity {
             InputStream hdbParking = getResources().openRawResource(R.raw.hdbparking);
             GenerateCarparkStatic HDB = new GenerateCarparkStatic.generateHDB();
             HDB.setList(HDB.readCSV(hdbParking));
+            Log.d("HDB>>>", "DONE");
             return null;
         });
 
@@ -63,6 +66,7 @@ public class LoginActivity extends AppCompatActivity {
             InputStream ltaParking = getResources().openRawResource(R.raw.ltaparking);
             GenerateCarparkStatic LTA = new GenerateCarparkStatic.generateLTA();
             LTA.setList(LTA.readCSV(ltaParking));
+            Log.d("LTA>>>", "DONE");
             return null;
         });
 

@@ -99,6 +99,8 @@ public class Carpark {
         private final ArrayList<String> parkCapacity = new ArrayList<>();
         private final ArrayList<String> vehCat = new ArrayList<>();
         private String remarks;
+        private static final double sixty = 0.60;
+        private static final double oneTwenty = 1.20;
 
         public URA(String cPN, String a, double svyX, double svyY, String pS) {
             super(cPN, a, svyX, svyY, pS);
@@ -227,7 +229,94 @@ public class Carpark {
 
         @Override
         public String calculateRates(String date, String currentDay, int currentTime, int finalTime, boolean second) {
-            return "";
+            if (finalTime == currentTime) {
+                return freeParkingCost;
+            }
+            PublicHolidays ph = new PublicHolidays();
+            String nextDay = null;
+            if (finalTime < currentTime && !second) {
+                int index = 0;
+                for (int i = 0; i < dayArray.length; i++) {
+                    if (dayArray[i].equals(currentDay)) {
+                        index = i+1;
+                    }
+                }
+                nextDay = dayArray[index % 7];
+            }
+
+            if (nextDay == null) {
+                int i = 0;
+                double cost = 0.00;
+
+                while (i < vehCat.size() && vehCat.get(i).equals("Car")) {
+                    String startTemp = getStartTime(i);
+                    String endTemp = getEndTime(i);
+                    String rateString = currentDay.equals("Sunday") || ph.isItPH(date)
+                            ? getSunPHRate(i)
+                            : currentDay.equals("Saturday")
+                            ? getSatdayRate(i)
+                            : getWeekdayRate(i);
+                    rateString = rateString.substring(1);
+                    String minimumRateString = currentDay.equals("Sunday") || ph.isItPH(date)
+                            ? getSunPHMin(i)
+                            : currentDay.equals("Saturday")
+                            ? getSatdayMin(i)
+                            : getWeekdayMin(i);
+                    int startTime = convertToInt(startTemp);
+                    int endTime = convertToInt(endTemp);
+                    double rate = Double.parseDouble(rateString);
+                    String[] splitMin = minimumRateString.split(" ");
+                    int minimumRate = Integer.parseInt(splitMin[0]);
+
+                    if (currentTime < startTime && finalTime < startTime) {
+                        cost += 0.00;
+                    } else if (currentTime < startTime && finalTime < endTime) {
+                        int difference = calculateTimeDifference(Integer.toString(startTime), Integer.toString(finalTime));
+                        int unit = (difference % minimumRate == 0 ? difference / minimumRate : difference / minimumRate + 1);
+                        Log.d("difference in time >>>>>", Integer.toString(difference));
+                        Log.d("unit>>>>>>>", Double.toString(unit));
+                        cost = cost + rate * unit;
+                    } else if (currentTime < endTime && finalTime < endTime) {
+                        int difference = calculateTimeDifference(Integer.toString(currentTime), Integer.toString(finalTime));
+                        Log.d("difference in time >>>>>", Integer.toString(difference));
+                        int unit = (difference % minimumRate == 0 ? difference / minimumRate : difference / minimumRate + 1);
+                        Log.d("unit>>>>>>>", Double.toString(unit));
+                        cost = cost + rate * unit;
+                    } else if (currentTime < startTime && finalTime > endTime) {
+                        int difference = calculateTimeDifference(Integer.toString(startTime), Integer.toString(endTime));
+                        int unit = (difference % minimumRate == 0 ? difference / minimumRate : difference / minimumRate + 1);
+                        Log.d("difference in time >>>>>", Integer.toString(difference));
+                        Log.d("unit>>>>>>>", Double.toString(unit));
+                        cost = cost + rate * unit;
+                    } else {
+                        cost += 0.00;
+                    }
+                    i++;
+                }
+
+                return decimalFormat.format(cost);
+            } else {
+                double cost = 0.00;
+                String firstDay = calculateRates(date, currentDay, currentTime, 2359, true);
+                String secondDay = calculateRates(findNextDate(), nextDay, 0, finalTime, true);
+                cost = Double.parseDouble(firstDay) + Double.parseDouble(secondDay);
+                return decimalFormat.format(cost);
+            }
+        }
+
+        private int convertToInt(String time) {
+            char AMorPM = time.charAt(6);
+            char firstDigit = time.charAt(0);
+            char secondDigit = time.charAt(1);
+            char thirdDigit = time.charAt(3);
+            char fourthDigit = time.charAt(4);
+            StringBuilder stringBuilder = new StringBuilder();
+            if (firstDigit != '0') {
+                stringBuilder.append(firstDigit);
+            }
+            stringBuilder.append(secondDigit).append(thirdDigit).append(fourthDigit);
+            return AMorPM == 'A' ? Integer.parseInt(stringBuilder.toString())
+                                 : Integer.parseInt(stringBuilder.toString()) + 1200;
         }
     }
 
@@ -315,9 +404,12 @@ public class Carpark {
         @SuppressLint("LogNotTimber")
         @Override
         public String calculateRates(String date, String currentDay, int currentTime, int finalTime, boolean second) {
+            if (finalTime == currentTime) {
+                return freeParkingCost;
+            }
             PublicHolidays phChecker = new PublicHolidays();
             String nextDay = null;
-            if (finalTime <= currentTime && !second) {
+            if (finalTime < currentTime && !second) {
                 int index = 0;
                 for (int i=0; i<dayArray.length; i++) {
                     if (dayArray[i].equals(currentDay)) {
@@ -333,8 +425,8 @@ public class Carpark {
                 // day of entry is sunday or ph
                 if (nextDay != null) {
                     double firstDayCost = Double.parseDouble(calculateRates(date, currentDay, currentTime, 2230, true));
-                    Log.d("FIRSTDAY SUN PH>>>>>>", Double.toString(firstDayCost));
-                    Log.d("SECONDDAY SUN PH>>>>>>", calculateRates(findNextDate(), nextDay, 700, finalTime, true));
+//                    Log.d("FIRSTDAY SUN PH>>>>>>", Double.toString(firstDayCost));
+//                    Log.d("SECONDDAY SUN PH>>>>>>", calculateRates(findNextDate(), nextDay, 700, finalTime, true));
                     double secondDayCost = Double.parseDouble(calculateRates(findNextDate(), nextDay, 700, finalTime, true));
                     int inBetweenMinutes;
                     if (secondDayCost == 0) {
@@ -347,7 +439,7 @@ public class Carpark {
                     // in and out on same day
                     if (after0700_before2230(currentTime, finalTime)) {
                         // Free parking since in after 7am and out before 10.30pm
-                        Log.d("Free Parking >>>", "FREE");
+//                        Log.d("Free Parking >>>", "FREE");
                         return Carpark.freeParkingCost;
                     } else {
 
@@ -365,8 +457,8 @@ public class Carpark {
                             minutesAfter = calculateTimeDifference(String.valueOf(currentTime), String.valueOf(finalTime));
                         }
 
-                        Log.d("Minutes Before ---->", Integer.toString(minutesBefore));
-                        Log.d("Minutes After ---->", Integer.toString(minutesAfter));
+//                        Log.d("Minutes Before ---->", Integer.toString(minutesBefore));
+//                        Log.d("Minutes After ---->", Integer.toString(minutesAfter));
 
                         if (hasNightParking(this)) {
                             // There is night parking
@@ -388,16 +480,16 @@ public class Carpark {
                             }
                         }
 
-                        Log.d("Single Day Cost ------>", Double.toString(cost));
+//                        Log.d("Single Day Cost ------>", Double.toString(cost));
                     }
                 }
             } else {
                 // day of entry is non sunday or ph
                 if (nextDay != null) {
                     double firstDayCost = Double.parseDouble(calculateRates(date, currentDay, currentTime, 2230, true));
-                    Log.d("FIRSTDAY WEEKDAY>>>>>>", Double.toString(firstDayCost));
+//                    Log.d("FIRSTDAY WEEKDAY>>>>>>", Double.toString(firstDayCost));
                     double secondDayCost = Double.parseDouble(calculateRates(findNextDate(), nextDay, 700, finalTime, true));
-                    Log.d("SECONDDAY WEEKDAY>>>>>>", Double.toString(secondDayCost));
+//                    Log.d("SECONDDAY WEEKDAY>>>>>>", Double.toString(secondDayCost));
                     int inBetweenMinutes;
                     if (secondDayCost == 0) {
                         inBetweenMinutes = calculateTimeDifference(String.valueOf(2230), String.valueOf(finalTime + 2400));
@@ -411,7 +503,7 @@ public class Carpark {
                     int minutesNight = 0;
                     int minutesPeak = 0;
 
-                    Log.d("Current & Final Time>>>", currentTime + " AND " + finalTime);
+//                    Log.d("Current & Final Time>>>", currentTime + " AND " + finalTime);
 
                     if (endBefore0700(currentTime, finalTime)) {
                         return Carpark.freeParkingCost;
@@ -438,9 +530,9 @@ public class Carpark {
                         minutesDay = calculateTimeDifference("1700", String.valueOf(finalTime));
                     }
 
-                    Log.d("Minutes Day ---->", Integer.toString(minutesDay));
-                    Log.d("Minutes Night ---->", Integer.toString(minutesNight));
-                    Log.d("Minutes Peak ---->", Integer.toString(minutesPeak));
+//                    Log.d("Minutes Day ---->", Integer.toString(minutesDay));
+//                    Log.d("Minutes Night ---->", Integer.toString(minutesNight));
+//                    Log.d("Minutes Peak ---->", Integer.toString(minutesPeak));
 
                     if (this.hasNoGracePeriod() || !isElectronicParking(this)) {
                         cost = calculateNightParking(this, minutesNight, false)

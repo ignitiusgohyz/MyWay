@@ -83,9 +83,7 @@ public class Parking extends AppCompatActivity implements NavigationView.OnNavig
             }
         });
 
-        justNavigate.setOnClickListener(v -> {
-            finish();
-        });
+        justNavigate.setOnClickListener(v -> finish());
 
         // Controls our filter button in our parking menu
         filterButton = findViewById(R.id.parking_filter_button);
@@ -109,16 +107,10 @@ public class Parking extends AppCompatActivity implements NavigationView.OnNavig
         ArrayList<Carpark> LTA = new GenerateCarparkStatic.generateLTA().getList();
         ArrayList<Carpark> tempMaster = new ArrayList<>();
 
-//        ArrayList<Carpark> tempMaster = new ArrayList<>();
         // Adds HDB & LTA car parks into URA, so from here URA contains all carparks
         tempMaster.addAll(URA);
         tempMaster.addAll(HDB);
         tempMaster.addAll(LTA);
-
-//        Log.d("MASTERLIST SIZE>>>>", masterList.size() +"");
-//        Log.d("LTA SIZE>>>>", LTA.size() +"");
-//        Log.d("URA SIZE>>>>", URA.size() + "");
-//        Log.d("HDB SIZE>>>>", HDB.size() + "");
 
         // masterList contains all HDB and URA carparks
         masterList = tempMaster;

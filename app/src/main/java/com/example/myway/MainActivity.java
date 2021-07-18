@@ -241,6 +241,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 showTimePicker();
                 setAlarm();
             });
+            cancelAlarm.setOnClickListener(v -> {
+                parkingAlarmDialog.dismiss();
+            });
         }
         navDrawer.closeDrawer(GravityCompat.START);
         return true;

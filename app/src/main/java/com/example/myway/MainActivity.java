@@ -6,6 +6,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -17,9 +18,11 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -93,6 +96,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import timber.log.Timber;
 
+import static androidx.core.app.NotificationCompat.PRIORITY_HIGH;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconAllowOverlap;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconIgnorePlacement;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconImage;
@@ -183,6 +187,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         display = parkingAlarmDialog.findViewById(R.id.parking_alarm_display);
         setAlarm = parkingAlarmDialog.findViewById(R.id.set_alarm_button);
         cancelAlarm = parkingAlarmDialog.findViewById(R.id.cancel_alarm_button);
+        createNotificationChannel();
 
 //        if (savedInstanceState == null) {
 //            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new ParkingAlarmFragment()).commit();
@@ -198,18 +203,18 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         });
     }
 
-//    private void createNotificationChannel() {
-//        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//            CharSequence name = "mywaynotificationchannel";
-//            String description = "Channel for Alarm Manager";
-//            int importance = NotificationManager.IMPORTANCE_HIGH;
-//            NotificationChannel channel = new NotificationChannel("myway", name, importance);
-//            channel.setDescription(description);
-//
-//            NotificationManager notificationManager = getSystemService(NotificationManager.class);
-//            notificationManager.createNotificationChannel(channel);
-//        }
-//    }
+    private void createNotificationChannel() {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "mywaynotificationchannel";
+            String description = "Channel for Alarm Manager";
+            int importance = NotificationManager.IMPORTANCE_HIGH;
+            NotificationChannel channel = new NotificationChannel("myway", name, importance);
+            channel.setDescription(description);
+
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
 
     @Override
     public void onBackPressed() {
@@ -279,15 +284,26 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 String message = "Parking is almost up!";
                 NotificationCompat.Builder builder = new NotificationCompat.Builder(MainActivity.this, "myway")
                         .setSmallIcon(R.mipmap.ic_myway_logo)
+                        .setPriority(PRIORITY_HIGH)
                         .setContentTitle("MyWay Notification")
                         .setContentText(message)
                         .setAutoCancel(true);
-
-                Intent intent = new Intent(MainActivity.this, MainActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                PendingIntent pendingIntent = PendingIntent.getActivity(MainActivity.this,0,intent, PendingIntent.FLAG_UPDATE_CURRENT);
-                builder.setContentIntent(pendingIntent);
-
+                // if remember go to main
+                // if nvr go to login
+                // this shud be flow for killing apps but now its minimising app
+                SharedPreferences preferences = getSharedPreferences("checkbox", MODE_PRIVATE);
+                String checkbox = preferences.getString("remember","");
+                if (checkbox.equals("true")) {
+                    Intent intentLoggedIn = new Intent(MainActivity.this, MainActivity.class);
+                    intentLoggedIn.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    PendingIntent pendingIntentLoggedIn = PendingIntent.getActivity(MainActivity.this, 0, intentLoggedIn, PendingIntent.FLAG_UPDATE_CURRENT);
+                    builder.setContentIntent(pendingIntentLoggedIn);
+                } else {
+                    Intent intentLoggedOut = new Intent(MainActivity.this, LoginActivity.class);
+                    intentLoggedOut.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    PendingIntent pendingIntentLoggedOut = PendingIntent.getActivity(MainActivity.this, 1, intentLoggedOut, PendingIntent.FLAG_UPDATE_CURRENT);
+                    builder.setContentIntent(pendingIntentLoggedOut);
+                }
                 NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
                 notificationManager.notify(0,builder.build());
             }

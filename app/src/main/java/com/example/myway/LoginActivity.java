@@ -100,6 +100,8 @@ public class LoginActivity extends AppCompatActivity {
             } else {
                 Toast.makeText(LoginActivity.this, "No such username!", Toast.LENGTH_SHORT).show();
             }
+            rememberMe.toggle();
+            rememberMe.toggle();
         });
 
         rememberMe.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -113,7 +115,7 @@ public class LoginActivity extends AppCompatActivity {
                 SharedPreferences preferences = getSharedPreferences("checkbox", MODE_PRIVATE);
                 SharedPreferences.Editor editor = preferences.edit();
                 editor.putString("remember","false");
-                editor.putString("username", "null");
+                editor.putString("username", createdUsername.getText().toString().toLowerCase().trim());
                 editor.apply();
             }
         });

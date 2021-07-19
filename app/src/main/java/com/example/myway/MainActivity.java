@@ -5,9 +5,7 @@ package com.example.myway;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.AlarmManager;
 import android.app.Dialog;
-import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -17,16 +15,14 @@ import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.ScaleDrawable;
 import android.location.Location;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.provider.Settings;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -39,6 +35,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.view.GravityCompat;
@@ -46,8 +43,6 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.android.material.timepicker.MaterialTimePicker;
-import com.google.android.material.timepicker.TimeFormat;
 import com.google.gson.JsonObject;
 import com.mapbox.android.core.location.LocationEngine;
 import com.mapbox.android.core.location.LocationEngineCallback;
@@ -84,11 +79,10 @@ import com.mapbox.services.android.navigation.ui.v5.route.NavigationMapRoute;
 import com.mapbox.services.android.navigation.v5.navigation.NavigationRoute;
 
 import org.jetbrains.annotations.NotNull;
-import org.w3c.dom.Text;
 
 import java.lang.ref.WeakReference;
-import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -141,19 +135,23 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private SVY21Coordinate destinationSVY21 = null;
 
     private DrawerLayout navDrawer;
-    private Calendar calendar;
-    private MaterialTimePicker picker;
-    private AlarmManager alarmManager;
-    private PendingIntent pendingIntent;
-    private TextView display;
+
     private Dialog parkingAlarmDialog;
+    private TextView display;
+    private Button setAlarm;
+    private Button cancelAlarm;
+    private static final long START_TIME_IN_MILLIS = 6000;
+    private CountDownTimer countDownTimer;
+    private boolean timerRunning;
+    private boolean startButtonClicked;
+    private long timeLeftInMillis = START_TIME_IN_MILLIS;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // Map access token is configured here
         Mapbox.getInstance(this, getString(R.string.mapbox_access_token));
-        createNotificationChannel();
         // MapView in XML, called after access token is configured.
         setContentView(R.layout.activity_main);
         mapView = findViewById(R.id.mapView);
@@ -181,6 +179,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         navDrawer.addDrawerListener(toggle);
         toggle.syncState();
 
+        parkingAlarmDialog.setContentView(R.layout.parking_alarm_dialog);
+        display = parkingAlarmDialog.findViewById(R.id.parking_alarm_display);
+        setAlarm = parkingAlarmDialog.findViewById(R.id.set_alarm_button);
+        cancelAlarm = parkingAlarmDialog.findViewById(R.id.cancel_alarm_button);
+
 //        if (savedInstanceState == null) {
 //            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new ParkingAlarmFragment()).commit();
 //            navigationView.setCheckedItem(R.id.nav_parking_alarm);
@@ -195,18 +198,18 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         });
     }
 
-    private void createNotificationChannel() {
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = "mywayreminderchannel";
-            String description = "Channel for Alarm Manager";
-            int importance = NotificationManager.IMPORTANCE_HIGH;
-            NotificationChannel channel = new NotificationChannel("myway", name, importance);
-            channel.setDescription(description);
-
-            NotificationManager notificationManager = getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
-        }
-    }
+//    private void createNotificationChannel() {
+//        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//            CharSequence name = "mywaynotificationchannel";
+//            String description = "Channel for Alarm Manager";
+//            int importance = NotificationManager.IMPORTANCE_HIGH;
+//            NotificationChannel channel = new NotificationChannel("myway", name, importance);
+//            channel.setDescription(description);
+//
+//            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+//            notificationManager.createNotificationChannel(channel);
+//        }
+//    }
 
     @Override
     public void onBackPressed() {
@@ -231,57 +234,89 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             Intent intent = new Intent(MainActivity.this, LoginActivity.class);
             startActivity(intent);
         } else if (item.getItemId() == R.id.nav_parking_alarm) {
-            parkingAlarmDialog.setContentView(R.layout.parking_alarm_dialog);
             parkingAlarmDialog.show();
-            display = parkingAlarmDialog.findViewById(R.id.parking_alarm_display);
-            Button setAlarm = parkingAlarmDialog.findViewById(R.id.set_alarm_button);
-            Button cancelAlarm = parkingAlarmDialog.findViewById(R.id.cancel_alarm_button);
-            setAlarm.setOnClickListener(v -> {
-                calendar = Calendar.getInstance();
-                showTimePicker();
-                setAlarm();
+            setAlarm.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (timerRunning) {
+                        pauseTimer();
+                    } else {
+                        startTimer();
+                    }
+                }
             });
-            cancelAlarm.setOnClickListener(v -> {
-                parkingAlarmDialog.dismiss();
+            cancelAlarm.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (startButtonClicked) {
+                        resetTimer();
+                    }
+                }
             });
+            if (timerRunning) {
+                updateCountDownText();
+            }
         }
+
+
         navDrawer.closeDrawer(GravityCompat.START);
         return true;
     }
 
-    private void showTimePicker() {
-        picker = new MaterialTimePicker.Builder()
-                .setTimeFormat(TimeFormat.CLOCK_12H)
-                .setHour(12)
-                .setMinute(0)
-                .setTitleText("Select Alarm Time")
-                .build();
-
-        picker.show(getSupportFragmentManager(), "myway");
-
-        picker.addOnPositiveButtonClickListener(new View.OnClickListener() {
+    private void startTimer() {
+        countDownTimer = new CountDownTimer(timeLeftInMillis, 1000) {
             @Override
-            public void onClick(View v) {
-                if (picker.getHour() > 12) {
-                    display.setText("Parking Alarm set for " + String.format("%02d",(picker.getHour()-12))+" : "+ String.format("%02d", picker.getMinute())+ " PM");
-                } else {
-                    display.setText("Parking Alarm set for " + String.format("%02d", picker.getHour()) + " : " + String.format("%02d", picker.getMinute()) + " AM");
-                }
-
-                calendar.set(Calendar.HOUR_OF_DAY, picker.getHour());
-                calendar.set(Calendar.MINUTE, picker.getMinute());
-                calendar.set(Calendar.SECOND, 0);
-                calendar.set(Calendar.MILLISECOND, 0);
+            public void onTick(long millisUntilFinished) {
+                startButtonClicked = true;
+                timeLeftInMillis = millisUntilFinished;
+                updateCountDownText();
             }
-        });
+            @Override
+            public void onFinish() {
+                timerRunning = false;
+                setAlarm.setText("start");
+                resetTimer();
+                String message = "Parking is almost up!";
+                NotificationCompat.Builder builder = new NotificationCompat.Builder(MainActivity.this, "myway")
+                        .setSmallIcon(R.mipmap.ic_myway_logo)
+                        .setContentTitle("MyWay Notification")
+                        .setContentText(message)
+                        .setAutoCancel(true);
+
+                Intent intent = new Intent(MainActivity.this, MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                PendingIntent pendingIntent = PendingIntent.getActivity(MainActivity.this,0,intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                builder.setContentIntent(pendingIntent);
+
+                NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                notificationManager.notify(0,builder.build());
+            }
+        }.start();
+
+        timerRunning = true;
+        setAlarm.setText("pause");
     }
 
-    private void setAlarm() {
-        alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        Intent i = new Intent(this, AlarmReceiver.class);
-        pendingIntent = PendingIntent.getBroadcast(this, 0,i,0);
-        alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
-        Toast.makeText(this, "Alarm set successfully", Toast.LENGTH_SHORT).show();
+    private void pauseTimer() {
+        countDownTimer.cancel();
+        timerRunning = false;
+        setAlarm.setText("start");
+    }
+
+    private void resetTimer() {
+        countDownTimer.cancel();
+        timerRunning = false;
+        setAlarm.setText("start");
+        timeLeftInMillis = START_TIME_IN_MILLIS;
+        display.setText("Parking Alarm has not been set.");
+    }
+
+    private void updateCountDownText() {
+        int minutes = (int) (timeLeftInMillis / 1000) / 60;
+        int seconds = (int) (timeLeftInMillis / 1000) % 60;
+
+        String timeLeftFormatted = String.format(Locale.getDefault(),"Parking Alarm up in %02d:%02d",minutes,seconds);
+        display.setText(timeLeftFormatted);
     }
 
     private void initSearchFab() {

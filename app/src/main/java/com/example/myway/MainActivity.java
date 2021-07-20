@@ -221,7 +221,16 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         if (this.navDrawer.isDrawerOpen(GravityCompat.START)) {
             this.navDrawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            if (searchText.getText().equals("Where would you like to go?")) {
+                Intent i = new Intent(Intent.ACTION_MAIN);
+                i.addCategory(Intent.CATEGORY_HOME);
+                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(i);
+            } else {
+                // this one not too sure yet
+                Intent i = new Intent(MainActivity.this, MainActivity.class);
+                startActivity(i);
+            }
         }
     }
 

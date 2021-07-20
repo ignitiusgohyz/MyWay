@@ -26,7 +26,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:importantForAutofill="no"
-        android:text="@string/where_would_you_like_to_go"
+        android:text="Where would you like to go?"
         android:textSize="16sp"
         android:textColor="@color/grey"
         android:fontFamily="@font/titillium_web_semibold"

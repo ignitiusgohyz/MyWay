@@ -173,7 +173,10 @@ public class LoginActivity extends AppCompatActivity {
 
         builder.setPositiveButton("YES", (dialog, which) -> {
             dialog.dismiss();
-            super.onBackPressed();
+            Intent i = new Intent(Intent.ACTION_MAIN);
+            i.addCategory(Intent.CATEGORY_HOME);
+            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(i);
         });
 
         builder.setNegativeButton("NO", (dialog, which) -> dialog.dismiss());

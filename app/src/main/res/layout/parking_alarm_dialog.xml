@@ -23,6 +23,17 @@
             android:layout_marginBottom="50dp"
             android:text="Parking Alarm has not been set." />
 
+        <Button
+            android:id="@+id/back_alarm_button"
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/titillium_web_semibold"
+            android:textSize="14sp"
+            android:layout_margin="20dp"
+            android:text="Back"
+            android:backgroundTint="@color/myway_blue"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"/>
 
         <Button
             android:id="@+id/set_alarm_button"
@@ -31,6 +42,7 @@
             android:fontFamily="@font/titillium_web_semibold"
             android:textSize="14sp"
             android:layout_margin="20dp"
+            android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             android:backgroundTint="@color/myway_blue"
@@ -39,12 +51,13 @@
         <Button
             android:id="@+id/cancel_alarm_button"
             android:layout_width="120dp"
+            android:visibility="invisible"
             android:layout_height="wrap_content"
             android:fontFamily="@font/titillium_web_semibold"
             android:textSize="14sp"
             android:layout_margin="20dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
             android:backgroundTint="@color/myway_blue"
             android:text="cancel" />
 

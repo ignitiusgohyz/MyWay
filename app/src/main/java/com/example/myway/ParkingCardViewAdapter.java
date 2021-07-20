@@ -89,18 +89,14 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
                     String currentTime = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
                     String currentDay = new SimpleDateFormat("EEEE", Locale.getDefault()).format(new Date());
                     String date = new SimpleDateFormat("ddMMyyyy", Locale.getDefault()).format(new Date());
-                    Log.d("CheckDate", "Date" + date);
                     String finalTime = "";
-//                            Log.d("CheckDay", "Day" + currentDay);
                     String[] timeArray = currentTime.split(":");
                     int currentHour = Integer.parseInt(timeArray[0]);
                     int currentMinute = Integer.parseInt(timeArray[1]);
                     int numHours = hourPicker.getValue();
                     int numMinutes = Integer.parseInt(minutePicker.getDisplayedValues()[minutePicker.getValue()-1]);
                     int finalHour = currentHour + numHours;
-//                            Log.d("HOURPICKER", "hour value: " + finalHour);
                     int finalMinute = currentMinute + numMinutes;
-//                            Log.d("HOURPICKER", "minute value: " + finalMinute);
                     if(finalMinute >= 60) {
                         finalMinute %= 60;
                         finalHour++;
@@ -118,19 +114,16 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
                     }
                     finalTime += finalHourString + ":" + finalMinuteString;
 
-                    Log.d("ARRAYLIST SIZE>>>>>>>>>>>>>>>>",parkingCardViewArrayList.size() + "");
                     //pass in current time, parkingduration, carpark information
                     String duration = currentTime + " - " + finalTime;
                     for (int i = 0; i < 16; i++) {
                         ParkingCardView parkingCardView = parkingCardViewArrayList.get(i);
-                        String price = calculatePrice(date, currentDay, ((currentHour*100) + currentMinute), numHours, numMinutes, ((finalHour*100) + finalMinute), parkingCardView);
-                        Log.d("PRICE PRICE PRICE INTO CP>>>>>>>>>>>>>", "" + price);
+                        String price = calculatePrice(date, currentDay, ((currentHour*100) + currentMinute), numHours, numMinutes, ((finalHour*100) + finalMinute), parkingCardView);Log.d("PRICE PRICE PRICE INTO CP>>>>>>>>>>>>>", "" + price);
                         parkingCardView.getCurrentCP().setPrice(price.equals(" no est.") ? 99999 : Double.parseDouble(price));
                         parkingCardView.getCurrentCP().setDuration(duration);
                         parkingCardView.setPrice_calculator(price);
                         parkingCardView.setDuration(duration);
                         if (i < viewHolders.size()) {
-                            Log.d("Updates view on selection", "This one");
                             ParkingCardViewHolder parkingCardViewHolder = viewHolders.get(i);
                             parkingCardViewHolder.setPrice(price, duration);
                         }
@@ -146,9 +139,12 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
                 popupMenu.getMenuInflater().inflate(R.menu.three_dots_cardview, popupMenu.getMenu());
                 popupMenu.setOnMenuItemClickListener(item -> {
                     if (item.getTitle().equals("Set Parking Alarm")) {
-//                        Intent intent = new Intent(v.getContext(), ParkingAlarmFragment.class);
-//                        v.getContext().startActivity(intent);
-                        Toast.makeText(v.getContext(), "PARKING ALARM SELECTED", Toast.LENGTH_SHORT).show();
+                        if (parkDuration.getText().equals("choose your duration")) {
+                            Toast.makeText(v.getContext(), "Please select a parking duration", Toast.LENGTH_SHORT).show();
+                        } else {
+                            // TODO set parking alarm based on duration
+                            Toast.makeText(v.getContext(), "Parking Alarm Set", Toast.LENGTH_SHORT).show();
+                        }
                     } else {
                         informationTransition(v);
                     }

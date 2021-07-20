@@ -144,6 +144,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private TextView display;
     private Button setAlarm;
     private Button cancelAlarm;
+    private Button backButtonAlarm;
     private static final long START_TIME_IN_MILLIS = 6000;
     private CountDownTimer countDownTimer;
     private boolean timerRunning;
@@ -187,6 +188,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         display = parkingAlarmDialog.findViewById(R.id.parking_alarm_display);
         setAlarm = parkingAlarmDialog.findViewById(R.id.set_alarm_button);
         cancelAlarm = parkingAlarmDialog.findViewById(R.id.cancel_alarm_button);
+        backButtonAlarm = parkingAlarmDialog.findViewById(R.id.back_alarm_button);
         createNotificationChannel();
 
 //        if (savedInstanceState == null) {
@@ -252,21 +254,26 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             setAlarm.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    setAlarm.setVisibility(View.INVISIBLE);
                     if (timerRunning) {
                         pauseTimer();
                     } else {
                         startTimer();
                     }
+                    cancelAlarm.setVisibility(View.VISIBLE);
                 }
             });
             cancelAlarm.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    cancelAlarm.setVisibility(View.INVISIBLE);
                     if (startButtonClicked) {
                         resetTimer();
                     }
+                    setAlarm.setVisibility(View.VISIBLE);
                 }
             });
+            backButtonAlarm.setOnClickListener(v -> parkingAlarmDialog.dismiss());
             if (timerRunning) {
                 updateCountDownText();
             }

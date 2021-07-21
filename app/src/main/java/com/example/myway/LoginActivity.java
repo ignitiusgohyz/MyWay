@@ -36,7 +36,7 @@ public class LoginActivity extends AppCompatActivity {
         ImageButton loginButton = findViewById(R.id.login);
         createdUsername = findViewById(R.id.username);
         createdPassword = findViewById(R.id.password);
-        CheckBox rememberMe = findViewById(R.id.rememberMe);
+//        CheckBox rememberMe = findViewById(R.id.rememberMe);
         ImageButton registerButton = findViewById(R.id.register);
         Button tempClearDatabaseButton = findViewById(R.id.tempclearbutton);
         visibilityButton = findViewById(R.id.visibility_button);
@@ -100,25 +100,30 @@ public class LoginActivity extends AppCompatActivity {
             } else {
                 Toast.makeText(LoginActivity.this, "No such username!", Toast.LENGTH_SHORT).show();
             }
-            rememberMe.toggle();
-            rememberMe.toggle();
+            SharedPreferences preferences = getSharedPreferences("checkbox", MODE_PRIVATE);
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putString("remember","true");
+            editor.putString("username", createdUsername.getText().toString().toLowerCase().trim());
+            editor.apply();
+//            rememberMe.toggle();
+//            rememberMe.toggle();
         });
 
-        rememberMe.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if(buttonView.isChecked()) {
-                SharedPreferences preferences = getSharedPreferences("checkbox", MODE_PRIVATE);
-                SharedPreferences.Editor editor = preferences.edit();
-                editor.putString("remember","true");
-                editor.putString("username", createdUsername.getText().toString().toLowerCase().trim());
-                editor.apply();
-            } else if(!buttonView.isChecked()) {
-                SharedPreferences preferences = getSharedPreferences("checkbox", MODE_PRIVATE);
-                SharedPreferences.Editor editor = preferences.edit();
-                editor.putString("remember","false");
-                editor.putString("username", createdUsername.getText().toString().toLowerCase().trim());
-                editor.apply();
-            }
-        });
+//        rememberMe.setOnCheckedChangeListener((buttonView, isChecked) -> {
+//            if(buttonView.isChecked()) {
+//                SharedPreferences preferences = getSharedPreferences("checkbox", MODE_PRIVATE);
+//                SharedPreferences.Editor editor = preferences.edit();
+//                editor.putString("remember","true");
+//                editor.putString("username", createdUsername.getText().toString().toLowerCase().trim());
+//                editor.apply();
+//            } else if(!buttonView.isChecked()) {
+//                SharedPreferences preferences = getSharedPreferences("checkbox", MODE_PRIVATE);
+//                SharedPreferences.Editor editor = preferences.edit();
+//                editor.putString("remember","false");
+//                editor.putString("username", createdUsername.getText().toString().toLowerCase().trim());
+//                editor.apply();
+//            }
+//        });
 
         SharedPreferences preferences = getSharedPreferences("checkbox",MODE_PRIVATE);
         String checkbox = preferences.getString("remember","");

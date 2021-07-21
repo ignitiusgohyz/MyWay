@@ -5,6 +5,7 @@ package com.example.myway;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.Dialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -24,7 +25,6 @@ import android.os.CountDownTimer;
 import android.provider.Settings;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -40,6 +40,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.view.GravityCompat;
@@ -97,6 +98,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import timber.log.Timber;
 
+import static androidx.core.app.NotificationCompat.CATEGORY_SYSTEM;
 import static androidx.core.app.NotificationCompat.PRIORITY_HIGH;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconAllowOverlap;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconIgnorePlacement;
@@ -149,9 +151,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private EditText countDownInput;
     private long startTimeInMillis;
     private CountDownTimer countDownTimer;
-    private boolean timerRunning;
     private boolean startButtonClicked;
     private long timeLeftInMillis;
+    private long endTime;
 
 
     @Override
@@ -289,7 +291,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 }
             });
             backButtonCountdown.setOnClickListener(v -> parkingAlarmDialog.dismiss());
-            if (timerRunning) {
+            if (startButtonClicked) {
                 updateCountDownText();
             }
         }
@@ -305,7 +307,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     private void startTimer() {
-
+        endTime = System.currentTimeMillis() + timeLeftInMillis;
         countDownTimer = new CountDownTimer(timeLeftInMillis, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
@@ -315,7 +317,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
             @Override
             public void onFinish() {
-                timerRunning = false;
+                startButtonClicked = false;
                 startCountdown.setText("start");
                 startCountdown.setVisibility(View.VISIBLE);
                 cancelCountdown.setVisibility(View.INVISIBLE);
@@ -324,13 +326,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 String message = "Parking is almost up!";
                 NotificationCompat.Builder builder = new NotificationCompat.Builder(MainActivity.this, "myway")
                         .setSmallIcon(R.mipmap.ic_myway_logo)
-                        .setPriority(PRIORITY_HIGH)
                         .setContentTitle("MyWay Notification")
                         .setContentText(message)
+                        .setPriority(PRIORITY_HIGH)
                         .setAutoCancel(true);
-                // if remember go to main
-                // if nvr go to login
-                // this shud be flow for killing apps but now its minimising app
+
+
+                // if logged out go to loginactivity, else if logged in go to mainactivity
                 SharedPreferences preferences = getSharedPreferences("checkbox", MODE_PRIVATE);
                 String checkbox = preferences.getString("remember","");
                 if (checkbox.equals("true")) {
@@ -344,16 +346,18 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     PendingIntent pendingIntentLoggedOut = PendingIntent.getActivity(MainActivity.this, 1, intentLoggedOut, PendingIntent.FLAG_UPDATE_CURRENT);
                     builder.setContentIntent(pendingIntentLoggedOut);
                 }
+//                NotificationManagerCompat notificationManager = NotificationManagerCompat.from(MainActivity.this);
+//                notificationManager.notify(1,builder.build());
                 NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                notificationManager.notify(0,builder.build());
+                notificationManager.notify(1,builder.build());
             }
         }.start();
 
-        timerRunning = true;
+        startButtonClicked = true;
     }
 
     private void resetTimer() {
-        timerRunning = false;
+        startButtonClicked = false;
         startCountdown.setText("start");
         timeLeftInMillis = startTimeInMillis;
         display.setText("Parking Alarm has not been set.");
@@ -771,6 +775,22 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     protected void onStart() {
         super.onStart();
+        SharedPreferences prefs = getSharedPreferences("prefs",MODE_PRIVATE);
+        startTimeInMillis = prefs.getLong("startTimeInMillis", 0);
+        timeLeftInMillis = prefs.getLong("timeLeftInMillis", startTimeInMillis);
+        startButtonClicked = prefs.getBoolean("startButtonClicked", false);
+        if (startButtonClicked) {
+            endTime = prefs.getLong("endTime", 0);
+            timeLeftInMillis = endTime - System.currentTimeMillis();
+            if (timeLeftInMillis < 0) {
+                timeLeftInMillis = 0;
+                startButtonClicked = false;
+                resetTimer();
+            } else {
+                startTimer();
+            }
+        }
+
         mapView.onStart();
     }
 
@@ -812,6 +832,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     protected void onStop() {
         super.onStop();
+        SharedPreferences prefs = getSharedPreferences("prefs", MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putLong("startTimeInMillis", startTimeInMillis);
+        editor.putLong("millisLeft", timeLeftInMillis);
+        editor.putBoolean("startButtonClicked", startButtonClicked);
+        editor.putLong("endTime", endTime);
+        editor.apply();
         if(countDownTimer != null) {
             countDownTimer.cancel();
         }

@@ -22,10 +22,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.provider.Settings;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -142,14 +143,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private Dialog parkingAlarmDialog;
     private TextView display;
-    private Button setAlarm;
-    private Button cancelAlarm;
-    private Button backButtonAlarm;
-    private static final long START_TIME_IN_MILLIS = 6000;
+    private Button startCountdown;
+    private Button cancelCountdown;
+    private Button backButtonCountdown;
+    private EditText countDownInput;
+    private long startTimeInMillis;
     private CountDownTimer countDownTimer;
     private boolean timerRunning;
     private boolean startButtonClicked;
-    private long timeLeftInMillis = START_TIME_IN_MILLIS;
+    private long timeLeftInMillis;
 
 
     @Override
@@ -186,9 +188,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         parkingAlarmDialog.setContentView(R.layout.parking_alarm_dialog);
         display = parkingAlarmDialog.findViewById(R.id.parking_alarm_display);
-        setAlarm = parkingAlarmDialog.findViewById(R.id.set_alarm_button);
-        cancelAlarm = parkingAlarmDialog.findViewById(R.id.cancel_alarm_button);
-        backButtonAlarm = parkingAlarmDialog.findViewById(R.id.back_alarm_button);
+        startCountdown = parkingAlarmDialog.findViewById(R.id.start_countdown_button);
+        cancelCountdown = parkingAlarmDialog.findViewById(R.id.cancel_countdown_button);
+        backButtonCountdown = parkingAlarmDialog.findViewById(R.id.back_countdown_button);
+        countDownInput = parkingAlarmDialog.findViewById(R.id.countdown_input);
+
         createNotificationChannel();
 
 //        if (savedInstanceState == null) {
@@ -251,29 +255,40 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             startActivity(intent);
         } else if (item.getItemId() == R.id.nav_parking_alarm) {
             parkingAlarmDialog.show();
-            setAlarm.setOnClickListener(new View.OnClickListener() {
+            startCountdown.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    setAlarm.setVisibility(View.INVISIBLE);
-                    if (timerRunning) {
-                        pauseTimer();
-                    } else {
-                        startTimer();
+                    String input = countDownInput.getText().toString();
+                    if (input.length() == 0) {
+                        Toast.makeText(MainActivity.this, "Field can't be empty", Toast.LENGTH_SHORT).show();
+                        return;
                     }
-                    cancelAlarm.setVisibility(View.VISIBLE);
+                    long millisInput = Long.parseLong(input) * 60000;
+                    if (millisInput == 0) {
+                        Toast.makeText(MainActivity.this, "Please enter a positive number", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    setTime(millisInput);
+                    countDownInput.setText("");
+                    startCountdown.setVisibility(View.INVISIBLE);
+                    cancelCountdown.setVisibility(View.VISIBLE);
+                    countDownInput.setVisibility(View.INVISIBLE);
+                    startTimer();
                 }
             });
-            cancelAlarm.setOnClickListener(new View.OnClickListener() {
+            cancelCountdown.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    cancelAlarm.setVisibility(View.INVISIBLE);
+                    cancelCountdown.setVisibility(View.INVISIBLE);
                     if (startButtonClicked) {
+                        countDownTimer.cancel();
                         resetTimer();
                     }
-                    setAlarm.setVisibility(View.VISIBLE);
+                    startCountdown.setVisibility(View.VISIBLE);
+                    countDownInput.setVisibility(View.VISIBLE);
                 }
             });
-            backButtonAlarm.setOnClickListener(v -> parkingAlarmDialog.dismiss());
+            backButtonCountdown.setOnClickListener(v -> parkingAlarmDialog.dismiss());
             if (timerRunning) {
                 updateCountDownText();
             }
@@ -284,7 +299,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         return true;
     }
 
+    private void setTime(long millisInput) {
+        startTimeInMillis = millisInput;
+        resetTimer();
+    }
+
     private void startTimer() {
+
         countDownTimer = new CountDownTimer(timeLeftInMillis, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
@@ -295,7 +316,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public void onFinish() {
                 timerRunning = false;
-                setAlarm.setText("start");
+                startCountdown.setText("start");
+                startCountdown.setVisibility(View.VISIBLE);
+                cancelCountdown.setVisibility(View.INVISIBLE);
+                countDownInput.setVisibility(View.VISIBLE);
                 resetTimer();
                 String message = "Parking is almost up!";
                 NotificationCompat.Builder builder = new NotificationCompat.Builder(MainActivity.this, "myway")
@@ -326,28 +350,25 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }.start();
 
         timerRunning = true;
-        setAlarm.setText("pause");
-    }
-
-    private void pauseTimer() {
-        countDownTimer.cancel();
-        timerRunning = false;
-        setAlarm.setText("start");
     }
 
     private void resetTimer() {
-        countDownTimer.cancel();
         timerRunning = false;
-        setAlarm.setText("start");
-        timeLeftInMillis = START_TIME_IN_MILLIS;
+        startCountdown.setText("start");
+        timeLeftInMillis = startTimeInMillis;
         display.setText("Parking Alarm has not been set.");
     }
 
     private void updateCountDownText() {
-        int minutes = (int) (timeLeftInMillis / 1000) / 60;
+        int hours = (int) (timeLeftInMillis / 1000) / 3600;
+        int minutes = (int) ((timeLeftInMillis / 1000) % 3600) / 60;
         int seconds = (int) (timeLeftInMillis / 1000) % 60;
-
-        String timeLeftFormatted = String.format(Locale.getDefault(),"Parking Alarm up in %02d:%02d",minutes,seconds);
+        String timeLeftFormatted;
+        if (hours > 0) {
+            timeLeftFormatted = String.format(Locale.getDefault(),"Parking Alarm up in %d:%02d:%02d",hours,minutes,seconds);
+        } else {
+            timeLeftFormatted = String.format(Locale.getDefault(), "Parking Alarm up in %02d:%02d",minutes,seconds);
+        }
         display.setText(timeLeftFormatted);
     }
 
@@ -791,6 +812,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     protected void onStop() {
         super.onStop();
+        if(countDownTimer != null) {
+            countDownTimer.cancel();
+        }
         mapView.onStop();
     }
 

@@ -159,15 +159,23 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
                             Button reach = parkingAlarmChoice.findViewById(R.id.setAlarmAfterNavigation);
                             long millisInput = durationChosen * 60_000;
                             now.setOnClickListener(v12 -> {
-                                mainContext.setAlarm(millisInput);
-                                Toast.makeText(v12.getContext(), "Parking Alarm Set", Toast.LENGTH_SHORT).show();
-                                parkingAlarmChoice.dismiss();
+                                if (mainContext.hasAlarmSet()) {
+                                    Toast.makeText(v12.getContext(), "Please cancel previous alarm", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    mainContext.setAlarm(millisInput);
+                                    Toast.makeText(v12.getContext(), "Parking Alarm Set", Toast.LENGTH_SHORT).show();
+                                    parkingAlarmChoice.dismiss();
+                                }
                             });
 
                             reach.setOnClickListener(v13 -> {
-                                mainContext.delayedAlarm(millisInput);
-                                Toast.makeText(v13.getContext(), "Parking Alarm Set upon Arrival at Destination", Toast.LENGTH_SHORT).show();
-                                parkingAlarmChoice.dismiss();
+                                if (mainContext.hasAlarmSet()) {
+                                    Toast.makeText(v13.getContext(), "Please cancel previous alarm", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    mainContext.delayedAlarm(millisInput);
+                                    Toast.makeText(v13.getContext(), "Parking Alarm Set upon Arrival at Destination", Toast.LENGTH_SHORT).show();
+                                    parkingAlarmChoice.dismiss();
+                                }
                             });
                         }
                     } else {

@@ -82,6 +82,7 @@ import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
 import com.mapbox.services.android.navigation.ui.v5.NavigationLauncher;
 import com.mapbox.services.android.navigation.ui.v5.NavigationLauncherOptions;
 import com.mapbox.services.android.navigation.ui.v5.NavigationViewOptions;
+import com.mapbox.services.android.navigation.ui.v5.listeners.NavigationListener;
 import com.mapbox.services.android.navigation.ui.v5.route.NavigationMapRoute;
 import com.mapbox.services.android.navigation.v5.navigation.NavigationRoute;
 import com.mapbox.services.android.navigation.v5.routeprogress.ProgressChangeListener;
@@ -155,7 +156,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private Button backButtonCountdown;
     private EditText countDownInput;
     private long startTimeInMillis;
-    private CountDownTimer countDownTimer;
+    private static CountDownTimer countDownTimer;
     private boolean startButtonClicked;
     private long timeLeftInMillis;
     private long endTime;
@@ -285,6 +286,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 cancelCountdown.setVisibility(View.INVISIBLE);
                 if (startButtonClicked) {
                     countDownTimer.cancel();
+                    countDownTimer = null;
                     resetTimer();
                 }
                 startCountdown.setVisibility(View.VISIBLE);
@@ -301,8 +303,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         return true;
     }
 
+    public boolean hasAlarmSet() {
+        return countDownTimer != null;
+    }
+
     public void setAlarm(long mInput) {
-        resetTimer();
         setTime(mInput);
         countDownInput.setText("");
         startCountdown.setVisibility(View.INVISIBLE);

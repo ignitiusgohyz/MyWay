@@ -155,6 +155,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private long timeLeftInMillis;
     private long endTime;
 
+    private ImageButton historyButton;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -196,6 +198,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         countDownInput = parkingAlarmDialog.findViewById(R.id.countdown_input);
 
         createNotificationChannel();
+
+        // TODO: extraneous
+        historyButton = findViewById(R.id.fragment_main_history);
+        historyButton.setOnClickListener(v -> Toast.makeText(this, "Feature not implemented yet.", Toast.LENGTH_SHORT).show());
 
 //        if (savedInstanceState == null) {
 //            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new ParkingAlarmFragment()).commit();
@@ -257,38 +263,27 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             startActivity(intent);
         } else if (item.getItemId() == R.id.nav_parking_alarm) {
             parkingAlarmDialog.show();
-            startCountdown.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    String input = countDownInput.getText().toString();
-                    if (input.length() == 0) {
-                        Toast.makeText(MainActivity.this, "Field can't be empty", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                    long millisInput = Long.parseLong(input) * 60000;
-                    if (millisInput == 0) {
-                        Toast.makeText(MainActivity.this, "Please enter a positive number", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                    setTime(millisInput);
-                    countDownInput.setText("");
-                    startCountdown.setVisibility(View.INVISIBLE);
-                    cancelCountdown.setVisibility(View.VISIBLE);
-                    countDownInput.setVisibility(View.INVISIBLE);
-                    startTimer();
+            startCountdown.setOnClickListener(v -> {
+                String input = countDownInput.getText().toString();
+                if (input.length() == 0) {
+                    Toast.makeText(MainActivity.this, "Field can't be empty", Toast.LENGTH_SHORT).show();
+                    return;
                 }
+                long millisInput = Long.parseLong(input) * 60000;
+                if (millisInput == 0) {
+                    Toast.makeText(MainActivity.this, "Please enter a positive number", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                setAlarm(millisInput);
             });
-            cancelCountdown.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    cancelCountdown.setVisibility(View.INVISIBLE);
-                    if (startButtonClicked) {
-                        countDownTimer.cancel();
-                        resetTimer();
-                    }
-                    startCountdown.setVisibility(View.VISIBLE);
-                    countDownInput.setVisibility(View.VISIBLE);
+            cancelCountdown.setOnClickListener(v -> {
+                cancelCountdown.setVisibility(View.INVISIBLE);
+                if (startButtonClicked) {
+                    countDownTimer.cancel();
+                    resetTimer();
                 }
+                startCountdown.setVisibility(View.VISIBLE);
+                countDownInput.setVisibility(View.VISIBLE);
             });
             backButtonCountdown.setOnClickListener(v -> parkingAlarmDialog.dismiss());
             if (startButtonClicked) {
@@ -299,6 +294,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         navDrawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    public void setAlarm(long mInput) {
+        setTime(mInput);
+        countDownInput.setText("");
+        startCountdown.setVisibility(View.INVISIBLE);
+        cancelCountdown.setVisibility(View.VISIBLE);
+        countDownInput.setVisibility(View.INVISIBLE);
+        startTimer();
     }
 
     private void setTime(long millisInput) {
@@ -556,6 +560,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             String accessToken = generateURAToken.getToken(ak);
             bundle.putString("token", accessToken);
             intent.putExtras(bundle);
+            ParkingCardViewAdapter.setParam(this);
             startActivity(intent);
         }));
     }

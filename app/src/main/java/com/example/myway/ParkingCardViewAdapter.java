@@ -37,7 +37,12 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
     private static ArrayList<ParkingCardView> parkingCardViewArrayList;
     private static ArrayList<ParkingCardViewHolder> viewHolders = new ArrayList<>();
     private static String username;
+    private static MainActivity mainContext;
     private static Context context;
+
+    public static void setParam(MainActivity c) {
+        mainContext = c;
+    }
 
     public static class ParkingCardViewHolder extends RecyclerView.ViewHolder {
         private final TextView location;
@@ -52,6 +57,7 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
         private final ImageButton threeDots;
         private final ImageButton arrowRight;
         private final TextView viewRates;
+        private long durationChosen = Long.MAX_VALUE;
 
         @SuppressLint("SetTextI18n")
         public ParkingCardViewHolder(@NonNull @NotNull View itemView) {
@@ -114,11 +120,13 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
                     }
                     finalTime += finalHourString + ":" + finalMinuteString;
 
+                    durationChosen = numHours * 60 + numMinutes;
+
                     //pass in current time, parkingduration, carpark information
                     String duration = currentTime + " - " + finalTime;
                     for (int i = 0; i < 16; i++) {
                         ParkingCardView parkingCardView = parkingCardViewArrayList.get(i);
-                        String price = calculatePrice(date, currentDay, ((currentHour*100) + currentMinute), numHours, numMinutes, ((finalHour*100) + finalMinute), parkingCardView);Log.d("PRICE PRICE PRICE INTO CP>>>>>>>>>>>>>", "" + price);
+                        String price = calculatePrice(date, currentDay, ((currentHour*100) + currentMinute), numHours, numMinutes, ((finalHour*100) + finalMinute), parkingCardView);
                         parkingCardView.getCurrentCP().setPrice(price.equals(" no est.") ? 99999 : Double.parseDouble(price));
                         parkingCardView.getCurrentCP().setDuration(duration);
                         parkingCardView.setPrice_calculator(price);
@@ -139,10 +147,12 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
                 popupMenu.getMenuInflater().inflate(R.menu.three_dots_cardview, popupMenu.getMenu());
                 popupMenu.setOnMenuItemClickListener(item -> {
                     if (item.getTitle().equals("Set Parking Alarm")) {
-                        if (parkDuration.getText().equals("choose your duration")) {
+                        if (parkDuration.getText().equals("choose your duration") || durationChosen == Long.MAX_VALUE) {
                             Toast.makeText(v.getContext(), "Please select a parking duration", Toast.LENGTH_SHORT).show();
                         } else {
                             // TODO set parking alarm based on duration
+                            long millisInput = durationChosen * 60_000;
+                            mainContext.setAlarm(millisInput);
                             Toast.makeText(v.getContext(), "Parking Alarm Set", Toast.LENGTH_SHORT).show();
                         }
                     } else {

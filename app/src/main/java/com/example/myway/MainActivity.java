@@ -160,6 +160,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private boolean startButtonClicked;
     private long timeLeftInMillis;
     private long endTime;
+    private boolean delay = false;
 
 
     @Override
@@ -557,6 +558,20 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     .shouldSimulateRoute(true) // REMEMBER TO SET TO FALSE
                     .build();
             NavigationLauncher.startNavigation(MainActivity.this, options);
+            Log.d("Navigation Started", "STARTING........");
+
+//            NavigationViewOptions.Builder optionsTest = NavigationViewOptions.builder();
+//            optionsTest.progressChangeListener(new ProgressChangeListener() {
+//                @Override
+//                public void onProgressChange(@NotNull Location location, @NotNull RouteProgress routeProgress) {
+//                    Log.d("Navigation IN PROGRESS", "IN PROGRESS........");
+//                    if (routeProgress.distanceRemaining() <= 100.0) {
+//                        Log.d("Navigation FINISHED", "FINISHED......");
+//                        Toast.makeText(MainActivity.this, "DONE", Toast.LENGTH_SHORT).show();
+//                    }
+//                }
+//            });
+
         }));
         checkParking = findViewById(R.id.checkParking);
         checkParking.setOnClickListener((v -> {
@@ -576,6 +591,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     public void delayedAlarm(long ms) {
         Log.d("Delayed Alarm selected>>>>>>>>>>>", "Delay-in-Progress");
+        delay = true;
         NavigationViewOptions.Builder options = NavigationViewOptions.builder();
         options.progressChangeListener((location, routeProgress) -> {
 //            if (routeProgress.currentState().equals(RouteProgressState.ROUTE_ARRIVED)) {

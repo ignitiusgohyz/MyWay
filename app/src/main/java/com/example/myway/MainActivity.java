@@ -23,6 +23,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -80,8 +81,12 @@ import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
 import com.mapbox.services.android.navigation.ui.v5.NavigationLauncher;
 import com.mapbox.services.android.navigation.ui.v5.NavigationLauncherOptions;
+import com.mapbox.services.android.navigation.ui.v5.NavigationViewOptions;
 import com.mapbox.services.android.navigation.ui.v5.route.NavigationMapRoute;
 import com.mapbox.services.android.navigation.v5.navigation.NavigationRoute;
+import com.mapbox.services.android.navigation.v5.routeprogress.ProgressChangeListener;
+import com.mapbox.services.android.navigation.v5.routeprogress.RouteProgress;
+import com.mapbox.services.android.navigation.v5.routeprogress.RouteProgressState;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -297,6 +302,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     public void setAlarm(long mInput) {
+        resetTimer();
         setTime(mInput);
         countDownInput.setText("");
         startCountdown.setVisibility(View.INVISIBLE);
@@ -545,7 +551,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         startButton.setOnClickListener((v -> {
             NavigationLauncherOptions options = NavigationLauncherOptions.builder()
                     .directionsRoute(currentRoute)
-                    .shouldSimulateRoute(true)
+                    .shouldSimulateRoute(true) // REMEMBER TO SET TO FALSE
                     .build();
             NavigationLauncher.startNavigation(MainActivity.this, options);
         }));
@@ -563,6 +569,22 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             ParkingCardViewAdapter.setParam(this);
             startActivity(intent);
         }));
+    }
+
+    public void delayedAlarm(long ms) {
+        Log.d("Delayed Alarm selected>>>>>>>>>>>", "Delay-in-Progress");
+        NavigationViewOptions.Builder options = NavigationViewOptions.builder();
+        options.progressChangeListener((location, routeProgress) -> {
+//            if (routeProgress.currentState().equals(RouteProgressState.ROUTE_ARRIVED)) {
+//                Log.d("Delayed Alarm OVER>>>>>>>>>>>", "Setting");
+//                setAlarm(ms);
+//            }
+            Log.d("Delayed Alarm OVER>>>>>>>>>>>", routeProgress.distanceRemaining().toString());
+            if (routeProgress.distanceRemaining() <= 50.0) {
+                Log.d("Delayed Alarm OVER>>>>>>>>>>>", "Setting");
+                setAlarm(ms);
+            }
+        });
     }
 
     private void enableLocationComponent(@NonNull Style loadedMapStyle) {

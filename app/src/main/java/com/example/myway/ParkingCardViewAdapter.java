@@ -58,6 +58,7 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
         private final ImageButton arrowRight;
         private final TextView viewRates;
         private long durationChosen = Long.MAX_VALUE;
+        private Dialog parkingAlarmChoice;
 
         @SuppressLint("SetTextI18n")
         public ParkingCardViewHolder(@NonNull @NotNull View itemView) {
@@ -74,6 +75,8 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
             threeDots = itemView.findViewById(R.id.ic_ellipsis);
             arrowRight = itemView.findViewById(R.id.fragment_carpark_rates_arrow_right);
             viewRates = itemView.findViewById(R.id.view_rates_1);
+            parkingAlarmChoice = new Dialog(itemView.getContext());
+            parkingAlarmChoice.setContentView(R.layout.parking_alarm_choice);
 
             viewHolders.add(this);
 
@@ -151,9 +154,21 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
                             Toast.makeText(v.getContext(), "Please select a parking duration", Toast.LENGTH_SHORT).show();
                         } else {
                             // TODO set parking alarm based on duration
+                            parkingAlarmChoice.show();
+                            Button now = parkingAlarmChoice.findViewById(R.id.setAlarmNow);
+                            Button reach = parkingAlarmChoice.findViewById(R.id.setAlarmAfterNavigation);
                             long millisInput = durationChosen * 60_000;
-                            mainContext.setAlarm(millisInput);
-                            Toast.makeText(v.getContext(), "Parking Alarm Set", Toast.LENGTH_SHORT).show();
+                            now.setOnClickListener(v12 -> {
+                                mainContext.setAlarm(millisInput);
+                                Toast.makeText(v12.getContext(), "Parking Alarm Set", Toast.LENGTH_SHORT).show();
+                                parkingAlarmChoice.dismiss();
+                            });
+
+                            reach.setOnClickListener(v13 -> {
+                                mainContext.delayedAlarm(millisInput);
+                                Toast.makeText(v13.getContext(), "Parking Alarm Set upon Arrival at Destination", Toast.LENGTH_SHORT).show();
+                                parkingAlarmChoice.dismiss();
+                            });
                         }
                     } else {
                         informationTransition(v);
@@ -219,28 +234,11 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
 
     public static String calculatePrice(String date, String currentDay, int currentTime, int numHours, int numMinutes, int finalTime, ParkingCardView currentCardView) {
         Carpark currentCP = currentCardView.getCurrentCP();
-//        if (currentCP instanceof Carpark.HDB) {
-//            return currentCP.calculateRates(date, currentDay, currentTime, finalTime, false);
-//        } else {
-//            return " no est.";
-//        }
         if (currentCP instanceof Carpark.LTA) {
             return " no est.";
         } else {
             return currentCP.calculateRates(date, currentDay, currentTime, finalTime, false);
         }
-//        if (currentCP instanceof Carpark.HDB) {
-//            //return ((Carpark.HDB) currentCP).calculate(date, currentDay, currentTime, numHours, numMinutes, finalTime);
-//            return currentCP.calculateRates(date, currentDay, currentTime, finalTime, false);
-//        } else if (currentCP instanceof Carpark.LTA) {
-//            //return ((Carpark.LTA) currentCP).calculate(date, currentDay, currentTime, numHours, numMinutes, finalTime);
-//            return currentCP.calculateRates(date, currentDay, currentTime, finalTime, false);
-//        } else if (currentCP instanceof Carpark.URA) {
-//            //return ((Carpark.URA) currentCP).calculate(date, currentDay, currentTime, numHours, numMinutes, finalTime);
-//            return currentCP.calculateRates(date, currentDay, currentTime, finalTime, false);
-//        } else {
-//            return "info unavailable";
-//        }
     }
     public ParkingCardViewAdapter(ArrayList<ParkingCardView> parkingCardViewArrayList, String username, Context context) {
         ParkingCardViewAdapter.parkingCardViewArrayList = parkingCardViewArrayList;

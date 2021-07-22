@@ -161,8 +161,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private long timeLeftInMillis;
     private long endTime;
 
-    private ImageButton historyButton;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -206,7 +204,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         createNotificationChannel();
 
         // TODO: extraneous
-        historyButton = findViewById(R.id.fragment_main_history);
+        ImageButton historyButton = findViewById(R.id.fragment_main_history);
         historyButton.setOnClickListener(v -> Toast.makeText(this, "Feature not implemented yet.", Toast.LENGTH_SHORT).show());
 
 //        if (savedInstanceState == null) {
@@ -585,7 +583,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 //                setAlarm(ms);
 //            }
             Log.d("Delayed Alarm OVER>>>>>>>>>>>", routeProgress.distanceRemaining().toString());
-            if (routeProgress.distanceRemaining() <= 50.0) {
+            if (routeProgress.distanceRemaining() <= 10.0) {
                 Log.d("Delayed Alarm OVER>>>>>>>>>>>", "Setting");
                 setAlarm(ms);
             }

@@ -1,6 +1,7 @@
 package com.example.myway;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -82,6 +83,10 @@ public class EmailRegistration extends AppCompatActivity {
                     Intent intent = new Intent(EmailRegistration.this, PasswordRegistration.class);
                     intent.putExtra("username", username);
                     intent.putExtra("email", email_string);
+                    SharedPreferences passEmail = getSharedPreferences("passemail", MODE_PRIVATE);
+                    SharedPreferences.Editor editor = passEmail.edit();
+                    editor.putString("email", email_string);
+                    editor.apply();
                     startActivity(intent);
                     overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                 }

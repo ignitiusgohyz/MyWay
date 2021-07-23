@@ -5,7 +5,6 @@ package com.example.myway;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.AlarmManager;
 import android.app.Dialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -41,7 +40,6 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.view.GravityCompat;
@@ -82,12 +80,8 @@ import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
 import com.mapbox.services.android.navigation.ui.v5.NavigationLauncher;
 import com.mapbox.services.android.navigation.ui.v5.NavigationLauncherOptions;
 import com.mapbox.services.android.navigation.ui.v5.NavigationViewOptions;
-import com.mapbox.services.android.navigation.ui.v5.listeners.NavigationListener;
 import com.mapbox.services.android.navigation.ui.v5.route.NavigationMapRoute;
 import com.mapbox.services.android.navigation.v5.navigation.NavigationRoute;
-import com.mapbox.services.android.navigation.v5.routeprogress.ProgressChangeListener;
-import com.mapbox.services.android.navigation.v5.routeprogress.RouteProgress;
-import com.mapbox.services.android.navigation.v5.routeprogress.RouteProgressState;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -104,7 +98,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import timber.log.Timber;
 
-import static androidx.core.app.NotificationCompat.CATEGORY_SYSTEM;
 import static androidx.core.app.NotificationCompat.PRIORITY_HIGH;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconAllowOverlap;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconIgnorePlacement;
@@ -150,6 +143,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private DrawerLayout navDrawer;
 
     private Dialog parkingAlarmDialog;
+    private Dialog myProfileDialog;
     private TextView display;
     private Button startCountdown;
     private Button cancelCountdown;
@@ -161,6 +155,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private long timeLeftInMillis;
     private long endTime;
     private boolean delay = false;
+    private ImageButton hamburgerMenu;
 
 
     @Override
@@ -174,6 +169,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         startButton = findViewById(R.id.startNavigation);
         checkParking = findViewById(R.id.checkParking);
         parkingAlarmDialog = new Dialog(this);
+        myProfileDialog = new Dialog(this);
         searchText = findViewById(R.id.location_text);
         TextView greetingText = findViewById(R.id.fragment_main_greeting_text);
         SharedPreferences preferences = getSharedPreferences("checkbox", MODE_PRIVATE);
@@ -182,7 +178,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
 
-        ImageButton hamburgerMenu = findViewById(R.id.fragment_main_hamburger_menu);
+        hamburgerMenu = findViewById(R.id.fragment_main_hamburger_menu);
         navDrawer = findViewById(R.id.my_drawer_layout);
         NavigationView navigationView = findViewById(R.id.navigation_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -195,6 +191,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         navDrawer.addDrawerListener(toggle);
         toggle.syncState();
 
+        myProfileDialog.setContentView(R.layout.my_account_dialog);
         parkingAlarmDialog.setContentView(R.layout.parking_alarm_dialog);
         display = parkingAlarmDialog.findViewById(R.id.parking_alarm_display);
         startCountdown = parkingAlarmDialog.findViewById(R.id.start_countdown_button);
@@ -229,7 +226,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             int importance = NotificationManager.IMPORTANCE_HIGH;
             NotificationChannel channel = new NotificationChannel("myway", name, importance);
             channel.setDescription(description);
-
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
         }
@@ -295,6 +291,17 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             if (startButtonClicked) {
                 updateCountDownText();
             }
+        } else if (item.getItemId() == R.id.nav_crowd_sourced_information) {
+            Toast.makeText(this, "Feature not implemented yet.", Toast.LENGTH_SHORT).show();
+        } else if (item.getItemId() == R.id.nav_account) {
+            SharedPreferences passEmail = getSharedPreferences("passemail", MODE_PRIVATE);
+            SharedPreferences preferences = getSharedPreferences("checkbox", MODE_PRIVATE);
+            String email = passEmail.getString("email", "null");
+            TextView dialogEmail = myProfileDialog.findViewById(R.id.my_profile_email);
+            TextView dialogUser = myProfileDialog.findViewById(R.id.my_profile_username);
+            dialogEmail.setText("Email: " + email);
+            dialogUser.setText("Username: " + preferences.getString("username", "null"));
+            myProfileDialog.show();
         }
 
 
@@ -303,7 +310,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     public boolean hasAlarmSet() {
-        return countDownTimer != null;
+        return startButtonClicked;
     }
 
     public void setAlarm(long mInput) {
@@ -315,12 +322,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         startTimer();
     }
 
-    private void setTime(long millisInput) {
+    protected void setTime(long millisInput) {
         startTimeInMillis = millisInput;
         resetTimer();
     }
 
-    private void startTimer() {
+    protected void startTimer() {
         endTime = System.currentTimeMillis() + timeLeftInMillis;
         countDownTimer = new CountDownTimer(timeLeftInMillis, 1000) {
             @Override
@@ -370,14 +377,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         startButtonClicked = true;
     }
 
-    private void resetTimer() {
+    protected void resetTimer() {
         startButtonClicked = false;
         startCountdown.setText("start");
         timeLeftInMillis = startTimeInMillis;
         display.setText("Parking Alarm has not been set.");
     }
 
-    private void updateCountDownText() {
+    protected void updateCountDownText() {
         int hours = (int) (timeLeftInMillis / 1000) / 3600;
         int minutes = (int) ((timeLeftInMillis / 1000) % 3600) / 60;
         int seconds = (int) (timeLeftInMillis / 1000) % 60;
@@ -843,6 +850,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     protected void onResume() {
         super.onResume();
+        Log.d("MAIN", "RESUME");
         mapView.onResume();
         if (destinationSVY21 != null) {
             FutureTask<Void> setURADistance = new FutureTask<>(() -> {
@@ -865,13 +873,37 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
             executor.execute(setHDBDistance);
             executor.execute(setLTADistance);
-
+        }
+        SharedPreferences prefs = getSharedPreferences("prefs", MODE_PRIVATE);
+        startTimeInMillis = prefs.getLong("startTimeInMillis", 0);
+        timeLeftInMillis = prefs.getLong("timeLeftInMillis", startTimeInMillis);
+        startButtonClicked = prefs.getBoolean("startButtonClicked", false);
+        if (startButtonClicked) {
+            endTime = prefs.getLong("endTime", 0);
+            timeLeftInMillis = endTime - System.currentTimeMillis();
+            if (timeLeftInMillis < 0) {
+                timeLeftInMillis = 0;
+                startButtonClicked = false;
+                resetTimer();
+            } else {
+                startTimer();
+            }
         }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        SharedPreferences prefs = getSharedPreferences("prefs", MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putLong("startTimeInMillis", startTimeInMillis);
+        editor.putLong("millisLeft", timeLeftInMillis);
+        editor.putBoolean("startButtonClicked", startButtonClicked);
+        editor.putLong("endTime", endTime);
+        editor.apply();
+        if(countDownTimer != null) {
+            countDownTimer.cancel();
+        }
         mapView.onPause();
     }
 

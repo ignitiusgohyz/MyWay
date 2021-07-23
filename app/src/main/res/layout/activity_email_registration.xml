@@ -33,7 +33,6 @@
         android:textColor="@color/black"
         android:textColorHint="@color/grey"
         android:inputType="textEmailAddress"
-        android:paddingEnd="75dp"
         app:layout_constraintBottom_toBottomOf="@+id/registration_email_box"
         app:layout_constraintEnd_toEndOf="@+id/registration_email_box"
         app:layout_constraintStart_toStartOf="@+id/registration_email_box"

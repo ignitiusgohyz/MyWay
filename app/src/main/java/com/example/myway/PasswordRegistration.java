@@ -21,6 +21,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 
 import java.util.regex.Matcher;
@@ -30,10 +31,13 @@ public class PasswordRegistration extends AppCompatActivity {
 
     private EditText first_password;
     private ImageButton visibilityButton;
+    private TextView privacyPolicy;
+    private TextView userAgreement;
     private EditText second_password;
     private TextView password_warning;
     private boolean canProceedPassword = false;
     private boolean canProceedChecked = false;
+    private CardView tNc;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -51,10 +55,11 @@ public class PasswordRegistration extends AppCompatActivity {
         TextView finishText = findViewById(R.id.textView);
         TextView userAgreements = findViewById(R.id.user_agreement_1);
         CheckBox checkBox = findViewById(R.id.user_agreement_checkbox);
-        TextView userAgreements2 = findViewById(R.id.user_agreement);
-        TextView privacyPolicy = findViewById(R.id.privacy_policy);
+        userAgreement = findViewById(R.id.user_agreement);
+        privacyPolicy = findViewById(R.id.privacy_policy);
         TextView and = findViewById(R.id.and);
         password_warning = findViewById(R.id.registration_password_warning);
+        tNc = findViewById(R.id.termsCardView);
 
         firstPasswordBox.setTranslationX(300);
         first_password.setTranslationX(300);
@@ -66,7 +71,7 @@ public class PasswordRegistration extends AppCompatActivity {
         finishText.setTranslationX(300);
         userAgreements.setTranslationX(300);
         checkBox.setTranslationX(300);
-        userAgreements2.setTranslationX(300);
+        userAgreement.setTranslationX(300);
         privacyPolicy.setTranslationX(300);
         and.setTranslationX(300);
         password_warning.setTranslationX(300);
@@ -82,7 +87,7 @@ public class PasswordRegistration extends AppCompatActivity {
         finishText.setAlpha(v2);
         userAgreements.setAlpha(v2);
         checkBox.setAlpha(v2);
-        userAgreements2.setAlpha(v2);
+        userAgreement.setAlpha(v2);
         privacyPolicy.setAlpha(v2);
         and.setAlpha(v2);
         password_warning.setAlpha(v2);
@@ -97,11 +102,31 @@ public class PasswordRegistration extends AppCompatActivity {
         finishText.animate().translationX(0).alpha(1).setDuration(500).setStartDelay(300).start();
         userAgreements.animate().translationX(0).alpha(1).setDuration(500).setStartDelay(300).start();
         checkBox.animate().translationX(0).alpha(1).setDuration(500).setStartDelay(300).start();
-        userAgreements2.animate().translationX(0).alpha(1).setDuration(500).setStartDelay(300).start();
+        userAgreement.animate().translationX(0).alpha(1).setDuration(500).setStartDelay(300).start();
         privacyPolicy.animate().translationX(0).alpha(1).setDuration(500).setStartDelay(300).start();
         and.animate().translationX(0).alpha(1).setDuration(500).setStartDelay(300).start();
         password_warning.animate().translationX(0).alpha(1).setDuration(500).setStartDelay(300).start();
 
+        userAgreement.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                tNc.setVisibility(View.VISIBLE);
+            }
+        });
+
+        privacyPolicy.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                userAgreement.performClick();
+            }
+        });
+
+        tNc.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                tNc.setVisibility(View.INVISIBLE);
+            }
+        });
 
         finishButton.setOnClickListener(v -> {
             if (canProceedPassword && canProceedChecked) {
@@ -249,16 +274,20 @@ public class PasswordRegistration extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Confirm").setMessage("Are you sure?");
+        if (tNc.getVisibility() == View.VISIBLE) {
+            tNc.setVisibility(View.INVISIBLE);
+        } else {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Confirm").setMessage("Are you sure?");
 
-        builder.setPositiveButton("YES", (dialog, which) -> {
-            dialog.dismiss();
-            finish();
-            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
-        });
+            builder.setPositiveButton("YES", (dialog, which) -> {
+                dialog.dismiss();
+                finish();
+                overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+            });
 
-        builder.setNegativeButton("NO", (dialog, which) -> dialog.dismiss());
-        builder.create().show();
+            builder.setNegativeButton("NO", (dialog, which) -> dialog.dismiss());
+            builder.create().show();
+        }
     }
 }

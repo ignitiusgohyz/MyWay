@@ -201,6 +201,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         countDownInput = parkingAlarmDialog.findViewById(R.id.countdown_input);
 
         createNotificationChannel();
+        SharedPreferences passEmail = getSharedPreferences("passemail", MODE_PRIVATE);
+        String email = passEmail.getString("email", "null");
+        View header = ((NavigationView)findViewById((R.id.navigation_view))).getHeaderView(0);
+        TextView headerEmail = header.findViewById(R.id.header_email);
+        TextView headerUsername = header.findViewById(R.id.header_username);
+        headerEmail.setText(email);
+        headerUsername.setText(preferences.getString("username", "null"));
 
         // TODO: extraneous
         ImageButton historyButton = findViewById(R.id.fragment_main_history);
@@ -294,15 +301,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         } else if (item.getItemId() == R.id.nav_crowd_sourced_information) {
             Toast.makeText(this, "Feature not implemented yet.", Toast.LENGTH_SHORT).show();
-        } else if (item.getItemId() == R.id.nav_account) {
-            SharedPreferences passEmail = getSharedPreferences("passemail", MODE_PRIVATE);
-            SharedPreferences preferences = getSharedPreferences("checkbox", MODE_PRIVATE);
-            String email = passEmail.getString("email", "null");
-            TextView dialogEmail = myProfileDialog.findViewById(R.id.my_profile_email);
-            TextView dialogUser = myProfileDialog.findViewById(R.id.my_profile_username);
-            dialogEmail.setText("Email: " + email);
-            dialogUser.setText("Username: " + preferences.getString("username", "null"));
-            myProfileDialog.show();
+        } else if (item.getItemId() == R.id.nav_settings) {
+            Toast.makeText(this, "Feature not implemented yet.", Toast.LENGTH_SHORT).show();
         }
 
 

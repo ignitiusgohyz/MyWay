@@ -457,15 +457,8 @@ public class Parking extends AppCompatActivity implements NavigationView.OnNavig
             }
         } else if (item.getItemId() == R.id.nav_crowd_sourced_information) {
             Toast.makeText(this, "Feature not implemented yet.", Toast.LENGTH_SHORT).show();
-        } else if (item.getItemId() == R.id.nav_account) {
-            SharedPreferences passEmail = getSharedPreferences("passemail", MODE_PRIVATE);
-            SharedPreferences preferences = getSharedPreferences("checkbox", MODE_PRIVATE);
-            String email = passEmail.getString("email", "null");
-            TextView dialogEmail = myProfileDialog.findViewById(R.id.my_profile_email);
-            TextView dialogUser = myProfileDialog.findViewById(R.id.my_profile_username);
-            dialogEmail.setText("Email: " + email);
-            dialogUser.setText("Username: " + preferences.getString("username", "null"));
-            myProfileDialog.show();
+        } else if (item.getItemId() == R.id.nav_settings) {
+            Toast.makeText(this, "Feature not implemented yet.", Toast.LENGTH_SHORT).show();
         }
         return true;
     }

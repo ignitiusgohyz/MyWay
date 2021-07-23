@@ -5,14 +5,14 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_account"
-            android:title="My Account"/>
-        <item
             android:id="@+id/nav_parking_alarm"
             android:title="Parking Alarm" />
         <item
             android:id="@+id/nav_crowd_sourced_information"
             android:title="Crowd-Sourced Information" />
+        <item
+            android:id="@+id/nav_settings"
+            android:title="Settings"/>
         <item
             android:id="@+id/nav_logout"
             android:title="Logout" />

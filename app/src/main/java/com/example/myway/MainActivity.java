@@ -13,6 +13,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -678,9 +679,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
         getRoute(originPoint, destinationPoint);
         startButton.setEnabled(true);
-        startButton.setBackgroundResource(R.color.mapboxBlue);
+        startButton.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.mapboxBlue)));
         checkParking.setEnabled(true);
-        checkParking.setBackgroundResource(R.color.mapboxBlue);
+        checkParking.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.mapboxBlue)));
         destinationLat = point.getLatitude();
         destinationLng = point.getLongitude();
         mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(

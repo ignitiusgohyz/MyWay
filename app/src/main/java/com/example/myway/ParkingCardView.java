@@ -6,7 +6,7 @@ public class ParkingCardView {
     private String price_calculator;
     private final double latitude;
     private final double longitude;
-    private final double distanceFromCurrent;
+    private final int distanceFromCurrent;
     private String duration;
     private final boolean redColour;
     private final Carpark currentCP;
@@ -16,7 +16,7 @@ public class ParkingCardView {
         this.location = location;
         this.carpark_availability = carpark_availability;
         this.price_calculator = price_calculator;
-        this.distanceFromCurrent = distanceFromCurrent;
+        this.distanceFromCurrent = (int) distanceFromCurrent;
         this.latitude = latitude;
         this.longitude = longitude;
         this.duration = duration;
@@ -69,7 +69,7 @@ public class ParkingCardView {
         return redColour;
     }
 
-    public double getDistanceFromCurrent() { return distanceFromCurrent; }
+    public int getDistanceFromCurrent() { return distanceFromCurrent; }
 
     public double getLatitude() { return latitude; }
 

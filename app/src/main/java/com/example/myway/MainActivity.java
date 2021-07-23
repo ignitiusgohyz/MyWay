@@ -139,7 +139,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private final String ak = "dc82311d-b99a-412e-9f12-6f607b758479";
 
-    private SVY21Coordinate destinationSVY21 = null;
+    private LatLonCoordinate destinationSVY21 = null;
 
     private DrawerLayout navDrawer;
 
@@ -486,7 +486,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     LatLng point = new LatLng(((Point) Objects.requireNonNull(selectedCarmenFeature.geometry())).latitude(),
                             ((Point) selectedCarmenFeature.geometry()).longitude());
 
-                    destinationSVY21 = new LatLonCoordinate(point.getLatitude(), point.getLongitude()).asSVY21();
+                    Log.d("Destination Actual Coordinates?", point.getLatitude() + " AND " + point.getLongitude());
+
+                    destinationSVY21 = new LatLonCoordinate(point.getLatitude(), point.getLongitude());
 
                     FutureTask<Void> setURADistance = new FutureTask<>(() -> {
                         new GenerateCarparkStatic.generateURA().fillCPDistances(destinationSVY21);
@@ -549,7 +551,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     if (latitude != 0.0 && longitude != 0.0) {
                         LatLng latLng = new LatLng(latitude, longitude);
 
-                        destinationSVY21 = new LatLonCoordinate(latLng.getLatitude(), latLng.getLongitude()).asSVY21();
+                        // NOT SVY21
+                        destinationSVY21 = new LatLonCoordinate(latLng.getLatitude(), latLng.getLongitude());
 
                         FutureTask<Void> setURADistance = new FutureTask<>(() -> {
                             new GenerateCarparkStatic.generateURA().fillCPDistances(destinationSVY21);

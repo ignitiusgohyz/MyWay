@@ -257,6 +257,7 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
         return new ParkingCardViewHolder(v);
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull @NotNull ParkingCardViewAdapter.ParkingCardViewHolder holder, int position) {
         holder.cardView.setTag(position);

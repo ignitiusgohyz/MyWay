@@ -53,17 +53,19 @@ public abstract class GenerateCarparkStatic {
         }
 
         @Override
-        protected void fillCPDistances(SVY21Coordinate destination) {
+        protected void fillCPDistances(LatLonCoordinate destination) {
             if (HDBList != null) {
                 for (Carpark carpark : HDBList) {
 //                    double distance1 = carpark.getParkingSVY21().getNorthing() - destination.getEasting();
 //                    double distance2 = carpark.getParkingSVY21().getEasting() - destination.getNorthing();
 //                    double distanceApart = Math.sqrt(Math.pow(distance1,2) + Math.pow(distance2,2));
 //                    carpark.setDistanceApart(Math.abs(distanceApart));
-                    double destinationLat = destination.asLatLon().getLatitude();
-                    double destinationLng = destination.asLatLon().getLongitude();
+                    double destinationLat = destination.getLatitude();
+                    double destinationLng = destination.getLongitude();
                     double carparkLat = carpark.getParkingSVY21().asLatLon().getLatitude();
                     double carparkLng = carpark.getParkingSVY21().asLatLon().getLongitude();
+                    Log.d("Destination Lat Lng>>>>>", destinationLat + " AND " + destinationLng);
+                    Log.d("Carpark Lat Lng>>>>>", carparkLat + " AND " + carparkLng + " : " + carpark.getAddress());
                     carpark.setDistanceApart(distanceInMetres(destinationLat, destinationLng, carparkLat, carparkLng));
                 }
             }
@@ -81,6 +83,7 @@ public abstract class GenerateCarparkStatic {
             double d = radiusOfEarth * c;
             return d * 1000.0;
         }
+
         @Override
         protected ArrayList<Carpark> getList() {
             return HDBList;
@@ -150,11 +153,11 @@ public abstract class GenerateCarparkStatic {
         }
 
         @Override
-        protected void fillCPDistances(SVY21Coordinate destination) {
+        protected void fillCPDistances(LatLonCoordinate destination) {
             if (URAList != null) {
                 for (Carpark carpark : URAList) {
-                    double destinationLat = destination.asLatLon().getLatitude();
-                    double destinationLng = destination.asLatLon().getLongitude();
+                    double destinationLat = destination.getLatitude();
+                    double destinationLng = destination.getLongitude();
                     double carparkLat = carpark.getParkingSVY21().asLatLon().getLatitude();
                     double carparkLng = carpark.getParkingSVY21().asLatLon().getLongitude();
                     carpark.setDistanceApart(distanceInMetres(destinationLat, destinationLng, carparkLat, carparkLng));
@@ -265,11 +268,11 @@ public abstract class GenerateCarparkStatic {
         }
 
         @Override
-        protected void fillCPDistances(SVY21Coordinate destination) {
+        protected void fillCPDistances(LatLonCoordinate destination) {
             if (LTAList != null) {
                 for (Carpark carpark : LTAList) {
-                    double destinationLat = destination.asLatLon().getLatitude();
-                    double destinationLng = destination.asLatLon().getLongitude();
+                    double destinationLat = destination.getLatitude();
+                    double destinationLng = destination.getLongitude();
                     double carparkLat = carpark.getParkingSVY21().asLatLon().getLatitude();
                     double carparkLng = carpark.getParkingSVY21().asLatLon().getLongitude();
                     carpark.setDistanceApart(distanceInMetres(destinationLat, destinationLng, carparkLat, carparkLng));
@@ -311,11 +314,11 @@ public abstract class GenerateCarparkStatic {
 
     protected abstract ArrayList<Carpark> readCSV(InputStream inputStream);
 
-    protected abstract void fillCPDistances(SVY21Coordinate destination);
+    protected abstract void fillCPDistances(LatLonCoordinate destination);
 
     protected abstract ArrayList<Carpark> getList();
 
     protected abstract void setList(ArrayList<Carpark> carparkArrayList);
 
-    protected abstract double distanceInMetres(double lat1, double lng1, double lat2, double lng2);
+    protected abstract double distanceInMetres(double destinationLat, double destinationLng, double carparkLat, double carparkLng);
 }

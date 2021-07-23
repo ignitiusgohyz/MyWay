@@ -26,7 +26,7 @@ public class Carpark {
     private final LatLonCoordinate parkingLatLon;
     private final SVY21Coordinate parkingSVY21;
     private final String parkingSystem;
-    private double distanceApart; // Distance from current location
+    private int distanceApart; // Distance from current location
     private Integer availableLots;
     private double price;
     private String duration;
@@ -735,10 +735,10 @@ public class Carpark {
     }
 
     public void setDistanceApart(double distanceApart) {
-        this.distanceApart = distanceApart;
+        this.distanceApart = (int) distanceApart;
     }
 
-    protected double getDistanceApart() { return this.distanceApart; }
+    protected int getDistanceApart() { return this.distanceApart; }
 
     public LatLonCoordinate getParkingLatLon() {
         return parkingLatLon;

@@ -328,6 +328,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     protected void startTimer() {
+        cancelCountdown.setVisibility(View.VISIBLE);
+        startCountdown.setVisibility(View.INVISIBLE);
+        countDownInput.setVisibility(View.INVISIBLE);
         endTime = System.currentTimeMillis() + timeLeftInMillis;
         countDownTimer = new CountDownTimer(timeLeftInMillis, 1000) {
             @Override
@@ -840,6 +843,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 startButtonClicked = false;
                 resetTimer();
             } else {
+                if (countDownTimer != null) {
+                    Log.d("Countdown Timer NULLIFIED >>>>>>>>>>>>>", "TRUE");
+                    countDownTimer.cancel();
+                    countDownTimer = null;
+                }
                 startTimer();
             }
         }
@@ -886,6 +894,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 startButtonClicked = false;
                 resetTimer();
             } else {
+                if (countDownTimer != null) {
+                    Log.d("Countdown Timer NULLIFIED >>>>>>>>>>>>>", "TRUE");
+                    countDownTimer.cancel();
+                    countDownTimer = null;
+                }
                 startTimer();
             }
         }
@@ -903,6 +916,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         editor.apply();
         if(countDownTimer != null) {
             countDownTimer.cancel();
+            countDownTimer = null;
         }
         mapView.onPause();
     }
@@ -919,6 +933,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         editor.apply();
         if(countDownTimer != null) {
             countDownTimer.cancel();
+            countDownTimer = null;
         }
         mapView.onStop();
     }

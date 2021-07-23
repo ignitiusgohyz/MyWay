@@ -448,8 +448,10 @@ public class Parking extends AppCompatActivity implements NavigationView.OnNavig
                 }
                 startCountdown.setVisibility(View.VISIBLE);
                 countDownInput.setVisibility(View.VISIBLE);
+                Log.d("Start Button Clicked in Cancel?>>>>>>>>", startButtonClicked + "");
             });
             backButtonCountdown.setOnClickListener(v -> parkingAlarmDialog.dismiss());
+            Log.d("Start Button Clicked?", startButtonClicked + "");
             if (startButtonClicked) {
                 updateCountDownText();
             }
@@ -487,6 +489,9 @@ public class Parking extends AppCompatActivity implements NavigationView.OnNavig
     }
 
     protected void startTimer() {
+        cancelCountdown.setVisibility(View.VISIBLE);
+        startCountdown.setVisibility(View.INVISIBLE);
+        countDownInput.setVisibility(View.INVISIBLE);
         endTime = System.currentTimeMillis() + timeLeftInMillis;
         countDownTimer = new CountDownTimer(timeLeftInMillis, 1000) {
             @Override
@@ -588,6 +593,12 @@ public class Parking extends AppCompatActivity implements NavigationView.OnNavig
                 startButtonClicked = false;
                 resetTimer();
             } else {
+                Log.d("Starts Timer onStart>>>>>>>>>>>>>", "TRUE");
+                if (countDownTimer != null) {
+                    Log.d("Countdown Timer NULLIFIED >>>>>>>>>>>>>", "TRUE");
+                    countDownTimer.cancel();
+                    countDownTimer = null;
+                }
                 startTimer();
             }
         }
@@ -605,6 +616,7 @@ public class Parking extends AppCompatActivity implements NavigationView.OnNavig
         editor.apply();
         if(countDownTimer != null) {
             countDownTimer.cancel();
+            countDownTimer = null;
         }
     }
 
@@ -620,6 +632,7 @@ public class Parking extends AppCompatActivity implements NavigationView.OnNavig
         editor.apply();
         if(countDownTimer != null) {
             countDownTimer.cancel();
+            countDownTimer = null;
         }
     }
 
@@ -638,6 +651,11 @@ public class Parking extends AppCompatActivity implements NavigationView.OnNavig
                 startButtonClicked = false;
                 resetTimer();
             } else {
+                if (countDownTimer != null) {
+                    Log.d("Countdown Timer NULLIFIED >>>>>>>>>>>>>", "TRUE");
+                    countDownTimer.cancel();
+                    countDownTimer = null;
+                }
                 startTimer();
             }
         }

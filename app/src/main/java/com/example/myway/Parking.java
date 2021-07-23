@@ -90,8 +90,8 @@ public class Parking extends AppCompatActivity implements NavigationView.OnNavig
 
         NavigationView navigationView = findViewById(R.id.navigation_view_parking);
         navigationView.setNavigationItemSelectedListener(this);
+        ParkingCardViewAdapter.setParam(this);
 
-        // TODO##
         hamburgerMenu = findViewById(R.id.fragment_parking_hamburger_menu);
         justNavigate = findViewById(R.id.fragment_parking_go);
         drawerLayout = findViewById(R.id.parking_drawer_layout);
@@ -104,7 +104,7 @@ public class Parking extends AppCompatActivity implements NavigationView.OnNavig
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.nav_open, R.string.nav_close);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
-//
+
         hamburgerMenu.setOnClickListener(v -> {
             if (!drawerLayout.isDrawerOpen(GravityCompat.START)) {
                 drawerLayout.openDrawer(GravityCompat.START);
@@ -171,15 +171,10 @@ public class Parking extends AppCompatActivity implements NavigationView.OnNavig
         } else if (type.equals("Price")) {
             // Sorts the car parks by price
             TextView estimate = findViewById(R.id.est_price_1);
-            Log.d("Filtering by price....", "Filtering....");
             if (estimate.getText().equals(" no est.") && !timingSelected) {
                 Toast.makeText(Parking.this, "Please select a timing!", Toast.LENGTH_SHORT).show();
             } else {
                 topSixteenParkings.sort((o1, o2) -> Double.compare(o1.getPrice(), o2.getPrice()));
-                Log.d("Carparks sorting now", "Now");
-                for (Carpark cp : topSixteenParkings) {
-                    Log.d("PRICE>>>", cp.getCarParkNo() + " " + cp.getPrice() + "");
-                }
                 fillPCVArrayList();
             }
         } else {
@@ -302,7 +297,6 @@ public class Parking extends AppCompatActivity implements NavigationView.OnNavig
         inflateRecycler();
     }
 
-    //
     private void fillPCVArrayList() {
         pcvArrayList.clear();
 

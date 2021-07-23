@@ -32,11 +32,11 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
     private static ArrayList<ParkingCardView> parkingCardViewArrayList;
     private static ArrayList<ParkingCardViewHolder> viewHolders = new ArrayList<>();
     private static String username;
-    private static MainActivity mainContext;
+    private static Parking parkingContext;
     private static Context context;
 
-    public static void setParam(MainActivity c) {
-        mainContext = c;
+    public static void setParam(Parking c) {
+        parkingContext = c;
     }
 
     public static class ParkingCardViewHolder extends RecyclerView.ViewHolder {
@@ -53,7 +53,7 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
         private final ImageButton arrowRight;
         private final TextView viewRates;
         private long durationChosen = Long.MAX_VALUE;
-        private Dialog parkingAlarmChoice;
+        private final Dialog parkingAlarmChoice;
 
         @SuppressLint("SetTextI18n")
         public ParkingCardViewHolder(@NonNull @NotNull View itemView) {
@@ -154,20 +154,20 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
                             Button reach = parkingAlarmChoice.findViewById(R.id.setAlarmAfterNavigation);
                             long millisInput = durationChosen * 60_000;
                             now.setOnClickListener(v12 -> {
-                                if (mainContext.hasAlarmSet()) {
+                                if (parkingContext.hasAlarmSet()) {
                                     Toast.makeText(v12.getContext(), "Please cancel previous alarm", Toast.LENGTH_SHORT).show();
                                 } else {
-                                    mainContext.setAlarm(millisInput);
+                                    parkingContext.setAlarm(millisInput);
                                     Toast.makeText(v12.getContext(), "Parking Alarm Set", Toast.LENGTH_SHORT).show();
                                     parkingAlarmChoice.dismiss();
                                 }
                             });
 
                             reach.setOnClickListener(v13 -> {
-                                if (mainContext.hasAlarmSet()) {
+                                if (parkingContext.hasAlarmSet()) {
                                     Toast.makeText(v13.getContext(), "Please cancel previous alarm", Toast.LENGTH_SHORT).show();
                                 } else {
-                                    mainContext.delayedAlarm(millisInput);
+                                    parkingContext.delayedAlarm(millisInput);
                                     Toast.makeText(v13.getContext(), "Parking Alarm Set upon Arrival at Destination", Toast.LENGTH_SHORT).show();
                                     parkingAlarmChoice.dismiss();
                                 }
@@ -270,9 +270,14 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
         holder.carpark_availability.setText(currentItem.getCarpark_availability());
         holder.location.setText(currentItem.getLocation());
         String price = currentItem.getPrice_calculator();
-        if (price != null) holder.price_calculator.setText(price.equals(" no est.") ? price : " est. $" + price);
         String duration = currentItem.getDuration();
-        holder.parkDuration.setText(duration);
+        if (holder.durationChosen == Long.MAX_VALUE) {
+            holder.parkDuration.setText("choose your duration");
+            holder.price_calculator.setText(" no est.");
+        } else if (price != null) {
+            holder.price_calculator.setText(price.equals(" no est.") ? price : " est. $" + price);
+            holder.parkDuration.setText(duration);
+        }
         double lon = currentItem.getLongitude();
         double lat = currentItem.getLatitude();
         holder.longitude.setText("" + lon);

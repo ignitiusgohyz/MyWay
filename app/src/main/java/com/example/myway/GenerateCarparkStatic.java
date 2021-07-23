@@ -56,14 +56,31 @@ public abstract class GenerateCarparkStatic {
         protected void fillCPDistances(SVY21Coordinate destination) {
             if (HDBList != null) {
                 for (Carpark carpark : HDBList) {
-                    double distance1 = carpark.getParkingSVY21().getNorthing() - destination.getEasting();
-                    double distance2 = carpark.getParkingSVY21().getEasting() - destination.getNorthing();
-                    double distanceApart = Math.sqrt(Math.pow(distance1,2) + Math.pow(distance2,2));
-                    carpark.setDistanceApart(Math.abs(distanceApart));
+//                    double distance1 = carpark.getParkingSVY21().getNorthing() - destination.getEasting();
+//                    double distance2 = carpark.getParkingSVY21().getEasting() - destination.getNorthing();
+//                    double distanceApart = Math.sqrt(Math.pow(distance1,2) + Math.pow(distance2,2));
+//                    carpark.setDistanceApart(Math.abs(distanceApart));
+                    double destinationLat = destination.asLatLon().getLatitude();
+                    double destinationLng = destination.asLatLon().getLongitude();
+                    double carparkLat = carpark.getParkingSVY21().asLatLon().getLatitude();
+                    double carparkLng = carpark.getParkingSVY21().asLatLon().getLongitude();
+                    carpark.setDistanceApart(distanceInMetres(destinationLat, destinationLng, carparkLat, carparkLng));
                 }
             }
         }
 
+        @Override
+        protected double distanceInMetres(double destinationLat, double destinationLng, double carparkLat, double carparkLng) {
+            double radiusOfEarth = 6378.137;
+            double dLat = ((carparkLat * Math.PI) / 180.0) - ((destinationLat * Math.PI) / 180.0);
+            double dLon = ((carparkLng * Math.PI) / 180.0) - ((destinationLng * Math.PI) / 180.0);
+            double a = (Math.sin(dLat/2.0) * Math.sin(dLat/2.0)) +
+                    (Math.cos((destinationLat * Math.PI) / 180.0) * Math.cos((carparkLat * Math.PI) / 180.0) *
+                            Math.sin(dLon/2.0) * Math.sin(dLon/2.0));
+            double c = 2.0 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            double d = radiusOfEarth * c;
+            return d * 1000.0;
+        }
         @Override
         protected ArrayList<Carpark> getList() {
             return HDBList;
@@ -136,10 +153,11 @@ public abstract class GenerateCarparkStatic {
         protected void fillCPDistances(SVY21Coordinate destination) {
             if (URAList != null) {
                 for (Carpark carpark : URAList) {
-                    double distance1 = carpark.getParkingSVY21().getNorthing() - destination.getEasting();
-                    double distance2 = carpark.getParkingSVY21().getEasting() - destination.getNorthing();
-                    double distanceApart = Math.sqrt(Math.pow(distance1,2) + Math.pow(distance2,2));
-                    carpark.setDistanceApart(Math.abs(distanceApart));
+                    double destinationLat = destination.asLatLon().getLatitude();
+                    double destinationLng = destination.asLatLon().getLongitude();
+                    double carparkLat = carpark.getParkingSVY21().asLatLon().getLatitude();
+                    double carparkLng = carpark.getParkingSVY21().asLatLon().getLongitude();
+                    carpark.setDistanceApart(distanceInMetres(destinationLat, destinationLng, carparkLat, carparkLng));
                 }
             }
         }
@@ -152,6 +170,19 @@ public abstract class GenerateCarparkStatic {
         @Override
         protected void setList(ArrayList<Carpark> carparkArrayList) {
             URAList = carparkArrayList;
+        }
+
+        @Override
+        protected double distanceInMetres(double destinationLat, double destinationLng, double carparkLat, double carparkLng) {
+            double radiusOfEarth = 6378.137;
+            double dLat = ((carparkLat * Math.PI) / 180.0) - ((destinationLat * Math.PI) / 180.0);
+            double dLon = ((carparkLng * Math.PI) / 180.0) - ((destinationLng * Math.PI) / 180.0);
+            double a = (Math.sin(dLat/2.0) * Math.sin(dLat/2.0)) +
+                    (Math.cos((destinationLat * Math.PI) / 180.0) * Math.cos((carparkLat * Math.PI) / 180.0) *
+                            Math.sin(dLon/2.0) * Math.sin(dLon/2.0));
+            double c = 2.0 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            double d = radiusOfEarth * c;
+            return d * 1000.0;
         }
 
         private static double parseCoordinates(String coordinateString, String type) {
@@ -181,6 +212,19 @@ public abstract class GenerateCarparkStatic {
 
     public static class generateLTA extends GenerateCarparkStatic {
         public generateLTA() {}
+
+        @Override
+        protected double distanceInMetres(double destinationLat, double destinationLng, double carparkLat, double carparkLng) {
+            double radiusOfEarth = 6378.137;
+            double dLat = ((carparkLat * Math.PI) / 180.0) - ((destinationLat * Math.PI) / 180.0);
+            double dLon = ((carparkLng * Math.PI) / 180.0) - ((destinationLng * Math.PI) / 180.0);
+            double a = (Math.sin(dLat/2.0) * Math.sin(dLat/2.0)) +
+                    (Math.cos((destinationLat * Math.PI) / 180.0) * Math.cos((carparkLat * Math.PI) / 180.0) *
+                            Math.sin(dLon/2.0) * Math.sin(dLon/2.0));
+            double c = 2.0 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            double d = radiusOfEarth * c;
+            return d * 1000.0;
+        }
 
         @Override
         protected ArrayList<Carpark> readCSV(InputStream inputStream) {
@@ -224,10 +268,11 @@ public abstract class GenerateCarparkStatic {
         protected void fillCPDistances(SVY21Coordinate destination) {
             if (LTAList != null) {
                 for (Carpark carpark : LTAList) {
-                    double distance1 = carpark.getParkingSVY21().getNorthing() - destination.getEasting();
-                    double distance2 = carpark.getParkingSVY21().getEasting() - destination.getNorthing();
-                    double distanceApart = Math.sqrt(Math.pow(distance1,2) + Math.pow(distance2,2));
-                    carpark.setDistanceApart(Math.abs(distanceApart));
+                    double destinationLat = destination.asLatLon().getLatitude();
+                    double destinationLng = destination.asLatLon().getLongitude();
+                    double carparkLat = carpark.getParkingSVY21().asLatLon().getLatitude();
+                    double carparkLng = carpark.getParkingSVY21().asLatLon().getLongitude();
+                    carpark.setDistanceApart(distanceInMetres(destinationLat, destinationLng, carparkLat, carparkLng));
                 }
             }
         }
@@ -271,4 +316,6 @@ public abstract class GenerateCarparkStatic {
     protected abstract ArrayList<Carpark> getList();
 
     protected abstract void setList(ArrayList<Carpark> carparkArrayList);
+
+    protected abstract double distanceInMetres(double lat1, double lng1, double lat2, double lng2);
 }

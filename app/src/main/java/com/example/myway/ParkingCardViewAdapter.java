@@ -268,7 +268,7 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
             holder.carpark_availability.setTextColor(Color.BLACK);
         }
         holder.carpark_availability.setText(currentItem.getCarpark_availability());
-        holder.location.setText(currentItem.getLocation());
+        holder.location.setText(currentItem.getLocation() + " (" + currentItem.getDistanceFromCurrent() + "m)");
         String price = currentItem.getPrice_calculator();
         String duration = currentItem.getDuration();
         if (holder.durationChosen == Long.MAX_VALUE) {

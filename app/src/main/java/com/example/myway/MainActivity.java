@@ -229,14 +229,18 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         });
 
         resetNorth.setOnClickListener(v -> {
-            mapboxMap.resetNorth();
-            mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(
-                    new CameraPosition.Builder()
-                            .target(new LatLng(locationComponent.getLastKnownLocation().getLatitude(),
-                                    locationComponent.getLastKnownLocation().getLongitude()))
-                            .zoom(14)
-                            .build()), 4000);
+            moveToLastKnown();
         });
+    }
+
+    private void moveToLastKnown() {
+        mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(
+                new CameraPosition.Builder()
+                        .target(new LatLng(locationComponent.getLastKnownLocation().getLatitude(),
+                                locationComponent.getLastKnownLocation().getLongitude()))
+                        .zoom(14)
+                        .bearing(0)
+                        .build()), 4000);
     }
 
     private void createNotificationChannel() {

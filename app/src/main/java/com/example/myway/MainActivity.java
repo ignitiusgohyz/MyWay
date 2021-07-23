@@ -230,6 +230,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         resetNorth.setOnClickListener(v -> {
             mapboxMap.resetNorth();
+            mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(
+                    new CameraPosition.Builder()
+                            .target(new LatLng(locationComponent.getLastKnownLocation().getLatitude(),
+                                    locationComponent.getLastKnownLocation().getLongitude()))
+                            .zoom(14)
+                            .build()), 4000);
         });
     }
 

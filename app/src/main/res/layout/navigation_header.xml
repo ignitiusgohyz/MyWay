@@ -29,11 +29,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
-        android:fontFamily="@font/titillium_web"
+        android:fontFamily="@font/titillium_web_semibold"
         android:gravity="center"
         android:text="Username"
         android:textColor="@color/white"
-        android:textSize="16sp"
+        android:textSize="24dp"
         app:layout_constraintStart_toEndOf="@id/imageView2"
         app:layout_constraintTop_toTopOf="@+id/imageView2" />
 
@@ -41,14 +41,14 @@
         android:id="@+id/header_email"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
         android:fontFamily="@font/titillium_web"
         android:gravity="center"
-        android:layout_marginTop="14dp"
+        android:maxWidth="140dp"
         android:text="Email"
         android:textColor="@color/white"
-        android:maxWidth="100dp"
-        android:textSize="16sp"
-        app:layout_constraintStart_toStartOf="@+id/header_username"
+        android:textSize="14sp"
+        app:layout_constraintStart_toEndOf="@+id/imageView2"
         app:layout_constraintTop_toBottomOf="@id/header_username" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

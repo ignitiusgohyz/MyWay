@@ -508,7 +508,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void onMapReady(@NonNull MapboxMap mapboxMap) {
         this.mapboxMap = mapboxMap;
-        this.mapboxMap.addOnMapClickListener(MainActivity.this);
+    //    this.mapboxMap.addOnMapClickListener(MainActivity.this);
         mapboxMap.setStyle(new Style.Builder().fromUri("mapbox://styles/mapbox/cjf4m44iw0uza2spb3q0a7s41"),
                 style -> {
                     initSearchFab();

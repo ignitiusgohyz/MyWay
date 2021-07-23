@@ -37,7 +37,7 @@ public class LoginActivity extends AppCompatActivity {
         createdPassword = findViewById(R.id.password);
 //        CheckBox rememberMe = findViewById(R.id.rememberMe);
         ImageButton registerButton = findViewById(R.id.register);
-        Button tempClearDatabaseButton = findViewById(R.id.tempclearbutton);
+//        Button tempClearDatabaseButton = findViewById(R.id.tempclearbutton);
         visibilityButton = findViewById(R.id.visibility_button);
         DatabaseHelper databaseHelper = new DatabaseHelper(LoginActivity.this);
 
@@ -132,10 +132,10 @@ public class LoginActivity extends AppCompatActivity {
             startActivity(intent);
         }
 
-        tempClearDatabaseButton.setOnClickListener(v -> {
-            databaseHelper.clearDatabase();
-            Toast.makeText(LoginActivity.this, "All records deleted", Toast.LENGTH_SHORT).show();
-        });
+//        tempClearDatabaseButton.setOnClickListener(v -> {
+//            databaseHelper.clearDatabase();
+//            Toast.makeText(LoginActivity.this, "All records deleted", Toast.LENGTH_SHORT).show();
+//        });
 
         registerButton.setOnClickListener(v -> {
             Intent intent = new Intent(LoginActivity.this, UsernameRegistration.class);

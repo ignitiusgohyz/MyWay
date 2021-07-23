@@ -158,6 +158,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private boolean delay = false;
     private ImageButton hamburgerMenu;
 
+    private ImageButton resetNorth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -212,6 +213,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         // TODO: extraneous
         ImageButton historyButton = findViewById(R.id.fragment_main_history);
         historyButton.setOnClickListener(v -> Toast.makeText(this, "Feature not implemented yet.", Toast.LENGTH_SHORT).show());
+        resetNorth = findViewById(R.id.resetNorth);
 
 //        if (savedInstanceState == null) {
 //            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new ParkingAlarmFragment()).commit();
@@ -224,6 +226,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             } else {
                 navDrawer.closeDrawer(GravityCompat.END);
             }
+        });
+
+        resetNorth.setOnClickListener(v -> {
+            mapboxMap.resetNorth();
         });
     }
 
@@ -499,7 +505,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                                     .target(point)
                                     .zoom(14)
                                     .build()), 4000);
-
                     onMapClick(point);
                 }
             }

@@ -10,6 +10,7 @@ public class ParkingCardView {
     private String duration;
     private final boolean redColour;
     private final Carpark currentCP;
+    private long durationStored;
 
     public ParkingCardView(Carpark currentCP, String location, String carpark_availability, String price_calculator, double distanceFromCurrent, double longitude, double latitude, String duration) {
         this.currentCP = currentCP;
@@ -67,6 +68,14 @@ public class ParkingCardView {
 
     public boolean isRedColour() {
         return redColour;
+    }
+
+    public void setDurationStored(long ms) {
+        durationStored = ms;
+    }
+
+    public long getDurationStored() {
+        return durationStored;
     }
 
     public int getDistanceFromCurrent() { return distanceFromCurrent; }

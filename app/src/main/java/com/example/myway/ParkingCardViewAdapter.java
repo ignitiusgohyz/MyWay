@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -129,6 +130,7 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
                         parkingCardView.getCurrentCP().setDuration(duration);
                         parkingCardView.setPrice_calculator(price);
                         parkingCardView.setDuration(duration);
+                        parkingCardView.setDurationStored(durationChosen * 60000);
                         if (i < viewHolders.size()) {
                             ParkingCardViewHolder parkingCardViewHolder = viewHolders.get(i);
                             parkingCardViewHolder.setPrice(price, duration);
@@ -145,14 +147,28 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
                 popupMenu.getMenuInflater().inflate(R.menu.three_dots_cardview, popupMenu.getMenu());
                 popupMenu.setOnMenuItemClickListener(item -> {
                     if (item.getTitle().equals("Set Parking Alarm")) {
-                        if (parkDuration.getText().equals("choose your duration") || durationChosen == Long.MAX_VALUE) {
+//                        if (parkDuration.getText().equals("choose your duration") || durationChosen == Long.MAX_VALUE) {
+                            if (parkDuration.getText().equals("choose your duration")) {
                             Toast.makeText(v.getContext(), "Please select a parking duration", Toast.LENGTH_SHORT).show();
                         } else {
                             // TODO set parking alarm based on duration
                             parkingAlarmChoice.show();
                             Button now = parkingAlarmChoice.findViewById(R.id.setAlarmNow);
                             Button reach = parkingAlarmChoice.findViewById(R.id.setAlarmAfterNavigation);
-                            long millisInput = durationChosen * 60_000;
+                            String tempString = parkDuration.getText().toString();
+                            String[] splitTime = tempString.split(" - ");
+                            String[] left = splitTime[0].split(":");
+                            String leftStart = left[0].charAt(0) == '0' ? left[0].substring(1) : left[0];
+                            String rightStart = left[1];
+                            leftStart = leftStart + rightStart;
+
+                            String[] right = splitTime[1].split(":");
+                            String leftEnd = right[0].charAt(0) == '0' ? right[0].substring(1) : right[0];
+                            String rightEnd = right[1];
+                            leftEnd = leftEnd + rightEnd;
+
+                            long millisInput = calculateTimeDifference(leftStart, leftEnd) * 60000;
+
                             now.setOnClickListener(v12 -> {
                                 if (parkingContext.hasAlarmSet()) {
                                     Toast.makeText(v12.getContext(), "Please cancel previous alarm", Toast.LENGTH_SHORT).show();
@@ -193,9 +209,41 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
                 intent.putExtra("latitude", lat);
                 intent.putExtra("longitude", lon);
                 intent.putExtra("username", username);
-                intent.putExtra("location", location.getText());
+                String[] parsedStrings = location.getText().toString().split(" ");
+                StringBuilder stringBuilder = new StringBuilder();
+                for (int i = 0; i < parsedStrings.length - 1; i++) {
+                    stringBuilder.append(parsedStrings[i]).append(" ");
+                }
+                intent.putExtra("location", stringBuilder.toString());
                 v.getContext().startActivity(intent);
             });
+        }
+
+        protected static int calculateTimeDifference(String startTime, String endTime) {
+            // 0530 - 0700 (END > START)
+            // 2300 - 2230 (START > END)
+            if (startTime.length() <= 3) startTime = "0" + startTime;
+            if (endTime.length() <= 3) endTime = "0" + endTime;
+
+            // 05 AND 30
+            // 23 AND 00
+            Integer startHour = Integer.parseInt(startTime.substring(0, 2)); // 2230    2230    2258
+            int startMin = Integer.parseInt(startTime.substring(2)); //     2313    2429    2401
+
+            // 07 AND 00
+            // 22 AND 30
+            Integer endHour = Integer.parseInt(endTime.substring(0, 2)); //
+            int endMin = Integer.parseInt(endTime.substring(2)); //
+
+            int differenceInTime;
+
+            if (endMin < startMin) {
+                differenceInTime = (endHour - startHour - 1) * 60 + (60 - startMin + endMin);
+            }  else {
+                differenceInTime = (endHour - startHour) * 60 + (endMin - startMin);
+            }
+
+            return differenceInTime;
         }
 
         private void setPrice(String price, String duration) {
@@ -272,13 +320,15 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
         holder.location.setText(currentItem.getLocation() + " (" + currentItem.getDistanceFromCurrent() + "m)");
         String price = currentItem.getPrice_calculator();
         String duration = currentItem.getDuration();
-        if (holder.durationChosen == Long.MAX_VALUE) {
-            holder.parkDuration.setText("choose your duration");
-            holder.price_calculator.setText(" no est.");
-        } else if (price != null) {
-            holder.price_calculator.setText(price.equals(" no est.") ? price : " est. $" + price);
-            holder.parkDuration.setText(duration);
-        }
+        holder.parkDuration.setText(duration);
+        holder.price_calculator.setText(price.equals(" no est.") ? price : " est. $" + price);
+//        if (holder.durationChosen == Long.MAX_VALUE) {
+//            holder.parkDuration.setText("choose your duration");
+//            holder.price_calculator.setText(" no est.");
+//        } else if (price != null) {
+//            holder.price_calculator.setText(price.equals(" no est.") ? price : " est. $" + price);
+//            holder.parkDuration.setText(duration);
+//        }
         double lon = currentItem.getLongitude();
         double lat = currentItem.getLatitude();
         holder.longitude.setText("" + lon);

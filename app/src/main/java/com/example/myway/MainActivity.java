@@ -608,7 +608,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             };
             NavigationViewOptions options = NavigationViewOptions.builder().directionsRoute(currentRoute).shouldSimulateRoute(true).navigationListener(navigationListener).build();
             // trying to fix NPE
-            NavigationMapboxMap navigationMapboxMap = new NavigationMapboxMap(mapView, mapboxMap);
+            // NavigationMapboxMap navigationMapboxMap = new NavigationMapboxMap(mapView, mapboxMap);
             com.mapbox.services.android.navigation.ui.v5.NavigationView navigationView = new com.mapbox.services.android.navigation.ui.v5.NavigationView(this);
             navigationView.startNavigation(options);
 

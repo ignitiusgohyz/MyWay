@@ -558,20 +558,7 @@ public class Parking extends AppCompatActivity implements NavigationView.OnNavig
     }
 
     public void delayedAlarm(long ms) {
-        Log.d("Delayed Alarm selected>>>>>>>>>>>", "Delay-in-Progress");
-        delay = true;
-        NavigationViewOptions.Builder options = NavigationViewOptions.builder();
-        options.progressChangeListener((location, routeProgress) -> {
-//            if (routeProgress.currentState().equals(RouteProgressState.ROUTE_ARRIVED)) {
-//                Log.d("Delayed Alarm OVER>>>>>>>>>>>", "Setting");
-//                setAlarm(ms);
-//            }
-            Log.d("Delayed Alarm OVER>>>>>>>>>>>", routeProgress.distanceRemaining().toString());
-            if (routeProgress.distanceRemaining() <= 10.0) {
-                Log.d("Delayed Alarm OVER>>>>>>>>>>>", "Setting");
-                setAlarm(ms);
-            }
-        });
+
     }
 
     @Override

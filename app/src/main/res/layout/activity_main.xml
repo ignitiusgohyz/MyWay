@@ -22,7 +22,7 @@
             android:background="?attr/colorPrimary"
             android:minHeight="?attr/actionBarSize"
             app:titleTextColor="@android:color/white"
-            tools:ignore="MissingConstraints"></androidx.appcompat.widget.Toolbar>
+            tools:ignore="MissingConstraints"/>
 
         <com.mapbox.mapboxsdk.maps.MapView
             android:id="@+id/mapView"
@@ -42,7 +42,7 @@
             android:src="@drawable/main_compass"
             mapbox:layout_constraintBottom_toTopOf="@+id/checkParking"
             mapbox:layout_constraintEnd_toEndOf="parent"
-            mapbox:layout_constraintTop_toBottomOf="@+id/cardView2"></ImageButton>
+            mapbox:layout_constraintTop_toBottomOf="@+id/cardView2"/>
         
 
         <Button

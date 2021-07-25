@@ -15,7 +15,8 @@
         android:theme="@style/Theme.MyWay"
         android:usesCleartextTraffic="true"
         tools:ignore="AllowBackup">
-        <activity android:name=".CarparkInformationActivityURA"></activity>
+        <activity android:name=".MapboxNavigationActivity"/>
+        <activity android:name=".CarparkInformationActivityURA" />
         <activity android:name=".CarparkInformationActivityHDB" />
         <activity android:name=".PasswordRegistration" />
         <activity android:name=".EmailRegistration" />
@@ -33,6 +34,7 @@
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
+
         <receiver android:name=".ReminderBroadcast" />
     </application>
 

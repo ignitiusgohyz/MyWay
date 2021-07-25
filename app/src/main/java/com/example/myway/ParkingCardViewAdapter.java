@@ -183,7 +183,8 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
                                 if (parkingContext.hasAlarmSet()) {
                                     Toast.makeText(v13.getContext(), "Please cancel previous alarm", Toast.LENGTH_SHORT).show();
                                 } else {
-                                    parkingContext.delayedAlarm(millisInput);
+//                                    parkingContext.delayedAlarm(millisInput);
+                                    MapboxNavigationActivity.setDelayedAlarm(millisInput);
                                     Toast.makeText(v13.getContext(), "Parking Alarm Set upon Arrival at Destination", Toast.LENGTH_SHORT).show();
                                     parkingAlarmChoice.dismiss();
                                 }
@@ -322,13 +323,6 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
         String duration = currentItem.getDuration();
         holder.parkDuration.setText(duration);
         holder.price_calculator.setText(price.equals(" no est.") ? price : " est. $" + price);
-//        if (holder.durationChosen == Long.MAX_VALUE) {
-//            holder.parkDuration.setText("choose your duration");
-//            holder.price_calculator.setText(" no est.");
-//        } else if (price != null) {
-//            holder.price_calculator.setText(price.equals(" no est.") ? price : " est. $" + price);
-//            holder.parkDuration.setText(duration);
-//        }
         double lon = currentItem.getLongitude();
         double lat = currentItem.getLatitude();
         holder.longitude.setText("" + lon);

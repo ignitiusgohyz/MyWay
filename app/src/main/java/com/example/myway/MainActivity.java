@@ -78,14 +78,8 @@ import com.mapbox.mapboxsdk.plugins.places.autocomplete.PlaceAutocomplete;
 import com.mapbox.mapboxsdk.plugins.places.autocomplete.model.PlaceOptions;
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
-import com.mapbox.services.android.navigation.ui.v5.NavigationLauncher;
-import com.mapbox.services.android.navigation.ui.v5.NavigationLauncherOptions;
 import com.mapbox.services.android.navigation.ui.v5.NavigationViewOptions;
-import com.mapbox.services.android.navigation.ui.v5.instruction.NavigationAlertView;
-import com.mapbox.services.android.navigation.ui.v5.listeners.NavigationListener;
-import com.mapbox.services.android.navigation.ui.v5.map.NavigationMapboxMap;
 import com.mapbox.services.android.navigation.ui.v5.route.NavigationMapRoute;
-import com.mapbox.services.android.navigation.v5.navigation.MapboxNavigation;
 import com.mapbox.services.android.navigation.v5.navigation.NavigationRoute;
 
 import org.jetbrains.annotations.NotNull;
@@ -585,45 +579,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         startButton = findViewById(R.id.startNavigation);
         startButton.setOnClickListener((v -> {
-//            NavigationLauncherOptions options = NavigationLauncherOptions.builder()
-//                    .directionsRoute(currentRoute)
-//                    .shouldSimulateRoute(true) // REMEMBER TO SET TO FALSE
-//                    .build();
-//            NavigationLauncher.startNavigation(MainActivity.this, options);
-            NavigationListener navigationListener = new NavigationListener() {
-                @Override
-                public void onCancelNavigation() {
-                    Toast.makeText(MainActivity.this, "Cancelled navigation", Toast.LENGTH_SHORT).show();
-                }
-
-                @Override
-                public void onNavigationFinished() {
-                    Toast.makeText(MainActivity.this, "Completed navigation", Toast.LENGTH_SHORT).show();
-                }
-
-                @Override
-                public void onNavigationRunning() {
-                    Toast.makeText(MainActivity.this, "Running navigation", Toast.LENGTH_SHORT).show();
-                }
-            };
-            NavigationViewOptions options = NavigationViewOptions.builder().directionsRoute(currentRoute).shouldSimulateRoute(true).navigationListener(navigationListener).build();
-            // trying to fix NPE
-            // NavigationMapboxMap navigationMapboxMap = new NavigationMapboxMap(mapView, mapboxMap);
-            com.mapbox.services.android.navigation.ui.v5.NavigationView navigationView = new com.mapbox.services.android.navigation.ui.v5.NavigationView(this);
-            navigationView.startNavigation(options);
-
-//            NavigationViewOptions.Builder optionsTest = NavigationViewOptions.builder();
-//            optionsTest.progressChangeListener(new ProgressChangeListener() {
-//                @Override
-//                public void onProgressChange(@NotNull Location location, @NotNull RouteProgress routeProgress) {
-//                    Log.d("Navigation IN PROGRESS", "IN PROGRESS........");
-//                    if (routeProgress.distanceRemaining() <= 100.0) {
-//                        Log.d("Navigation FINISHED", "FINISHED......");
-//                        Toast.makeText(MainActivity.this, "DONE", Toast.LENGTH_SHORT).show();
-//                    }
-//                }
-//            });
-
+            Intent intent = new Intent(MainActivity.this, MapboxNavigationActivity.class);
+            Log.d(TAG, "onMapReady: " + currentRoute.toString());
+            MapboxNavigationActivity.setParam(currentRoute);
+            startActivity(intent);
         }));
         checkParking = findViewById(R.id.checkParking);
         checkParking.setOnClickListener((v -> {
@@ -638,23 +597,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             intent.putExtras(bundle);
             startActivity(intent);
         }));
-    }
-
-    public void delayedAlarm(long ms) {
-        Log.d("Delayed Alarm selected>>>>>>>>>>>", "Delay-in-Progress");
-        delay = true;
-        NavigationViewOptions.Builder options = NavigationViewOptions.builder();
-        options.progressChangeListener((location, routeProgress) -> {
-//            if (routeProgress.currentState().equals(RouteProgressState.ROUTE_ARRIVED)) {
-//                Log.d("Delayed Alarm OVER>>>>>>>>>>>", "Setting");
-//                setAlarm(ms);
-//            }
-            Log.d("Delayed Alarm OVER>>>>>>>>>>>", routeProgress.distanceRemaining().toString());
-            if (routeProgress.distanceRemaining() <= 10.0) {
-                Log.d("Delayed Alarm OVER>>>>>>>>>>>", "Setting");
-                setAlarm(ms);
-            }
-        });
     }
 
     private void enableLocationComponent(@NonNull Style loadedMapStyle) {
@@ -749,7 +691,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                             Timber.tag(TAG).e("No routes found.");
                             return;
                         }
-
                         currentRoute = response.body().routes().get(0);
 
                         if (navigationMapRoute != null) {
@@ -871,6 +812,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     protected void onStart() {
         super.onStart();
+
+        SharedPreferences delaySharedPreferences = getSharedPreferences("delayedAlarm", MODE_PRIVATE);
+        long timeDelay = delaySharedPreferences.getLong("msDelay", Long.MAX_VALUE);
+        if (timeDelay != Long.MAX_VALUE) {
+            setAlarm(timeDelay);
+        }
+
         SharedPreferences prefs = getSharedPreferences("prefs",MODE_PRIVATE);
         startTimeInMillis = prefs.getLong("startTimeInMillis", 0);
         timeLeftInMillis = prefs.getLong("timeLeftInMillis", startTimeInMillis);
@@ -900,6 +848,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onResume();
         Log.d("MAIN", "RESUME");
         mapView.onResume();
+
+        SharedPreferences delaySharedPreferences = getSharedPreferences("delayedAlarm", MODE_PRIVATE);
+        long timeDelay = delaySharedPreferences.getLong("msDelay", Long.MAX_VALUE);
+        if (timeDelay != Long.MAX_VALUE) {
+            setAlarm(timeDelay);
+        }
+
         if (destinationSVY21 != null) {
             FutureTask<Void> setURADistance = new FutureTask<>(() -> {
                 new GenerateCarparkStatic.generateURA().fillCPDistances(destinationSVY21);

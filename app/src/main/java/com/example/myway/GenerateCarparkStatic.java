@@ -64,8 +64,8 @@ public abstract class GenerateCarparkStatic {
                     double destinationLng = destination.getLongitude();
                     double carparkLat = carpark.getParkingSVY21().asLatLon().getLatitude();
                     double carparkLng = carpark.getParkingSVY21().asLatLon().getLongitude();
-                    Log.d("Destination Lat Lng>>>>>", destinationLat + " AND " + destinationLng);
-                    Log.d("Carpark Lat Lng>>>>>", carparkLat + " AND " + carparkLng + " : " + carpark.getAddress());
+//                    Log.d("Destination Lat Lng>>>>>", destinationLat + " AND " + destinationLng);
+//                    Log.d("Carpark Lat Lng>>>>>", carparkLat + " AND " + carparkLng + " : " + carpark.getAddress());
                     carpark.setDistanceApart(distanceInMetres(destinationLat, destinationLng, carparkLat, carparkLng));
                 }
             }

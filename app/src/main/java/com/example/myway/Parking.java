@@ -138,6 +138,15 @@ public class Parking extends AppCompatActivity implements NavigationView.OnNavig
         cancelCountdown = parkingAlarmDialog.findViewById(R.id.cancel_countdown_button);
         backButtonCountdown = parkingAlarmDialog.findViewById(R.id.back_countdown_button);
         countDownInput = parkingAlarmDialog.findViewById(R.id.countdown_input);
+
+        SharedPreferences preferences = getSharedPreferences("checkbox", MODE_PRIVATE);
+        SharedPreferences passEmail = getSharedPreferences("passemail", MODE_PRIVATE);
+        String email = passEmail.getString("email", "null");
+        View header = ((NavigationView)findViewById((R.id.navigation_view_parking))).getHeaderView(0);
+        TextView headerEmail = header.findViewById(R.id.header_email);
+        TextView headerUsername = header.findViewById(R.id.header_username);
+        headerEmail.setText(email);
+        headerUsername.setText(preferences.getString("username", "null"));
     }
 
     private void resumption() {
@@ -377,12 +386,12 @@ public class Parking extends AppCompatActivity implements NavigationView.OnNavig
                 String available = CarparkAvailableFinder.get(index);
                 currentCP.setAvailableLots(Integer.parseInt(available));
                 String total = currentCP instanceof Carpark.URA ? ((Carpark.URA) currentCP).getParkCapacity(0)
-                                                                : currentCP instanceof Carpark.HDB
-                                                                ? CarparkTotalFinder.get(index)
-                                                                : "LTA";
+                        : currentCP instanceof Carpark.HDB
+                        ? CarparkTotalFinder.get(index)
+                        : "LTA";
                 pcvArrayList.add(new ParkingCardView(currentCP, currentAddress,
                         total.equals("LTA") ? available + " lots available"
-                                            : available + "/" + total + " lots available"
+                                : available + "/" + total + " lots available"
                         , currentCP.getPrice() > 999 || currentCP.getPrice() == 0.0 ? " no est." : decimalFormat.format(currentCP.getPrice())
                         , distance, currentCP.getxCoord(), currentCP.getyCoord(),
                         currentCP.getDuration() == null ? "choose your duration" : currentCP.getDuration()));

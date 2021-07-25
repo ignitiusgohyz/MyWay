@@ -69,7 +69,6 @@ public class Parking extends AppCompatActivity implements NavigationView.OnNavig
     private boolean startButtonClicked;
     private long timeLeftInMillis;
     private long endTime;
-    private boolean delay = false;
     private ImageButton hamburgerMenu;
     private ImageButton justNavigate;
     private DrawerLayout drawerLayout;
@@ -555,10 +554,6 @@ public class Parking extends AppCompatActivity implements NavigationView.OnNavig
             timeLeftFormatted = String.format(Locale.getDefault(), "Parking Alarm up in %02d:%02d",minutes,seconds);
         }
         display.setText(timeLeftFormatted);
-    }
-
-    public void delayedAlarm(long ms) {
-
     }
 
     @Override

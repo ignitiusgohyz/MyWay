@@ -153,7 +153,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private boolean startButtonClicked;
     private long timeLeftInMillis;
     private long endTime;
-    private boolean delay = false;
     private ImageButton hamburgerMenu;
 
     private ImageButton resetNorth;
@@ -812,13 +811,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     protected void onStart() {
         super.onStart();
-
-        SharedPreferences delaySharedPreferences = getSharedPreferences("delayedAlarm", MODE_PRIVATE);
-        long timeDelay = delaySharedPreferences.getLong("msDelay", Long.MAX_VALUE);
-        if (timeDelay != Long.MAX_VALUE) {
-            setAlarm(timeDelay);
-        }
-
         SharedPreferences prefs = getSharedPreferences("prefs",MODE_PRIVATE);
         startTimeInMillis = prefs.getLong("startTimeInMillis", 0);
         timeLeftInMillis = prefs.getLong("timeLeftInMillis", startTimeInMillis);
@@ -839,7 +831,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 startTimer();
             }
         }
-
         mapView.onStart();
     }
 
@@ -848,13 +839,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onResume();
         Log.d("MAIN", "RESUME");
         mapView.onResume();
-
-        SharedPreferences delaySharedPreferences = getSharedPreferences("delayedAlarm", MODE_PRIVATE);
-        long timeDelay = delaySharedPreferences.getLong("msDelay", Long.MAX_VALUE);
-        if (timeDelay != Long.MAX_VALUE) {
-            setAlarm(timeDelay);
-        }
-
         if (destinationSVY21 != null) {
             FutureTask<Void> setURADistance = new FutureTask<>(() -> {
                 new GenerateCarparkStatic.generateURA().fillCPDistances(destinationSVY21);

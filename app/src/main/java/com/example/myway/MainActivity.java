@@ -81,7 +81,11 @@ import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
 import com.mapbox.services.android.navigation.ui.v5.NavigationLauncher;
 import com.mapbox.services.android.navigation.ui.v5.NavigationLauncherOptions;
 import com.mapbox.services.android.navigation.ui.v5.NavigationViewOptions;
+import com.mapbox.services.android.navigation.ui.v5.instruction.NavigationAlertView;
+import com.mapbox.services.android.navigation.ui.v5.listeners.NavigationListener;
+import com.mapbox.services.android.navigation.ui.v5.map.NavigationMapboxMap;
 import com.mapbox.services.android.navigation.ui.v5.route.NavigationMapRoute;
+import com.mapbox.services.android.navigation.v5.navigation.MapboxNavigation;
 import com.mapbox.services.android.navigation.v5.navigation.NavigationRoute;
 
 import org.jetbrains.annotations.NotNull;
@@ -581,12 +585,32 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         startButton = findViewById(R.id.startNavigation);
         startButton.setOnClickListener((v -> {
-            NavigationLauncherOptions options = NavigationLauncherOptions.builder()
-                    .directionsRoute(currentRoute)
-                    .shouldSimulateRoute(true) // REMEMBER TO SET TO FALSE
-                    .build();
-            NavigationLauncher.startNavigation(MainActivity.this, options);
-            Log.d("Navigation Started", "STARTING........");
+//            NavigationLauncherOptions options = NavigationLauncherOptions.builder()
+//                    .directionsRoute(currentRoute)
+//                    .shouldSimulateRoute(true) // REMEMBER TO SET TO FALSE
+//                    .build();
+//            NavigationLauncher.startNavigation(MainActivity.this, options);
+            NavigationListener navigationListener = new NavigationListener() {
+                @Override
+                public void onCancelNavigation() {
+                    Toast.makeText(MainActivity.this, "Cancelled navigation", Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onNavigationFinished() {
+                    Toast.makeText(MainActivity.this, "Completed navigation", Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onNavigationRunning() {
+                    Toast.makeText(MainActivity.this, "Running navigation", Toast.LENGTH_SHORT).show();
+                }
+            };
+            NavigationViewOptions options = NavigationViewOptions.builder().directionsRoute(currentRoute).shouldSimulateRoute(true).navigationListener(navigationListener).build();
+            // trying to fix NPE
+            NavigationMapboxMap navigationMapboxMap = new NavigationMapboxMap(mapView, mapboxMap);
+            com.mapbox.services.android.navigation.ui.v5.NavigationView navigationView = new com.mapbox.services.android.navigation.ui.v5.NavigationView(this);
+            navigationView.startNavigation(options);
 
 //            NavigationViewOptions.Builder optionsTest = NavigationViewOptions.builder();
 //            optionsTest.progressChangeListener(new ProgressChangeListener() {
@@ -807,7 +831,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             finish();
         }
     }
-
 
     private static class MainActivityLocationCallback implements LocationEngineCallback<LocationEngineResult> {
 

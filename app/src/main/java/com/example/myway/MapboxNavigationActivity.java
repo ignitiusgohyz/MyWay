@@ -117,7 +117,7 @@ public class MapboxNavigationActivity extends AppCompatActivity implements OnNav
         cancelCountdown.setVisibility(View.VISIBLE);
         startCountdown.setVisibility(View.INVISIBLE);
         countDownInput.setVisibility(View.INVISIBLE);
-        display.setText("Parking Alarm has will be set on arrival.");
+        display.setText("Parking Alarm will be set on arrival.");
     }
 
     protected void startTimer() {

@@ -183,7 +183,7 @@ public class ParkingCardViewAdapter extends RecyclerView.Adapter<ParkingCardView
                                 if (parkingContext.hasAlarmSet()) {
                                     Toast.makeText(v13.getContext(), "Please cancel previous alarm", Toast.LENGTH_SHORT).show();
                                 } else {
-//                                    parkingContext.delayedAlarm(millisInput);
+                                    parkingContext.updateDelayedAlarm();
                                     MapboxNavigationActivity.setDelayedAlarm(millisInput);
                                     Toast.makeText(v13.getContext(), "Parking Alarm Set upon Arrival at Destination", Toast.LENGTH_SHORT).show();
                                     parkingAlarmChoice.dismiss();

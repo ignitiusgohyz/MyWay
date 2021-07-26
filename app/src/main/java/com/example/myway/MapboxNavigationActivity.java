@@ -109,7 +109,15 @@ public class MapboxNavigationActivity extends AppCompatActivity implements OnNav
     }
 
     public boolean hasAlarmSet() {
-        return startButtonClicked;
+        return startButtonClicked || delayedAlarm;
+    }
+
+    protected void updateDelayedAlarm() {
+        delayedAlarm = true;
+        cancelCountdown.setVisibility(View.VISIBLE);
+        startCountdown.setVisibility(View.INVISIBLE);
+        countDownInput.setVisibility(View.INVISIBLE);
+        display.setText("Parking Alarm has will be set on arrival.");
     }
 
     protected void startTimer() {

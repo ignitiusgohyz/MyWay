@@ -154,6 +154,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private long timeLeftInMillis;
     private long endTime;
     private ImageButton hamburgerMenu;
+    private boolean delayedAlarm;
 
     private ImageButton resetNorth;
 
@@ -304,6 +305,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     countDownTimer.cancel();
                     countDownTimer = null;
                     resetTimer();
+                } else if (delayedAlarm) {
+                    resetTimer();
+                    delayedAlarm = false;
                 }
                 startCountdown.setVisibility(View.VISIBLE);
                 countDownInput.setVisibility(View.VISIBLE);
@@ -324,7 +328,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     public boolean hasAlarmSet() {
-        return startButtonClicked;
+        return startButtonClicked || delayedAlarm;
     }
 
     public void setAlarm(long mInput) {
@@ -399,6 +403,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         startCountdown.setText("start");
         timeLeftInMillis = startTimeInMillis;
         display.setText("Parking Alarm has not been set.");
+    }
+
+    protected void updateDelayedAlarm() {
+        delayedAlarm = true;
+        cancelCountdown.setVisibility(View.VISIBLE);
+        startCountdown.setVisibility(View.INVISIBLE);
+        countDownInput.setVisibility(View.INVISIBLE);
+        display.setText("Parking Alarm has will be set on arrival.");
     }
 
     protected void updateCountDownText() {

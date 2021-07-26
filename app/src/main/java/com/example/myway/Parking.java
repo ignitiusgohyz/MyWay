@@ -73,6 +73,7 @@ public class Parking extends AppCompatActivity implements NavigationView.OnNavig
     private ImageButton justNavigate;
     private DrawerLayout drawerLayout;
     String username;
+    private boolean delayedAlarm;
 
 
     private static final String accessKey = "dc82311d-b99a-412e-9f12-6f607b758479"; // URA access key, to be changed yearly
@@ -447,6 +448,9 @@ public class Parking extends AppCompatActivity implements NavigationView.OnNavig
                     countDownTimer.cancel();
                     countDownTimer = null;
                     resetTimer();
+                } else if (delayedAlarm) {
+                    resetTimer();
+                    delayedAlarm = false;
                 }
                 startCountdown.setVisibility(View.VISIBLE);
                 countDownInput.setVisibility(View.VISIBLE);
@@ -466,7 +470,7 @@ public class Parking extends AppCompatActivity implements NavigationView.OnNavig
     }
 
     public boolean hasAlarmSet() {
-        return startButtonClicked;
+        return startButtonClicked || delayedAlarm;
     }
 
     public void setAlarm(long mInput) {
@@ -541,6 +545,14 @@ public class Parking extends AppCompatActivity implements NavigationView.OnNavig
         startCountdown.setText("start");
         timeLeftInMillis = startTimeInMillis;
         display.setText("Parking Alarm has not been set.");
+    }
+
+    protected void updateDelayedAlarm() {
+        delayedAlarm = true;
+        cancelCountdown.setVisibility(View.VISIBLE);
+        startCountdown.setVisibility(View.INVISIBLE);
+        countDownInput.setVisibility(View.INVISIBLE);
+        display.setText("Parking Alarm has will be set on arrival.");
     }
 
     protected void updateCountDownText() {

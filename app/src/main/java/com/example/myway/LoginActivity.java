@@ -21,7 +21,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 
 public class LoginActivity extends AppCompatActivity {
-
+    //test
     private ImageButton visibilityButton;
     private EditText createdUsername;
     private String createdUsername_string;

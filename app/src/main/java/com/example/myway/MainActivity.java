@@ -827,6 +827,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         startTimeInMillis = prefs.getLong("startTimeInMillis", 0);
         timeLeftInMillis = prefs.getLong("timeLeftInMillis", startTimeInMillis);
         startButtonClicked = prefs.getBoolean("startButtonClicked", false);
+        delayedAlarm = prefs.getBoolean("delayedAlarm", false);
         if (startButtonClicked) {
             endTime = prefs.getLong("endTime", 0);
             timeLeftInMillis = endTime - System.currentTimeMillis();
@@ -842,6 +843,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 }
                 startTimer();
             }
+        } else if(delayedAlarm) {
+            updateDelayedAlarm();
         }
         mapView.onStart();
     }
@@ -877,6 +880,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         startTimeInMillis = prefs.getLong("startTimeInMillis", 0);
         timeLeftInMillis = prefs.getLong("timeLeftInMillis", startTimeInMillis);
         startButtonClicked = prefs.getBoolean("startButtonClicked", false);
+        delayedAlarm = prefs.getBoolean("delayedAlarm", false);
         if (startButtonClicked) {
             endTime = prefs.getLong("endTime", 0);
             timeLeftInMillis = endTime - System.currentTimeMillis();
@@ -892,6 +896,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 }
                 startTimer();
             }
+        } else if (delayedAlarm) {
+            updateDelayedAlarm();
         }
     }
 
@@ -904,6 +910,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         editor.putLong("millisLeft", timeLeftInMillis);
         editor.putBoolean("startButtonClicked", startButtonClicked);
         editor.putLong("endTime", endTime);
+        editor.putBoolean("delayedAlarm", delayedAlarm);
         editor.apply();
         if(countDownTimer != null) {
             countDownTimer.cancel();
@@ -921,6 +928,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         editor.putLong("millisLeft", timeLeftInMillis);
         editor.putBoolean("startButtonClicked", startButtonClicked);
         editor.putLong("endTime", endTime);
+        editor.putBoolean("delayedAlarm", delayedAlarm);
         editor.apply();
         if(countDownTimer != null) {
             countDownTimer.cancel();

@@ -225,6 +225,7 @@ public class MapboxNavigationActivity extends AppCompatActivity implements OnNav
         startTimeInMillis = prefs.getLong("startTimeInMillis", 0);
         timeLeftInMillis = prefs.getLong("timeLeftInMillis", startTimeInMillis);
         startButtonClicked = prefs.getBoolean("startButtonClicked", false);
+        delayedAlarm = prefs.getBoolean("delayedAlarm", false);
         if (startButtonClicked) {
             endTime = prefs.getLong("endTime", 0);
             timeLeftInMillis = endTime - System.currentTimeMillis();
@@ -240,6 +241,8 @@ public class MapboxNavigationActivity extends AppCompatActivity implements OnNav
                 }
                 startTimer();
             }
+        } else if (delayedAlarm) {
+            updateDelayedAlarm();
         }
         navigationView.onStart();
     }
@@ -251,6 +254,7 @@ public class MapboxNavigationActivity extends AppCompatActivity implements OnNav
         startTimeInMillis = prefs.getLong("startTimeInMillis", 0);
         timeLeftInMillis = prefs.getLong("timeLeftInMillis", startTimeInMillis);
         startButtonClicked = prefs.getBoolean("startButtonClicked", false);
+        delayedAlarm = prefs.getBoolean("delayedAlarm", false);
         if (startButtonClicked) {
             endTime = prefs.getLong("endTime", 0);
             timeLeftInMillis = endTime - System.currentTimeMillis();
@@ -266,6 +270,8 @@ public class MapboxNavigationActivity extends AppCompatActivity implements OnNav
                 }
                 startTimer();
             }
+        } else if (delayedAlarm) {
+            updateDelayedAlarm();
         }
         navigationView.onResume();
     }
@@ -279,6 +285,7 @@ public class MapboxNavigationActivity extends AppCompatActivity implements OnNav
         editor.putLong("millisLeft", timeLeftInMillis);
         editor.putBoolean("startButtonClicked", startButtonClicked);
         editor.putLong("endTime", endTime);
+        editor.putBoolean("delayedAlarm", delayedAlarm);
         editor.apply();
         if(countDownTimer != null) {
             countDownTimer.cancel();
@@ -296,6 +303,7 @@ public class MapboxNavigationActivity extends AppCompatActivity implements OnNav
         editor.putLong("millisLeft", timeLeftInMillis);
         editor.putBoolean("startButtonClicked", startButtonClicked);
         editor.putLong("endTime", endTime);
+        editor.putBoolean("delayedAlarm", delayedAlarm);
         editor.apply();
         if(countDownTimer != null) {
             countDownTimer.cancel();

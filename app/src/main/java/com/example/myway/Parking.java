@@ -575,6 +575,7 @@ public class Parking extends AppCompatActivity implements NavigationView.OnNavig
         startTimeInMillis = prefs.getLong("startTimeInMillis", 0);
         timeLeftInMillis = prefs.getLong("timeLeftInMillis", startTimeInMillis);
         startButtonClicked = prefs.getBoolean("startButtonClicked", false);
+        delayedAlarm = prefs.getBoolean("delayedAlarm", false);
         if (startButtonClicked) {
             endTime = prefs.getLong("endTime", 0);
             timeLeftInMillis = endTime - System.currentTimeMillis();
@@ -591,6 +592,8 @@ public class Parking extends AppCompatActivity implements NavigationView.OnNavig
                 }
                 startTimer();
             }
+        } else if (delayedAlarm) {
+            updateDelayedAlarm();
         }
     }
 
@@ -603,6 +606,7 @@ public class Parking extends AppCompatActivity implements NavigationView.OnNavig
         editor.putLong("millisLeft", timeLeftInMillis);
         editor.putBoolean("startButtonClicked", startButtonClicked);
         editor.putLong("endTime", endTime);
+        editor.putBoolean("delayedAlarm", delayedAlarm);
         editor.apply();
         if(countDownTimer != null) {
             countDownTimer.cancel();
@@ -619,6 +623,7 @@ public class Parking extends AppCompatActivity implements NavigationView.OnNavig
         editor.putLong("millisLeft", timeLeftInMillis);
         editor.putBoolean("startButtonClicked", startButtonClicked);
         editor.putLong("endTime", endTime);
+        editor.putBoolean("delayedAlarm", delayedAlarm);
         editor.apply();
         if(countDownTimer != null) {
             countDownTimer.cancel();
@@ -633,6 +638,7 @@ public class Parking extends AppCompatActivity implements NavigationView.OnNavig
         startTimeInMillis = prefs.getLong("startTimeInMillis", 0);
         timeLeftInMillis = prefs.getLong("timeLeftInMillis", startTimeInMillis);
         startButtonClicked = prefs.getBoolean("startButtonClicked", false);
+        delayedAlarm = prefs.getBoolean("delayedAlarm", false);
         if (startButtonClicked) {
             endTime = prefs.getLong("endTime", 0);
             timeLeftInMillis = endTime - System.currentTimeMillis();
@@ -648,6 +654,8 @@ public class Parking extends AppCompatActivity implements NavigationView.OnNavig
                 }
                 startTimer();
             }
+        } else if (delayedAlarm) {
+            updateDelayedAlarm();
         }
     }
 }
